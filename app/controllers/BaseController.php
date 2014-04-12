@@ -7,5 +7,10 @@
 
 class BaseController extends \Phalcon\Mvc\Controller
 {
-
+	public function initialize ()
+	{
+		$this->tag->setDoctype(\Phalcon\Tag::HTML5);
+		$this->tag->setTitle('Топ-линия');
+		$this->tag->setTitleSeparator(' :: ');
+	}
 } 

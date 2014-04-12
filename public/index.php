@@ -11,10 +11,25 @@ try {
     // Файл подключения сервиса для работы с БД
     require __DIR__ . '/../app/config/Db.php';
 
-    // Настраиваем компонент View
+	// Шаблонизатор Volt в DI
+	$di->set('voltService', function($view, $di) {
+
+		$volt = new Phalcon\Mvc\View\Engine\Volt($view, $di);
+
+		$volt->setOptions(array(
+			"compiledExtension" => ".compiled"
+		));
+
+		return $volt;
+	});
+
+    // Настраиваем компонент View/Simple с шаблонизатором
     $di->set('view', function(){
-        $view = new \Phalcon\Mvc\View();
+        $view = new \Phalcon\Mvc\View\Simple();
         $view->setViewsDir('../app/views/');
+	    $view->registerEngines([
+		    '.volt' => 'voltService'
+	    ]);
         return $view;
     });
 
@@ -23,6 +38,8 @@ try {
 
     // Обработка запроса
     $application = new \Phalcon\Mvc\Application($di);
+
+	$application->useImplicitView(false);
 
     echo $application->handle()->getContent();
 
