@@ -2,14 +2,31 @@
 
 try {
 
+	// Создание DI
+	$di = new Phalcon\DI\FactoryDefault();
+
+	// Подключаем конфигурацию как сервис
+	require '../app/config/config.php';
+	$di->set('config', function() use ($settings) {
+		return new \Phalcon\Config($settings);
+	});
+
     // Регистрация автозагрузчика
-	require __DIR__ . '/../app/config/Loader.php';
+	$loader = new \Phalcon\Loader();
+	$loader->registerDirs([
+		$di->getShared('config')->app->controllers,
+		$di->getShared('config')->app->models
+	])->register();
 
-    // Создание DI
-    $di = new Phalcon\DI\FactoryDefault();
-
-    // Файл подключения сервиса для работы с БД
-    require __DIR__ . '/../app/config/Db.php';
+    // Сервиса для работы с БД
+    $di->set('db', function($di) {
+	    return new \Phalcon\Db\Adapter\Pdo\Mysql([
+		    'host' => $di->getShared('config')->database->host,
+		    'username' => $di->getShared('config')->database->username,
+		    'password' => $di->getShared('config')->database->password,
+		    'dbname' => $di->getShared('config')->database->dbname
+	    ]);
+    });
 
 	// Шаблонизатор Volt в DI
 	$di->set('voltService', function($view, $di) {

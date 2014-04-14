@@ -6,6 +6,7 @@ class IndexController extends BaseController
 	{
 		$this->tag->appendTitle('Главная');
 
-		echo $this->view->render('index/index');
+		$this->view->setVar('env', $this->env);
+		echo $this->view->render('index');
 	}
 }

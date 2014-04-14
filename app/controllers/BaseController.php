@@ -12,5 +12,8 @@ class BaseController extends \Phalcon\Mvc\Controller
 		$this->tag->setDoctype(\Phalcon\Tag::HTML5);
 		$this->tag->setTitle('Топ-линия');
 		$this->tag->setTitleSeparator(' :: ');
+
+		//TODO: Перенести это в конфигурацию.
+		$this->env = 'development';
 	}
 } 
