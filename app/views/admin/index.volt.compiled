@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<?php echo $this->partial('admin/partials/head'); ?>
+<body>
+    <section class="container-fluid">
+        <div class="row-fluid" style="margin-top: 5px">
+            <?php echo $this->partial('admin/partials/menu'); ?>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <!-- Content -->
+                
+    <h1 style="text-align: center">
+        Добро пожаловать в Административную панель.
+    </h1>
+    <img src="/images/logo.png" alt="" style="display: block; margin: 30px auto"/>
+    <h3 style="text-align: center">
+        Для продолжения работы выберите раздел в верхнем меню
+    </h3>
+
+            </div>
+        </div>
+    </section>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <?php echo $this->tag->javascriptInclude('js/vendor/jquery-1.11.0.min.js'); ?>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <?php echo $this->tag->javascriptInclude('js/vendor/bootstrap.min.js'); ?>
+</body>
+</html>
