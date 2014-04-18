@@ -2,20 +2,23 @@
 
 try {
 
+	define('BASE_URL', '../app/');
+
 	// Создание DI
 	$di = new Phalcon\DI\FactoryDefault();
 
 	// Подключаем конфигурацию как сервис
-	require '../app/config/config.php';
+	require BASE_URL . 'config/config.php';
 	$di->set('config', function() use ($settings) {
 		return new \Phalcon\Config($settings);
-	});
+	}, true);
 
     // Регистрация автозагрузчика
 	$loader = new \Phalcon\Loader();
-	$loader->registerDirs([
-		$di->getShared('config')->app->controllers,
-		$di->getShared('config')->app->models
+	$loader->registerNamespaces([
+		'App\Controllers' => BASE_URL . 'controllers/',
+		'App\Models' => BASE_URL . 'models/',
+		'App\Validation' => BASE_URL . 'classes/'
 	])->register();
 
     // Сервиса для работы с БД
@@ -27,6 +30,24 @@ try {
 		    'dbname' => $di->getShared('config')->database->dbname
 	    ]);
     });
+
+	// Collection Manager
+	$di->set('collectionManager', function(){
+		return new Phalcon\Mvc\Collection\Manager();
+	}, true);
+
+	// Сервис для работы с MongoDB
+	$di->set('mongo', function() use($di) {
+		$username = $di->get('config')->mongo->username;
+		$password = $di->get('config')->mongo->password;
+		$host = $di->get('config')->mongo->host;
+		$dbname = $di->get('config')->mongo->dbname;
+
+		$connectionString = 'mongodb://' . $username . ':' . $password . '@' . $host;
+		$connectionString2 = 'mongodb://' . $host;
+		$mongo = new Mongo($connectionString2);
+		return $mongo->selectDb($dbname);
+	}, true);
 
 	// Шаблонизатор Volt в DI
 	$di->set('voltService', function($view, $di) {
@@ -50,8 +71,32 @@ try {
         return $view;
     });
 
+	// Шифрование
+	$di->set('crypt', function() use($di) {
+		$crypt = new \Phalcon\Crypt();
+		$crypt->setKey($di->get('config')->secret);
+		$crypt->setMode('ecb');
+		return $crypt;
+	}, true);
+
+	// Сессии
+	$di->setShared('session', function() {
+		$session = new \Phalcon\Session\Adapter\Files([
+			'lifetime' => 3600
+		]);
+		$session->start();
+		return $session;
+	});
+
+	// Куки
+	$di->set('cookies', function() {
+		$cookies = new \Phalcon\Http\Response\Cookies();
+		$cookies->useEncryption(true);
+		return $cookies;
+	}, true);
+
 	// Роуты
-	require __DIR__ . '/../app/config/Routes.php';
+	require BASE_URL . 'config/Routes.php';
 
     // Обработка запроса
     $application = new \Phalcon\Mvc\Application($di);

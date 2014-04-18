@@ -4,12 +4,12 @@
 <body>
 	<div class="main">
 		<?php echo $this->partial('partials/header'); ?>
-	<section class="content">
-        
-<h1>Привет!</h1>
+        <section class="content">
+            
+<h1>Привет</h1>
 
-	</section>
-		<?php echo $this->partial('partials/footer'); ?>
+        </section>
+            <?php echo $this->partial('partials/footer'); ?>
 	</div>
 </body>
 </html>

@@ -1,15 +1,52 @@
 <div class="navbar">
 	<div class="navbar-inner">
-		<a class="brand" href="/" title="Показать сайт" target="_blank">Топ линия</a>
+		<a class="brand" href="/" title="Показать сайт" target="_blank"><?php echo $name; ?></a>
 		<ul class="nav">
 			<li class="divider-vertical"></li>
-			<li class="active"><a href="/admin">На главную</a></li>
+
+			<?php if ($url == '/admin') { ?>
+				<li class="active"><a href="/admin">На главную</a></li>
+			<?php } else { ?>
+				<li><a href="/admin">На главную</a></li>
+			<?php } ?>
+
 			<li class="divider-vertical"></li>
-			<li><a href="/products" title="Редактирование продуктов">Продукты</a></li>
+
+			<?php if ($url == '/products') { ?>
+				<li class="active"><a href="/products" title="Редактирование продуктов">Товары</a></li>
+			<?php } else { ?>
+				<li><a href="/products" title="Редактирование продуктов">Товары</a></li>
+			<?php } ?>
+
 			<li class="divider-vertical"></li>
-			<li><a href="/news">Новости</a></li>
+
+			<?php if ($url == '/news') { ?>
+				<li class="active"><a href="/news">Новости</a></li>
+			<?php } else { ?>
+				<li><a href="/news">Новости</a></li>
+			<?php } ?>
+
 			<li class="divider-vertical"></li>
-			<li><a href="/pages">Статические страницы</a></li>
+
+			<?php if ($url == '/admin/users') { ?>
+				<li class="active"><a href="/admin/users">Пользователи</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/users">Пользователи</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/pages') { ?>
+				<li class="active"><a href="/pages">Статические страницы</a></li>
+			<?php } else { ?>
+				<li><a href="/pages">Статические страницы</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($user != null) { ?>
+				<li><a href="/admin/logout">Выход</a></li>
+			<?php } ?>
 		</ul>
 	</div>
 </div>
