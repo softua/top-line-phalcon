@@ -12,18 +12,26 @@
 
 			<li class="divider-vertical"></li>
 
-			<?php if ($url == '/products') { ?>
-				<li class="active"><a href="/products" title="Редактирование продуктов">Товары</a></li>
+			<?php if ($url == '/admin/products') { ?>
+				<li class="active"><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
 			<?php } else { ?>
-				<li><a href="/products" title="Редактирование продуктов">Товары</a></li>
+				<li><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
 			<?php } ?>
 
 			<li class="divider-vertical"></li>
 
-			<?php if ($url == '/news') { ?>
-				<li class="active"><a href="/news">Новости</a></li>
+			<?php if ($url == '/admin/categories') { ?>
+				<li class="active"><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
 			<?php } else { ?>
-				<li><a href="/news">Новости</a></li>
+				<li><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/news') { ?>
+				<li class="active"><a href="/admin/news">Новости</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/news">Новости</a></li>
 			<?php } ?>
 
 			<li class="divider-vertical"></li>
@@ -36,15 +44,15 @@
 
 			<li class="divider-vertical"></li>
 
-			<?php if ($url == '/pages') { ?>
-				<li class="active"><a href="/pages">Статические страницы</a></li>
+			<?php if ($url == '/admin/pages') { ?>
+				<li class="active"><a href="/admin/pages">Статические страницы</a></li>
 			<?php } else { ?>
-				<li><a href="/pages">Статические страницы</a></li>
+				<li><a href="/admin/pages">Статические страницы</a></li>
 			<?php } ?>
 
 			<li class="divider-vertical"></li>
 
-			<?php if ($user != null) { ?>
+			<?php if ($user == !null) { ?>
 				<li><a href="/admin/logout">Выход</a></li>
 			<?php } ?>
 		</ul>

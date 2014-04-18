@@ -15,6 +15,14 @@ class AdminController extends BaseAdminController
 			$this->dispatcher->forward([
 				'action' => 'login'
 			]);
+		} else {
+			$this->user = Models\Users::findById(trim($this->cookies->get('user-id')->getValue()));
+
+			$this->view->setVars([
+				'name' => $this->config->name,
+				'user' => $this->user,
+				'url' => $this->request->getURI()
+			]);
 		}
 	}
 
@@ -22,13 +30,6 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Админ. панель');
 
-		$user = Models\Users::findById(trim($this->cookies->get('user-id')->getValue()));
-
-		$this->view->setVars([
-			'name' => $this->config->name,
-			'user' => $user,
-			'url' => $this->request->getURI()
-		]);
 		echo $this->view->render('admin/index');
 	}
 
@@ -79,17 +80,12 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Пользователи');
 
-		$user = Models\Users::findById(trim($this->cookies->get('user-id')->getValue()));
-
 		$allUsers = Models\Users::find();
 		$roles = Models\Roles::find();
 
 		$this->view->setVars([
-			'name' => $this->config->name,
-			'user' => $user,
 			'users' => $allUsers,
-			'roles' => $roles,
-			'url' => $this->request->getURI()
+			'roles' => $roles
 		]);
 
 		echo $this->view->render('admin/users/list');
@@ -97,7 +93,42 @@ class AdminController extends BaseAdminController
 
 	public function userAction($id)
 	{
-		echo $id;
+		$this->tag->prependTitle('Редактирование');
+		$user = Models\Users::findById($id);
+		$roles = Models\Roles::find();
+
+		// POST запрос
+		if ($this->request->isPost()) {
+
+			$name = $this->request->getPost('name', ['striptags', 'trim']);
+			$email = $this->request->getPost('email', ['email', 'trim']);
+			$role = $this->request->getPost('role', ['alphanum', 'trim']);
+
+			$validation = new Validation();
+
+			$validation->isEmpty([
+				'Имя' => $name,
+				'Права' => $role
+			]);
+
+			if ($validation->validate()) {
+				$user->name = $name;
+				$user->email = $email;
+				$user->role = $role;
+
+				$user->save();
+			} else {
+				$errors = $validation->getMessages();
+				$this->view->setVar('errors', $errors);
+			}
+		}
+
+		$this->view->setVars([
+			'user' => $user,
+			'roles' => $roles
+		]);
+
+		echo $this->view->render('admin/users/edit');
 	}
 
 	public function newUserAction()
@@ -137,10 +168,7 @@ class AdminController extends BaseAdminController
 				$user->login = $login;
 				$user->password = $this->crypt->encryptBase64($password);
 				$user->name = $name;
-
-				if ($email != null)
-					$user->email = $email;
-
+				$user->email = $email;
 				$user->role = $role;
 
 				if ($user->save()) {
@@ -153,7 +181,6 @@ class AdminController extends BaseAdminController
 				]);
 				echo $this->view->render('admin/users/new');
 			}
-
 		}
 	}
 
@@ -164,10 +191,17 @@ class AdminController extends BaseAdminController
 		$user = Models\Users::findById($id);
 		$user->delete();
 
-		if (trim($this->cookies->get('user-id')->getValue()) == $id) {
+		if ($this->user == $id) {
 			$this->logoutAction();
 		}
 
 		$this->response->redirect('admin/users');
+	}
+
+	public function categoriesAction()
+	{
+		$this->tag->prependTitle('Категории');
+
+		echo $this->view->render('admin/categories');
 	}
 }

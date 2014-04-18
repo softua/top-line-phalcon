@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<?php echo $this->partial('admin/partials/head'); ?>
+<body>
+	<section class="container-fluid">
+		<div class="row-fluid" style="margin-top: 5px">
+			
+	<?php echo $this->partial('admin/partials/menu'); ?>
+
+		</div>
+		<div class="row-fluid">
+			<!-- Content -->
+			
+	<div class="span12">
+		<?php if (isset($errors) && $errors == !$empty) { ?>
+			<?php foreach ($errors as $error) { ?>
+				<?php foreach ($error as $message) { ?>
+					<p class="text-error"><?php echo $message; ?></p>
+				<?php } ?>
+			<?php } ?>
+		<?php } ?>
+		<form class="form-horizontal" action="/admin/user/<?php echo $user->_id; ?>" method="post">
+			<?php foreach ($user as $key => $value) { ?>
+				<?php if ($key == 'login') { ?>
+					<h2><?php echo $value; ?></h2>
+				<?php } elseif ($key == 'name') { ?>
+					<div class="control-group">
+						<label class="control-label" for="<?php echo $key; ?>">Имя:</label>
+						<div class="controls">
+							<input type="text" name="<?php echo $key; ?>" id="<?php echo $key; ?>" value="<?php echo $value; ?>">
+						</div>
+					</div>
+				<?php } elseif ($key == 'password' || $key == '_id') { ?>
+					<?php continue; ?>
+				<?php } elseif ($key == 'email') { ?>
+					<div class="control-group">
+						<label class="control-label" for="<?php echo $key; ?>">E-mail:</label>
+						<div class="controls">
+							<input type="text" name="<?php echo $key; ?>" id="<?php echo $key; ?>" value="<?php echo $value; ?>">
+						</div>
+					</div>
+				<?php } elseif ($key == 'role') { ?>
+					<div class="control-group">
+						<label class="control-label" for="<?php echo $key; ?>">Права:</label>
+						<div class="controls">
+							<select name="<?php echo $key; ?>" id="<?php echo $key; ?>">
+								<?php foreach ($roles as $role) { ?>
+									<?php if ($role->_id == $value) { ?>
+										<option selected value="<?php echo $role->_id; ?>"><?php echo $role->description; ?></option>
+									<?php } else { ?>
+										<option value="<?php echo $role->_id; ?>"><?php echo $role->description; ?></option>
+									<?php } ?>
+								<?php } ?>
+							</select>
+						</div>
+					</div>
+				<?php } ?>
+			<?php } ?>
+			<div class="control-group">
+				<div class="controls">
+					<input type="submit" class="btn btn-success" value="Сохранить"/>
+					<a class="btn btn-danger" href="/admin/users">Вернуться к списку</a>
+				</div>
+			</div>
+		</form>
+	</div>
+
+		</div>
+	</section>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/jquery-1.11.0.min.js'); ?>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/bootstrap.min.js'); ?>
+</body>
+</html>

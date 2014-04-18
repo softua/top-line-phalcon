@@ -12,18 +12,26 @@
 
 			<li class="divider-vertical"></li>
 
-			{% if url is '/products' %}
-				<li class="active"><a href="/products" title="Редактирование продуктов">Товары</a></li>
+			{% if url is '/admin/products' %}
+				<li class="active"><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
 			{% else %}
-				<li><a href="/products" title="Редактирование продуктов">Товары</a></li>
+				<li><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>
 
-			{% if url is '/news' %}
-				<li class="active"><a href="/news">Новости</a></li>
+			{% if url is '/admin/categories' %}
+				<li class="active"><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
 			{% else %}
-				<li><a href="/news">Новости</a></li>
+				<li><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
+			{% endif %}
+
+			<li class="divider-vertical"></li>
+
+			{% if url is '/admin/news' %}
+				<li class="active"><a href="/admin/news">Новости</a></li>
+			{% else %}
+				<li><a href="/admin/news">Новости</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>
@@ -36,15 +44,15 @@
 
 			<li class="divider-vertical"></li>
 
-			{% if url is '/pages' %}
-				<li class="active"><a href="/pages">Статические страницы</a></li>
+			{% if url is '/admin/pages' %}
+				<li class="active"><a href="/admin/pages">Статические страницы</a></li>
 			{% else %}
-				<li><a href="/pages">Статические страницы</a></li>
+				<li><a href="/admin/pages">Статические страницы</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>
 
-			{% if user != NULL %}
+			{% if user is not null %}
 				<li><a href="/admin/logout">Выход</a></li>
 			{% endif %}
 		</ul>
