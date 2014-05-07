@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<?php echo $this->partial('admin/partials/head'); ?>
+<body>
+	<section class="container-fluid admin">
+		<div class="row-fluid" style="margin-top: 5px">
+			
+	<?php echo $this->partial('admin/partials/menu'); ?>
+
+		</div>
+		<div class="row-fluid">
+			<!-- Content -->
+			
+	<div class="span12">
+		<?php if (isset($errors) && $errors == !$empty) { ?>
+			<?php foreach ($errors as $error) { ?>
+				<?php foreach ($error as $message) { ?>
+					<p class="text-error"><?php echo $message; ?></p>
+				<?php } ?>
+			<?php } ?>
+		<?php } ?>
+		<form class="form-horizontal" action="/admin/property/edit/<?php echo $property->_id; ?>" method="post">
+			<div class="control-group">
+				<label class="control-label" for="name">Свойство:</label>
+				<div class="controls">
+					<input type="text" name="name" id="name" value="<?php echo $property->name; ?>">
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<input type="submit" class="btn btn-success" value="Сохранить"/>
+					<a class="btn btn-primary" href="/admin/properties">Вернуться к списку</a>
+				</div>
+			</div>
+		</form>
+	</div>
+
+		</div>
+	</section>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/jquery-1.11.0.min.js'); ?>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/bootstrap.min.js'); ?>
+</body>
+</html>

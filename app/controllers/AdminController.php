@@ -328,4 +328,73 @@ class AdminController extends BaseAdminController
 
 		echo $this->view->render('admin/properties/index');
 	}
+
+	public function addPropertyAction()
+	{
+		$this->tag->prependTitle('Добавление свойства');
+
+		// POST запрос
+		if ($this->request->isPost()) {
+
+			$name = $this->request->getPost('name', ['striptags', 'trim']);
+
+			$validation = new \App\Validation();
+
+			$validation->isEmpty([
+				'Свойство' => $name
+			]);
+
+			if ($validation->validate()) {
+				$property = new \App\Models\ProductProperty();
+				$property->name = $name;
+				$property->save();
+
+				return $this->response->redirect('admin/properties');
+			} else {
+				$errors = $validation->getMessages();
+				$this->view->setVar('errors', $errors);
+			}
+		}
+
+		echo $this->view->render('admin/properties/add');
+	}
+
+	public function editPropertyAction($id)
+	{
+		$this->tag->prependTitle('Редактирование свойства');
+
+		$property = \App\Models\ProductProperty::findById($id);
+		if(count($property) < 0) {
+			$this->response->redirect([
+				'controller' => 'admin',
+				'action' => 'properties'
+			]);
+		}
+
+		$this->view->setVar('property', $property);
+
+		// POST запрос
+		if ($this->request->isPost()) {
+
+			$name = $this->request->getPost('name', ['striptags', 'trim']);
+
+			$validation = new \App\Validation();
+
+			$validation->isEmpty([
+				'Свойство' => $name
+			]);
+
+			if ($validation->validate()) {
+				$property->name = $name;
+				$property->save();
+
+				return $this->response->redirect('admin/properties');
+			} else {
+				$errors = $validation->getMessages();
+				$this->view->setVar('errors', $errors);
+			}
+		}
+
+		echo $this->view->render('admin/properties/edit');
+	}
 }

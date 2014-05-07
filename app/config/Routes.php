@@ -89,5 +89,21 @@ $di->set('router', function() {
 		]
 	);
 
+	$router->add(
+		'/admin/property/add',
+		[
+			'controller' => 'admin',
+			'action' => 'addproperty'
+		]
+	);
+
+	$router->add(
+		'/admin/property/edit/{id}',
+		[
+			'controller' => 'admin',
+			'action' => 'editproperty'
+		]
+	);
+
 	return $router;
 });

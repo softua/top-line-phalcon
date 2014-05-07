@@ -13,12 +13,12 @@
 			
 	<?php if ($properties == !null) { ?>
 		<a class="btn btn-primary" href="/admin/property/add" title="Добавить параметр">Добавить параметр</a>
-		<table class="table table-hover">
+		<table class="table table-hover table-condensed">
 			<thead>
 				<tr>
 					<th>№</th>
-					<th>Описание</th>
 					<th>Название</th>
+					<th>Используется в товарах (раз)</th>
 					<th>Действия</th>
 				</tr>
 			</thead>
@@ -26,9 +26,9 @@
 				<?php $v35571427481iterator = $properties; $v35571427481incr = 0; $v35571427481loop = new stdClass(); $v35571427481loop->length = count($v35571427481iterator); $v35571427481loop->index = 1; $v35571427481loop->index0 = 1; $v35571427481loop->revindex = $v35571427481loop->length; $v35571427481loop->revindex0 = $v35571427481loop->length - 1; ?><?php foreach ($v35571427481iterator as $prop) { ?><?php $v35571427481loop->first = ($v35571427481incr == 0); $v35571427481loop->index = $v35571427481incr + 1; $v35571427481loop->index0 = $v35571427481incr; $v35571427481loop->revindex = $v35571427481loop->length - $v35571427481incr; $v35571427481loop->revindex0 = $v35571427481loop->length - ($v35571427481incr + 1); $v35571427481loop->last = ($v35571427481incr == ($v35571427481loop->length - 1)); ?>
 					<tr>
 						<td><?php echo $v35571427481loop->index; ?></td>
-						<td><?php echo $prop->desc; ?></td>
 						<td><?php echo $prop->name; ?></td>
-						<td><a class="btn" href="/admin/property/edit<?php echo $prop->_id; ?>">Редактировать</a></td>
+						<td></td>
+						<td><a class="btn" href="/admin/property/edit/<?php echo $prop->_id; ?>">Редактировать</a></td>
 					</tr>
 				<?php $v35571427481incr++; } ?>
 			</tbody>

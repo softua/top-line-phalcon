@@ -7,7 +7,6 @@
 
 namespace App\Models;
 
-
 class ProductProperty extends \Phalcon\Mvc\Collection
 {
 	public function getSource()
@@ -18,7 +17,7 @@ class ProductProperty extends \Phalcon\Mvc\Collection
 	public static function getAllProperties()
 	{
 		$props = ProductProperty::find([
-			'sort' => ['desc' => 1]
+			'sort' => ['name' => 1]
 		]);
 
 		if(count($props) > 0) return $props;
