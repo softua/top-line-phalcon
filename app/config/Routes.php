@@ -57,5 +57,37 @@ $di->set('router', function() {
 		]
 	);
 
+	$router->add(
+		'/admin/getcategories/{parent}',
+		[
+			'controller' => 'admin',
+			'action' => 'getcategories'
+		]
+	);
+
+	$router->add(
+		'/admin/category/add/{parent}',
+		[
+			'controller' => 'admin',
+			'action' => 'addcategory'
+		]
+	);
+
+	$router->add(
+		'/admin/category/edit/{id}',
+		[
+			'controller' => 'admin',
+			'action' => 'editcategory'
+		]
+	);
+
+	$router->add(
+		'/admin/category/delete/{id}',
+		[
+			'controller' => 'admin',
+			'action' => 'deletecategory'
+		]
+	);
+
 	return $router;
 });

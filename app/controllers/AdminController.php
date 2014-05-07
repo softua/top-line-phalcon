@@ -2,26 +2,29 @@
 
 namespace App\Controllers;
 
-use App\Models;
-use App\Validation\Validation;
-
 class AdminController extends BaseAdminController
 {
 	public function beforeExecuteRoute()
 	{
-		$action = $this->dispatcher->getActionName();
+		if (!$this->cookies->has('user')) {
 
-		if (!$this->cookies->has('user-id') && $action != 'login') {
-			$this->dispatcher->forward([
-				'action' => 'login'
-			]);
+			if ($this->dispatcher->getActionName() != 'login') {
+
+				$this->dispatcher->forward([
+					'action' => 'login'
+				]);
+			}
+
 		} else {
-			$this->user = Models\Users::findById(trim($this->cookies->get('user-id')->getValue()));
+			$this->user = \App\Models\Users::findById(trim($this->cookies->get('user')->getValue()));
+
+			$this->cookies->set('user', $this->user->_id, time() + $this->config->cookie_lifetime);
+			$this->cookies->send();
 
 			$this->view->setVars([
 				'name' => $this->config->name,
-				'user' => $this->user,
-				'url' => $this->request->getURI()
+				'url' => $this->request->getURI(),
+				'user' => $this->user
 			]);
 		}
 	}
@@ -35,6 +38,10 @@ class AdminController extends BaseAdminController
 
 	public function loginAction()
 	{
+		if ($this->cookies->has('user')) {
+			return $this->response->redirect('admin');
+		}
+
 		if ($this->request->isGet()) {
 			$this->tag->prependTitle('Вход');
 
@@ -43,7 +50,7 @@ class AdminController extends BaseAdminController
 			$login = $this->request->getPost('login', ['striptags', 'trim']);
 			$password = $this->request->getPost('password', ['striptags', 'trim']);
 
-			$users = Models\Users::find([
+			$users = \App\Models\Users::find([
 				'conditions' => ['login' => $login]
 			]);
 
@@ -51,7 +58,9 @@ class AdminController extends BaseAdminController
 				$bdPass = trim($this->crypt->decryptBase64($users[0]->password));
 
 				if ($bdPass == $password) {
-					$this->cookies->set('user-id', (string)$users[0]->_id);
+
+					$this->cookies->set('user', (string)$users[0]->_id, time() + $this->config->cookie_lifetime);
+
 					$this->response->redirect('admin');
 				} else {
 					$this->tag->prependTitle('Вход');
@@ -68,20 +77,17 @@ class AdminController extends BaseAdminController
 
 	public function logoutAction()
 	{
-		$this->session->destroy();
+		$this->cookies->set('user', null, time() - 60);
 
-		$this->cookies->set('user-id', null, time() - 60);
-		$this->cookies->set('PHPSESSID', null, time() - 60);
-
-		$this->response->redirect('admin');
+		return $this->response->redirect('admin');
 	}
 
 	public function usersAction()
 	{
 		$this->tag->prependTitle('Пользователи');
 
-		$allUsers = Models\Users::find();
-		$roles = Models\Roles::find();
+		$allUsers = \App\Models\Users::find();
+		$roles = \App\Models\Roles::find();
 
 		$this->view->setVars([
 			'users' => $allUsers,
@@ -94,8 +100,8 @@ class AdminController extends BaseAdminController
 	public function userAction($id)
 	{
 		$this->tag->prependTitle('Редактирование');
-		$user = Models\Users::findById($id);
-		$roles = Models\Roles::find();
+		$user = \App\Models\Users::findById($id);
+		$roles = \App\Models\Roles::find();
 
 		// POST запрос
 		if ($this->request->isPost()) {
@@ -104,7 +110,7 @@ class AdminController extends BaseAdminController
 			$email = $this->request->getPost('email', ['email', 'trim']);
 			$role = $this->request->getPost('role', ['alphanum', 'trim']);
 
-			$validation = new Validation();
+			$validation = new \App\Validation();
 
 			$validation->isEmpty([
 				'Имя' => $name,
@@ -138,14 +144,14 @@ class AdminController extends BaseAdminController
 		// GET запрос
 		if ($this->request->isGet()) {
 			$this->view->setVars([
-				'roles' => Models\Roles::find()
+				'roles' => \App\Models\Roles::find()
 			]);
 			echo $this->view->render('admin/users/new');
 		}
 
 		// POST запрос
 		if ($this->request->isPost()) {
-			$validation = new Validation();
+			$validation = new \App\Validation();
 
 			$login = $this->request->getPost('login', ['striptags', 'trim', 'lower']);
 			$password = $this->request->getPost('password', 'trim');
@@ -176,7 +182,7 @@ class AdminController extends BaseAdminController
 				}
 			} else {
 				$this->view->setVars([
-					'roles' => Models\Roles::find(),
+					'roles' => \App\Models\Roles::find(),
 					'errors' => $validation->getMessages()
 				]);
 				echo $this->view->render('admin/users/new');
@@ -202,6 +208,124 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Категории');
 
-		echo $this->view->render('admin/categories');
+		$this->view->setVar('mainCategories', \App\Models\Category::getMainCategories());
+
+		echo $this->view->render('admin/categories/categories');
+	}
+
+	public function getCategoriesAction($parent = null)
+	{
+		if($this->request->isAjax() && $parent != null) {
+			$categories = \App\Models\Category::getCategories($parent);
+
+			if($categories != null)
+				echo json_encode($categories);
+			else {
+				echo json_encode(null);
+			}
+
+		} else {
+			$this->response->redirect('admin/categories');
+		}
+	}
+
+	public function addCategoryAction($parent = 0)
+	{
+		$this->tag->prependTitle('Редактирование');
+
+		$fullParentCategory = \App\Models\Category::getFullCategoryName($parent);
+
+		$this->view->setVar('fullParentCategory', $fullParentCategory);
+
+		// POST запрос
+		if ($this->request->isPost()) {
+
+			$category = new \App\Models\Category();
+
+			$name = $this->request->getPost('name', ['striptags', 'trim']);
+			$sort = $this->request->getPost('sort', ['striptags', 'trim', 'int']);
+
+			$validation = new \App\Validation();
+
+			$validation->isEmpty([
+				'Категория' => $name,
+				'Порядок' => $sort
+			]);
+
+			if ($validation->validate()) {
+				$category->name = $name;
+				$category->parent = $parent;
+				$category->seo = \App\Translit::get_seo_keyword($name, true);
+				$category->sort = (int)$sort;
+
+				$category->save();
+
+				return $this->response->redirect('admin/categories');
+			} else {
+				$errors = $validation->getMessages();
+				$this->view->setVar('errors', $errors);
+			}
+		}
+
+		echo $this->view->render('admin/categories/add');
+	}
+
+	public function editCategoryAction($id = null)
+	{
+		if($id == null)
+			return $this->response->redirect('admin/categories');
+
+		$this->tag->prependTitle('Редактирование');
+
+		$category = \App\Models\Category::findById($id);
+		$this->view->setVar('category', $category);
+		$fullParentCategory = \App\Models\Category::getFullCategoryName($category->parent);
+		$this->view->setVar('fullParentCategory', $fullParentCategory);
+
+		// POST
+		if($this->request->isPost()) {
+			$name = $this->request->getPost('name', ['striptags', 'trim']);
+			$sort = $this->request->getPost('sort', ['striptags', 'trim', 'int']);
+
+			$validation = new \App\Validation();
+			$validation->isEmpty([
+				'Категория' => $name,
+				'Порядок' => $sort
+			]);
+			if ($validation->validate()) {
+				$category->name = $name;
+				$category->seo = \App\Translit::get_seo_keyword($name, true);
+				$category->sort = (int)$sort;
+				$category->save();
+			} else {
+				$errors = $validation->getMessages();
+				$this->view->setVar('errors', $errors);
+			}
+		}
+
+		echo $this->view->render('admin/categories/edit');
+	}
+
+	public function deleteCategoryAction($id = null)
+	{
+		if($id && $id != '0') {
+			$category = \App\Models\Category::findById($id);
+			$children = \App\Models\Category::getCategories($id);
+			if($children === null)
+				$category->delete();
+
+			return $this->response->redirect('admin/categories');
+		}
+	}
+
+	public function propertiesAction()
+	{
+		$this->tag->prependTitle('Параметры товаров');
+
+		$props = \App\Models\ProductProperty::getAllProperties();
+
+		$this->view->setVar('properties', $props);
+
+		echo $this->view->render('admin/properties/index');
 	}
 }

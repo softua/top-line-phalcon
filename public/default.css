@@ -1,50 +1,50 @@
 @font-face {
   font-family: 'segoe_uiregular';
-  src: url("segoeui-webfont.eot");
-  src: url("segoeui-webfont.eot?#iefix") format('embedded-opentype');
-  src: url("segoeui-webfont.woff") format('woff');
-  src: url("segoeui-webfont.ttf") format('truetype');
-  src: url("segoeui-webfont.svg#segoe_uiregular") format('svg');
+  src: url("/public/fonts/segoeui-webfont.eot");
+  src: url("/public/fonts/segoeui-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public/fonts/segoeui-webfont.woff") format('woff');
+  src: url("/public/fonts/segoeui-webfont.ttf") format('truetype');
+  src: url("/public/fonts/segoeui-webfont.svg#segoe_uiregular") format('svg');
 }
 @font-face {
   font-family: 'segoe_uibold';
-  src: url("segoeuib-webfont.eot");
-  src: url("segoeuib-webfont.eot?#iefix") format('embedded-opentype');
-  src: url("segoeuib-webfont.woff") format('woff');
-  src: url("segoeuib-webfont.ttf") format('truetype');
-  src: url("segoeuib-webfont.svg#segoe_uibold") format('svg');
+  src: url("/public/fonts/segoeuib-webfont.eot");
+  src: url("/public/fonts/segoeuib-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public/fonts/segoeuib-webfont.woff") format('woff');
+  src: url("/public/fonts/segoeuib-webfont.ttf") format('truetype');
+  src: url("/public/fonts/segoeuib-webfont.svg#segoe_uibold") format('svg');
 }
 @font-face {
   font-family: 'segoe_uiitalic';
-  src: url("segoeuii-webfont.eot");
-  src: url("segoeuii-webfont.eot?#iefix") format('embedded-opentype');
-  src: url("segoeuii-webfont.woff") format('woff');
-  src: url("segoeuii-webfont.ttf") format('truetype');
-  src: url("segoeuii-webfont.svg#segoe_uiitalic") format('svg');
+  src: url("/public/fonts/segoeuii-webfont.eot");
+  src: url("/public/fonts/segoeuii-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public/fonts/segoeuii-webfont.woff") format('woff');
+  src: url("/public/fonts/segoeuii-webfont.ttf") format('truetype');
+  src: url("/public/fonts/segoeuii-webfont.svg#segoe_uiitalic") format('svg');
 }
 @font-face {
   font-family: 'segoe_uilight';
-  src: url("segoeuil-webfont.eot");
-  src: url("segoeuil-webfont.eot?#iefix") format('embedded-opentype');
-  src: url("segoeuil-webfont.woff") format('woff');
-  src: url("segoeuil-webfont.ttf") format('truetype');
-  src: url("segoeuil-webfont.svg#segoe_uilight") format('svg');
+  src: url("/public/fonts/segoeuil-webfont.eot");
+  src: url("/public/fonts/segoeuil-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public/fonts/segoeuil-webfont.woff") format('woff');
+  src: url("/public/fonts/segoeuil-webfont.ttf") format('truetype');
+  src: url("/public/fonts/segoeuil-webfont.svg#segoe_uilight") format('svg');
 }
 @font-face {
   font-family: 'segoe_uibold_italic';
-  src: url("segoeuiz-webfont.eot");
-  src: url("segoeuiz-webfont.eot?#iefix") format('embedded-opentype');
-  src: url("segoeuiz-webfont.woff") format('woff');
-  src: url("segoeuiz-webfont.ttf") format('truetype');
-  src: url("segoeuiz-webfont.svg#segoe_uibold_italic") format('svg');
+  src: url("/public/fonts/segoeuiz-webfont.eot");
+  src: url("/public/fonts/segoeuiz-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public/fonts/segoeuiz-webfont.woff") format('woff');
+  src: url("/public/fonts/segoeuiz-webfont.ttf") format('truetype');
+  src: url("/public/fonts/segoeuiz-webfont.svg#segoe_uibold_italic") format('svg');
 }
 @font-face {
   font-family: 'segoe_uisemibold';
-  src: url("seguisb-webfont.eot");
-  src: url("seguisb-webfont.eot?#iefix") format('embedded-opentype');
-  src: url("seguisb-webfont.woff") format('woff');
-  src: url("seguisb-webfont.ttf") format('truetype');
-  src: url("seguisb-webfont.svg#segoe_uisemibold") format('svg');
+  src: url("/public/fonts/seguisb-webfont.eot");
+  src: url("/public/fonts/seguisb-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public/fonts/seguisb-webfont.woff") format('woff');
+  src: url("/public/fonts/seguisb-webfont.ttf") format('truetype');
+  src: url("/public/fonts/seguisb-webfont.svg#segoe_uisemibold") format('svg');
 }
 html,
 body,

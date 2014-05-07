@@ -20,6 +20,14 @@
 
 			<li class="divider-vertical"></li>
 
+			<?php if ($url == '/admin/properties') { ?>
+				<li class="active"><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
 			<?php if ($url == '/admin/categories') { ?>
 				<li class="active"><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
 			<?php } else { ?>

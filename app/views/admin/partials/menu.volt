@@ -20,6 +20,14 @@
 
 			<li class="divider-vertical"></li>
 
+			{% if url is '/admin/properties' %}
+				<li class="active"><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
+			{% else %}
+				<li><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
+			{% endif %}
+
+			<li class="divider-vertical"></li>
+
 			{% if url is '/admin/categories' %}
 				<li class="active"><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
 			{% else %}

@@ -10,12 +10,7 @@ $settings = [
 //	'env' => 'production',
 	'env' => 'development',
 	'secret' => 'dsf4iorj23i%fdsdgdsadferfd89wej',
-	'database' => [
-		'host' => 'localhost',
-		'username' => 'softua',
-		'password' => '7TWaskME',
-		'dbname' => 'phalcon-tutorial'
-	],
+	'cookie_lifetime' => '86400', // сутки
 
 	'mongo' => [
 		'host' => 'localhost:27017',

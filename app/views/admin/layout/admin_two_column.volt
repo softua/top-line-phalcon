@@ -2,7 +2,7 @@
 <html>
 {{ partial('admin/partials/head') }}
 <body>
-	<section class="container-fluid">
+	<section class="container-fluid admin">
 		<div class="row-fluid" style="margin-top: 5px">
 			{% block menu %}{% endblock %}
 		</div>

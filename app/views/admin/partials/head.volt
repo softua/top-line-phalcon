@@ -5,5 +5,7 @@
 	{{ get_title() }}
 	<!-- Bootstrap -->
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
-	{{ stylesheet_link('css/bootstrap.min.css') }}
+	<link rel="stylesheet" href="/css/admin.css"/>
+	<script src="/js/vendor/jquery-1.11.0.min.js"></script>
+	<script src="/js/admin_master.js"></script>
 </head>

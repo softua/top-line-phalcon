@@ -2,7 +2,7 @@
 <html>
 <?php echo $this->partial('admin/partials/head'); ?>
 <body>
-	<section class="container-fluid">
+	<section class="container-fluid admin">
 		<div class="row-fluid" style="margin-top: 5px">
 			
 	<?php echo $this->partial('admin/partials/menu'); ?>
@@ -21,19 +21,38 @@
 				<!-- Content -->
                 
 	<?php if ($users == !$empty) { ?>
-	<ol>
-		<?php foreach ($users as $user) { ?>
-			<li>
-				<a href="/admin/user/<?php echo $user->_id; ?>" title="Редактировать пользователя"><?php echo $user->login; ?></a> - <span><?php echo $user->name; ?></span>
-				<?php foreach ($roles as $role) { ?>
-					<?php if ($role->_id == $user->role) { ?>
-						<p>Права: <?php echo $role->description; ?></p>
-					<?php } ?>
-				<?php } ?>
-				<a class="btn btn-danger" href="/admin/delete/user/<?php echo $user->_id; ?>">Удалить пользователя</a>
-			</li>
-		<?php } ?>
-	</ol>
+	<table class="table table-hover">
+		<caption>Users</caption>
+		<thead>
+			<tr>
+				<th>№</th>
+				<th>Логин</th>
+				<th>Имя</th>
+				<th>Права</th>
+				<th>Действия</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php $v6574623411iterator = $users; $v6574623411incr = 0; $v6574623411loop = new stdClass(); $v6574623411loop->length = count($v6574623411iterator); $v6574623411loop->index = 1; $v6574623411loop->index0 = 1; $v6574623411loop->revindex = $v6574623411loop->length; $v6574623411loop->revindex0 = $v6574623411loop->length - 1; ?><?php foreach ($v6574623411iterator as $user) { ?><?php $v6574623411loop->first = ($v6574623411incr == 0); $v6574623411loop->index = $v6574623411incr + 1; $v6574623411loop->index0 = $v6574623411incr; $v6574623411loop->revindex = $v6574623411loop->length - $v6574623411incr; $v6574623411loop->revindex0 = $v6574623411loop->length - ($v6574623411incr + 1); $v6574623411loop->last = ($v6574623411incr == ($v6574623411loop->length - 1)); ?>
+				<tr>
+					<td><?php echo $v6574623411loop->index; ?></td>
+					<td><?php echo $user->login; ?></td>
+					<td><?php echo $user->name; ?></td>
+					<td>
+						<?php foreach ($roles as $role) { ?>
+							<?php if ($role->_id == $user->role) { ?>
+								<?php echo $role->description; ?>
+							<?php } ?>
+						<?php } ?>
+					</td>
+					<td>
+						<a class="btn" href="/admin/user/<?php echo $user->_id; ?>" title="Редактировать пользователя">Редактировать</a>
+						<a class="btn btn-danger" href="/admin/delete/user/<?php echo $user->_id; ?>" title="Удалить пользователя">Удалить</a>
+					</td>
+				</tr>
+			<?php $v6574623411incr++; } ?>
+		</tbody>
+	</table>
 	<?php } ?>
 
 			</div>

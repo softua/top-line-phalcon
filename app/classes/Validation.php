@@ -5,9 +5,7 @@
  * Time: 13:57
  */
 
-namespace App\Validation;
-
-use App\Models;
+namespace App;
 
 class Validation
 {
@@ -30,7 +28,7 @@ class Validation
 	 */
 	public function isUniqueUser($login)
 	{
-		$dbUser = Models\Users::find([
+		$dbUser = \App\Models\Users::find([
 			'conditions' => ['login' => $login]
 		]);
 

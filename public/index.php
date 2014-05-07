@@ -1,6 +1,9 @@
 <?
 
 try {
+	// Отключаем PHP сессии
+	ini_set('session.auto_start', '0');
+	ini_set('session.use_cookies', '0');
 
 	define('BASE_URL', '../app/');
 
@@ -16,9 +19,9 @@ try {
     // Регистрация автозагрузчика
 	$loader = new \Phalcon\Loader();
 	$loader->registerNamespaces([
+		'App' => BASE_URL . 'classes/',
 		'App\Controllers' => BASE_URL . 'controllers/',
-		'App\Models' => BASE_URL . 'models/',
-		'App\Validation' => BASE_URL . 'classes/'
+		'App\Models' => BASE_URL . 'models/'
 	])->register();
 
     // Сервиса для работы с БД
@@ -78,15 +81,6 @@ try {
 		$crypt->setMode('ecb');
 		return $crypt;
 	}, true);
-
-	// Сессии
-	$di->setShared('session', function() {
-		$session = new \Phalcon\Session\Adapter\Files([
-			'lifetime' => 3600
-		]);
-		$session->start();
-		return $session;
-	});
 
 	// Куки
 	$di->set('cookies', function() {
