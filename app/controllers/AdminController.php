@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models;
+
 class AdminController extends BaseAdminController
 {
 	public function beforeExecuteRoute()
@@ -29,6 +31,18 @@ class AdminController extends BaseAdminController
 		}
 	}
 
+	public function notFoundAction()
+	{
+		$this->tag->prependTitle('Ошибка');
+
+		$this->response->setStatusCode(404, 'Страница не найдена');
+
+		$this->dispatcher->forward([
+			'controller' => 'admin',
+			'action' => 'index'
+		]);
+	}
+
 	public function indexAction()
 	{
 		$this->tag->prependTitle('Админ. панель');
@@ -50,7 +64,7 @@ class AdminController extends BaseAdminController
 			$login = $this->request->getPost('login', ['striptags', 'trim']);
 			$password = $this->request->getPost('password', ['striptags', 'trim']);
 
-			$users = \App\Models\Users::find([
+			$users = Models\Users::find([
 				'conditions' => ['login' => $login]
 			]);
 
@@ -86,8 +100,8 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Пользователи');
 
-		$allUsers = \App\Models\Users::find();
-		$roles = \App\Models\Roles::find();
+		$allUsers = Models\Users::find();
+		$roles = Models\Roles::find();
 
 		$this->view->setVars([
 			'users' => $allUsers,
@@ -100,8 +114,8 @@ class AdminController extends BaseAdminController
 	public function userAction($id)
 	{
 		$this->tag->prependTitle('Редактирование');
-		$user = \App\Models\Users::findById($id);
-		$roles = \App\Models\Roles::find();
+		$user = Models\Users::findById($id);
+		$roles = Models\Roles::find();
 
 		// POST запрос
 		if ($this->request->isPost()) {
@@ -144,7 +158,7 @@ class AdminController extends BaseAdminController
 		// GET запрос
 		if ($this->request->isGet()) {
 			$this->view->setVars([
-				'roles' => \App\Models\Roles::find()
+				'roles' => Models\Roles::find()
 			]);
 			echo $this->view->render('admin/users/new');
 		}
@@ -182,7 +196,7 @@ class AdminController extends BaseAdminController
 				}
 			} else {
 				$this->view->setVars([
-					'roles' => \App\Models\Roles::find(),
+					'roles' => Models\Roles::find(),
 					'errors' => $validation->getMessages()
 				]);
 				echo $this->view->render('admin/users/new');
@@ -208,7 +222,7 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Категории');
 
-		$this->view->setVar('mainCategories', \App\Models\Category::getMainCategories());
+		$this->view->setVar('mainCategories', Models\Category::getMainCategories());
 
 		echo $this->view->render('admin/categories/categories');
 	}
@@ -216,7 +230,7 @@ class AdminController extends BaseAdminController
 	public function getCategoriesAction($parent = null)
 	{
 		if($this->request->isAjax() && $parent != null) {
-			$categories = \App\Models\Category::getCategories($parent);
+			$categories = Models\Category::getCategories($parent);
 
 			if($categories != null)
 				echo json_encode($categories);
@@ -229,18 +243,21 @@ class AdminController extends BaseAdminController
 		}
 	}
 
-	public function addCategoryAction($parent = 0)
+	public function addCategoryAction($parent)
 	{
 		$this->tag->prependTitle('Редактирование');
 
-		$fullParentCategory = \App\Models\Category::getFullCategoryName($parent);
+		$fullParentCategory = Models\Category::getFullCategoryName($parent);
 
-		$this->view->setVar('fullParentCategory', $fullParentCategory);
+		$this->view->setVars([
+			'fullParentCategory', $fullParentCategory,
+			'parent' => $parent
+		]);
 
 		// POST запрос
 		if ($this->request->isPost()) {
 
-			$category = new \App\Models\Category();
+			$category = new Models\Category();
 
 			$name = $this->request->getPost('name', ['striptags', 'trim']);
 			$sort = $this->request->getPost('sort', ['striptags', 'trim', 'int']);
@@ -277,9 +294,9 @@ class AdminController extends BaseAdminController
 
 		$this->tag->prependTitle('Редактирование');
 
-		$category = \App\Models\Category::findById($id);
+		$category = Models\Category::findById($id);
 		$this->view->setVar('category', $category);
-		$fullParentCategory = \App\Models\Category::getFullCategoryName($category->parent);
+		$fullParentCategory = Models\Category::getFullCategoryName($category->parent);
 		$this->view->setVar('fullParentCategory', $fullParentCategory);
 
 		// POST
@@ -309,8 +326,8 @@ class AdminController extends BaseAdminController
 	public function deleteCategoryAction($id = null)
 	{
 		if($id && $id != '0') {
-			$category = \App\Models\Category::findById($id);
-			$children = \App\Models\Category::getCategories($id);
+			$category = Models\Category::findById($id);
+			$children = Models\Category::getCategories($id);
 			if($children === null)
 				$category->delete();
 
@@ -318,83 +335,242 @@ class AdminController extends BaseAdminController
 		}
 	}
 
-	public function propertiesAction()
+	public function productsAction()
 	{
-		$this->tag->prependTitle('Параметры товаров');
+		$this->tag->prependTitle('Товары');
 
-		$props = \App\Models\ProductProperty::getAllProperties();
+		$mainCats = Models\Category::getMainCategories();
+		$products = Models\Product::getProducts();
 
-		$this->view->setVar('properties', $props);
+		$this->view->setVars([
+			'mainCategories' => $mainCats,
+			'products' => $products
+		]);
 
-		echo $this->view->render('admin/properties/index');
+		echo $this->view->render('admin/products/index');
 	}
 
-	public function addPropertyAction()
+	public function getProductsAction($categoryId = null)
 	{
-		$this->tag->prependTitle('Добавление свойства');
+		if($this->request->isAjax()) {
+			echo $categoryId;
+		} else {
+			$this->response->redirect('admin/notfound');
+		}
+	}
+
+	public function addProductAction()
+	{
+		$this->tag->prependTitle('Добавление товара');
+
+		$types = Models\ProductType::getAllTypesAsString();
+		$countries = Models\Country::getAllTypesAsString();
+		$brands = Models\ProductBrands::getAllTypesAsString();
+
+		$this->view->setVars([
+			'types' => $types,
+			'countries' => $countries,
+			'brands' => $brands
+		]);
 
 		// POST запрос
-		if ($this->request->isPost()) {
-
-			$name = $this->request->getPost('name', ['striptags', 'trim']);
+		if($this->request->isPost())
+		{
+			$type = $this->request->getPost('type', ['trim', 'striptags']);
+			$articul = $this->request->getPost('articul', ['trim', 'striptags']);
+			$model = $this->request->getPost('model', ['trim', 'striptags']);
+			$country = $this->request->getPost('country', ['trim', 'striptags']);
+			$brand = $this->request->getPost('brand', ['trim', 'striptags']);
+			$curancy = $this->request->getPost('main_curancy', ['trim', 'striptags']);
+			$price = $this->request->getPost('price', ['trim', 'striptags']);
+			$short_desc = $this->request->getPost('short_desc', ['trim']);
+			$full_desc = $this->request->getPost('full_desc', ['trim']);
+			$meta_keywords = $this->request->getPost('keywords', ['trim', 'striptags']);
+			$meta_description = $this->request->getPost('description', ['trim', 'striptags']);
 
 			$validation = new \App\Validation();
 
-			$validation->isEmpty([
-				'Свойство' => $name
-			]);
+			$validation->isNotEmpty([
+				'Тип' => $type,
+				'Страна-производитель' => $country,
+				'Основная валюта' => $curancy,
+				'Цена' => $price
+			], false);
 
-			if ($validation->validate()) {
-				$property = new \App\Models\ProductProperty();
-				$property->name = $name;
-				$property->save();
+			if (!$articul)
+			{
+				// Если артикул не указан, пытаемся взять его значение из Модели
+				if ($validation->isNotEmpty(['Модель' => $model], true))
+				{
+					$articul = $model;
 
-				return $this->response->redirect('admin/properties');
-			} else {
-				$errors = $validation->getMessages();
-				$this->view->setVar('errors', $errors);
+				} else // Если Модель тоже не указана, генерируем ошибку артикула
+				{
+					$validation->isNotEmpty([
+						'Артикул' => $articul
+					], false);
+				}
 			}
+
+			$validation->isInRangeString([
+				'Тип' => $type,
+				'Страна-производитель' => $country
+			], 3, 20, false);
+
+			if ($validation->isFloat(['Цена' => $price], true))
+				$price = preg_replace('/,/', '.', $price); // меняем "," на "."
+
+			// Внесенные значения
+			$inputs = [
+				'type' => $type,
+				'articul' => $articul,
+				'model' => $model,
+				'country' => $country,
+				'brand' => $brand,
+				'price' => $price,
+				'short_description' => $short_desc,
+				'full_description' => $full_desc,
+				'meta_keywords' => $meta_keywords,
+				'meta_description' => $meta_description
+			];
+
+			// Если пройдена вся валидация
+			if ($validation->validate())
+			{
+				$product = new Models\Product();
+
+				$product->type = $type;
+				$product->articul = $articul;
+				if ($model)
+					$product->model = $model;
+				$product->country = $country;
+				if ($brand)
+					$product->brand = $brand;
+				$product->main_curancy = $curancy;
+
+				// Название цены на основании основной валюты
+				$priceName = 'price_' . $curancy;
+
+				$product->$priceName = $price;
+				if ($short_desc)
+					$product->short_description = $short_desc;
+
+				if ($full_desc)
+					$product->full_description = $full_desc;
+
+				if ($meta_keywords)
+					$product->meta_keywords = $meta_keywords;
+
+				if ($meta_description)
+					$product->meta_description = $meta_description;
+
+				// Добавляем возможные варианты стран, типов и брендов для автодополнения
+				Models\Country::addCountry($product->country);
+				Models\ProductBrands::addBrand($product->brand);
+				Models\ProductType::addType($product->type);
+
+				$product->seo_name = Models\Product::generateSeoName($product);
+
+				$product->save();
+
+				// Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
+				if(Models\Product::isUniqueSeoName($product->seo_name))
+				{
+					return $this->response->redirect('admin/editproduct/' . $product->_id);
+
+				} else // Иначе идем на страницу для редактирования SEO-названия
+				{
+					return $this->response->redirect('admin/editseoname/' . $product->_id);
+				}
+
+
+			} else // Иначе передаем ошибки в представление
+			{
+				$this->view->setVars([
+					'data' => $inputs,
+					'errors' => $validation->getMessages()
+				]);
+			}
+
+
 		}
 
-		echo $this->view->render('admin/properties/add');
+		echo $this->view->render('admin/products/add');
 	}
 
-	public function editPropertyAction($id)
+	public function editProductAction($id = null)
 	{
-		$this->tag->prependTitle('Редактирование свойства');
+		$this->tag->prependTitle('Редактирование');
 
-		$property = \App\Models\ProductProperty::findById($id);
-		if(count($property) < 0) {
-			$this->response->redirect([
-				'controller' => 'admin',
-				'action' => 'properties'
-			]);
+		// Если ID есть,...
+		if ($id && strlen($id) == 24)
+		{
+
+
+		} else // иначе отправляемся ...
+		{
+			return $this->response->redirect('admin');
 		}
 
-		$this->view->setVar('property', $property);
+		echo $this->view->render('admin/products/edit');
+	}
 
-		// POST запрос
-		if ($this->request->isPost()) {
+	public function editSeoNameAction($id = null)
+	{
+		$this->tag->prependTitle('SEO-название');
 
-			$name = $this->request->getPost('name', ['striptags', 'trim']);
+		if ($id)
+		{
+			$product = Models\Product::getProductById($id);
 
-			$validation = new \App\Validation();
-
-			$validation->isEmpty([
-				'Свойство' => $name
+			// Товары с таким же SEO-названием
+			$sameProducts = Models\Product::find([
+				'conditions' => ['seo_name' => $product->seo_name]
 			]);
 
-			if ($validation->validate()) {
-				$property->name = $name;
-				$property->save();
+			if (count($sameProducts) > 1)
+			{
+				$this->view->setVar('sameProducts', $sameProducts);
+			}
 
-				return $this->response->redirect('admin/properties');
-			} else {
-				$errors = $validation->getMessages();
-				$this->view->setVar('errors', $errors);
+			$this->view->setVar('product', $product);
+
+			// POST запрос
+			if ($this->request->isPost())
+			{
+				$validation = new \App\Validation();
+				$seo_name = $this->request->getPost('seo-name', ['trim', 'striptags']);
+
+				$validation->isNotEmpty(['Сео-название' => $seo_name], false);
+
+				// Если валидация пройдена
+				if ($validation->validate())
+				{
+					$product->seo_name = \App\Translit::get_seo_keyword($seo_name, true);
+					$product->save();
+
+					// Товары с таким же SEO-названием
+					$sameProducts = Models\Product::find([
+						'conditions' => ['seo_name' => $product->seo_name]
+					]);
+
+					// Если повторы все-равно есть
+					if (count($sameProducts) > 1)
+					{
+						$this->view->setVar('sameProducts', $sameProducts);
+
+					} else // иначе перенаправляемся к дальнейшему редактированию
+					{
+						return $this->response->redirect('admin/editproduct/' . $product->_id);
+					}
+
+				} else // иначе отправляем ошибки в представление
+				{
+					$this->view->setVar('errors', $validation->getMessages());
+				}
 			}
 		}
 
-		echo $this->view->render('admin/properties/edit');
+		echo $this->view->render('admin/products/editseo');
 	}
 }

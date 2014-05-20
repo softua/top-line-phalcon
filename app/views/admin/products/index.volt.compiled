@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<?php echo $this->partial('admin/partials/head'); ?>
+<body>
+	<section class="container-fluid admin">
+		<div class="row-fluid" style="margin-top: 5px">
+			
+	<?php echo $this->partial('admin/partials/menu'); ?>
+
+		</div>
+		<div class="row-fluid">
+			<div class="span3">
+				<!-- Sidebar -->
+                
+	<?php if (isset($mainCategories) && $mainCategories == !null) { ?>
+		<ul class="admin__catogories">
+			<?php foreach ($mainCategories as $category) { ?>
+				<li class="admin__categories__item" data-category-id="<?php echo $category->_id; ?>">
+					<a href="/admin/getproducts/<?php echo $category->_id; ?>" data-action="open" data-editing="false"><?php echo $category->name; ?></a>
+					<ul class="admin__categories admin__categories--hidden"></ul>
+				</li>
+			<?php } ?>
+		</ul>
+	<?php } ?>
+
+			</div>
+			<div class="span9">
+				<!-- Content -->
+                
+	<a class="btn btn-primary" href="/admin/addproduct">Добавить новый товар</a>
+	<div class="products">
+		<?php if (isset($products) && $products == !null && (is_array($products) || ($products) instanceof Traversable)) { ?>
+			<h3>В БД - <?php echo $this->length($products); ?> товар (ов, а)</h3>
+			<h3>Выберите категорию слева для отображения списка товаров</h3>
+		<?php } else { ?>
+			<h3>Нет товаров</h3>
+		<?php } ?>
+	</div>
+
+			</div>
+		</div>
+	</section>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <?php echo $this->tag->javascriptInclude('js/vendor/jquery-1.11.0.min.js'); ?>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <?php echo $this->tag->javascriptInclude('js/vendor/bootstrap.min.js'); ?>
+</body>
+</html>

@@ -9,7 +9,7 @@
 		<ul class="admin__catogories">
 			{% for category in mainCategories %}
 				<li class="admin__categories__item" data-category-id="{{ category._id }}">
-					<a href="/" class="btn btn-mini btn-primary" data-action="open">+</a>
+					<a href="/" class="btn btn-mini btn-primary" data-action="open" data-editing="true">+</a>
 					<a href="/admin/category/edit/{{ category._id }}" title="Редактировать">{{ category.name }} (SEO - {{ category.seo }}, sort = {{ category.sort }})</a>
 					<ul class="admin__categories admin__categories--hidden">
 						<li class="admin__categories__item">
@@ -23,6 +23,12 @@
 					</li>
 				{% endif %}
 			{% endfor %}
+		</ul>
+	{% else %}
+		<ul class="admin__catogories">
+			<li class="admin__categories__item">
+				<a href="/admin/category/add/0" class="btn btn-success">Добавить категорию</a>
+			</li>
 		</ul>
 	{% endif %}
 {% endblock %}

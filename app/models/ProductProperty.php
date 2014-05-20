@@ -11,7 +11,7 @@ class ProductProperty extends \Phalcon\Mvc\Collection
 {
 	public function getSource()
 	{
-		return 'properties';
+		return 'product_properties';
 	}
 
 	public static function getAllProperties()

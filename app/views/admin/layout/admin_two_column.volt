@@ -7,11 +7,11 @@
 			{% block menu %}{% endblock %}
 		</div>
 		<div class="row-fluid">
-			<div class="span2">
+			<div class="span3">
 				<!-- Sidebar -->
                 {% block sidebar %}{% endblock %}
 			</div>
-			<div class="span10">
+			<div class="span9">
 				<!-- Content -->
                 {% block content %}{% endblock %}
 			</div>

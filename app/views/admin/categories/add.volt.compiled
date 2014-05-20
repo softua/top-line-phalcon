@@ -22,8 +22,8 @@
 				<?php } ?>
 			<?php } ?>
 		<?php } ?>
-		<?php if ($parent == !null) { ?>
-			<form class="form-horizontal" action="/admin/category/add/<?php echo $parent->_id; ?>" method="post">
+		<?php if (isset($parent) && $parent == !null) { ?>
+			<form class="form-horizontal" action="/admin/category/add/<?php echo $parent; ?>" method="post">
 		<?php } else { ?>
 			<form class="form-horizontal" action="/admin/category/add/0" method="post">
 		<?php } ?>

@@ -13,8 +13,8 @@ $di->set('router', function() {
 	]);
 
 	$router->notFound([
-		'controller' => 'index',
-		'action' => 'index'
+		'controller' => 'admin',
+		'action' => 'notfound'
 	]);
 
 	$router->add(
@@ -90,18 +90,26 @@ $di->set('router', function() {
 	);
 
 	$router->add(
-		'/admin/property/add',
+		'/admin/getproducts/{id}',
 		[
 			'controller' => 'admin',
-			'action' => 'addproperty'
+			'action' => 'getproducts'
 		]
 	);
 
 	$router->add(
-		'/admin/property/edit/{id}',
+		'/admin/editseoname/{id}',
 		[
 			'controller' => 'admin',
-			'action' => 'editproperty'
+			'action' => 'editseoname'
+		]
+	);
+
+	$router->add(
+		'/admin/editproduct/{id}',
+		[
+			'controller' => 'admin',
+			'action' => 'editproduct'
 		]
 	);
 

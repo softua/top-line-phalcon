@@ -16,8 +16,8 @@
 				{% endfor %}
 			{% endfor %}
 		{% endif %}
-		{% if parent is not null %}
-			<form class="form-horizontal" action="/admin/category/add/{{ parent._id }}" method="post">
+		{% if parent is defined and parent is not null %}
+			<form class="form-horizontal" action="/admin/category/add/{{ parent }}" method="post">
 		{% else %}
 			<form class="form-horizontal" action="/admin/category/add/0" method="post">
 		{% endif %}

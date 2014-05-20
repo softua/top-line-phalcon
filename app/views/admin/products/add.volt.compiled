@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<?php echo $this->partial('admin/partials/head'); ?>
+<body>
+	<section class="container-fluid admin">
+		<div class="row-fluid" style="margin-top: 5px">
+			
+	<?php echo $this->partial('admin/partials/menu'); ?>
+
+		</div>
+		<div class="row-fluid">
+			<!-- Content -->
+			
+	<div class="span12">
+		<h2>Добавление основных параметров товара</h2>
+		<?php if (isset($errors) && $errors == !$empty) { ?>
+			<?php foreach ($errors as $error) { ?>
+				<?php foreach ($error as $err) { ?>
+					<h4 class="text-error"><?php echo $err; ?></h4>
+				<?php } ?>
+			<?php } ?>
+		<?php } ?>
+		<form action="/admin/addproduct" method="POST">
+			<table class="table table-bordered table-hover">
+				<tbody>
+					<tr>
+						<th><label for="type">Тип:</label></th>
+						<td>
+							<input type="text" name="type" value="<?php echo $data['type']; ?>" id="type" data-provide="typeahead" data-items="5" data-source='<?php echo $types; ?>'/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="articul">Артикул:</label></th>
+						<td>
+							<input type="text" name="articul" value="<?php echo $data['articul']; ?>" id="articul"/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="model">Модель:</label></th>
+						<td>
+							<input type="text" name="model" value="<?php echo $data['model']; ?>" id="model"/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="country">Страна-производитель:</label></th>
+						<td>
+							<input type="text" name="country" value="<?php echo $data['country']; ?>" id="country" data-provide="typeahead" data-items="5" data-source='<?php echo $countries; ?>'/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="brand">Бренд:</label></th>
+						<td>
+							<input type="text" name="brand" value="<?php echo $data['brand']; ?>" id="brand" data-provide="typeahead" data-items="5" data-source='<?php echo $brands; ?>'/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="main_curancy">Основная валюта:</label></td>
+						<td>
+							<select name="main_curancy" id="main_curancy">
+								<option value="eur">Евро</option>
+								<option value="usd">Доллар США</option>
+								<option value="uah">Гривна</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="price">Цена:</label></th>
+						<td>
+							<input type="text" name="price" value="<?php echo $data['price']; ?>" id="price"/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="short_desc">Короткое описание:</label></th>
+						<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10"></textarea><?php echo $data['short_description']; ?></td>
+					</tr>
+					<tr>
+						<th><label for="full_desc">Полное описание:</label></th>
+						<td><textarea class="tinymce" name="full_desc" id="full_desc" rows="20"><?php echo $data['full_description']; ?></textarea></td>
+					</tr>
+					<tr>
+						<th><label for="keywords">Meta keywords:</label></th>
+						<td>
+							<input type="text" name="keywords" value="<?php echo $data['meta_keywords']; ?>" id="keywords"/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="description">Meta description:</label></th>
+						<td>
+							<textarea name="description" id="description" rows="10"><?php echo $data['meta_description']; ?></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td><a class="btn btn-primary" href="/admin/products">Вернуться к списку</a></td>
+						<td><input class="btn btn-success" type="submit" value="Создать"/></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+		</div>
+	</section>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/jquery-1.11.0.min.js'); ?>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/bootstrap.min.js'); ?>
+</body>
+</html>

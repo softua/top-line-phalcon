@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<?php echo $this->partial('admin/partials/head'); ?>
+<body>
+	<section class="container-fluid admin">
+		<div class="row-fluid" style="margin-top: 5px">
+			
+	<?php echo $this->partial('admin/partials/menu'); ?>
+
+		</div>
+		<div class="row-fluid">
+			<!-- Content -->
+			
+	<?php if (isset($product) && $product == !null) { ?>
+		<div class="span12">
+			<h1><?php echo strip_tags($this->tag->getTitle()); ?></h1>
+			<h2>Такой товар возможно уже существует</h2>
+			<h3>Ниже представлен список совпадений. Если представлены другие товары, отредактируйте SEO-название, чтобы оно отличалось</h3>
+			<h4>(можно добавить "_", "-",...)</h4>
+			<?php if (isset($sameProducts) && $sameProducts == !$empty) { ?>
+				<ul>
+					<?php foreach ($sameProducts as $product) { ?>
+						<li><a href="/admin/editproduct/<?php echo $product->_id; ?>" target="_blank"><?php echo $product->seo_name; ?></a></li>
+					<?php } ?>
+				</ul>
+			<?php } ?>
+			<form action="/admin/editseoname/<?php echo $product->_id; ?>" method="POST">
+				<fieldset>
+					<legend><?php echo $product->seo_name; ?></legend>
+					<table class="table-bordered">
+						<tr>
+							<th>Тип</th>
+							<td><?php echo $product->type; ?></td>
+						</tr>
+						<tr>
+							<th>Артикул</th>
+							<td><?php echo $product->articul; ?></td>
+						</tr>
+						<tr>
+							<th>Модель</th>
+							<td><?php echo $product->model; ?></td>
+						</tr>
+						<tr>
+							<th>Страна-производитель</th>
+							<td><?php echo $product->country; ?></td>
+						</tr>
+						<tr>
+							<th>Бренд</th>
+							<td><?php echo $product->brand; ?></td>
+						</tr>
+						<tr>
+							<th>Цена</th>
+							<td>Временно не доступно</td> 
+						</tr>
+					</table>
+					
+					<?php if (isset($errors) && $errors == !$empty) { ?>
+						<?php foreach ($errors as $error) { ?>
+							<?php foreach ($error as $message) { ?>
+								<p class="text-error"><?php echo $message; ?></p>
+							<?php } ?>
+						<?php } ?>
+					<?php } ?>
+					
+					<label for="seo-name">SEO-название</label>
+					<input type="text" name="seo-name" id="seo-name" value="<?php echo $product->seo_name; ?>"/>
+					<input type="submit" class="btn btn-primary" value="Сохранить"/>
+				</fieldset>
+			</form>
+		</div>
+	<?php } else { ?>
+		<h1>Нечего тут делать</h1>
+	<?php } ?>
+
+		</div>
+	</section>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/jquery-1.11.0.min.js'); ?>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<?php echo $this->tag->javascriptInclude('js/vendor/bootstrap.min.js'); ?>
+</body>
+</html>

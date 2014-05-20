@@ -13,17 +13,9 @@
 			<li class="divider-vertical"></li>
 
 			{% if url is '/admin/products' %}
-				<li class="active"><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
+				<li class="active"><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
 			{% else %}
-				<li><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
-			{% endif %}
-
-			<li class="divider-vertical"></li>
-
-			{% if url is '/admin/properties' %}
-				<li class="active"><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
-			{% else %}
-				<li><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
+				<li><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>

@@ -13,17 +13,9 @@
 			<li class="divider-vertical"></li>
 
 			<?php if ($url == '/admin/products') { ?>
-				<li class="active"><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
+				<li class="active"><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
 			<?php } else { ?>
-				<li><a href="/admin/products" title="Редактирование продуктов">Товары</a></li>
-			<?php } ?>
-
-			<li class="divider-vertical"></li>
-
-			<?php if ($url == '/admin/properties') { ?>
-				<li class="active"><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
-			<?php } else { ?>
-				<li><a href="/admin/properties" title="Редактирование параметров товаров">Параметры товаров</a></li>
+				<li><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
 			<?php } ?>
 
 			<li class="divider-vertical"></li>

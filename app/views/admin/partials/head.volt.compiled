@@ -7,5 +7,6 @@
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="/css/admin.css"/>
 	<script src="/js/vendor/jquery-1.11.0.min.js"></script>
+	<script src="/js/vendor/tinymce/tinymce.min.js"></script>
 	<script src="/js/admin_master.js"></script>
 </head>
