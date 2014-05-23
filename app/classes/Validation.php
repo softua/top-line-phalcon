@@ -282,4 +282,14 @@ class Validation
 		else
 			return false;
 	}
+
+	/**
+	 * Устанавливает сообщение вручную
+	 * @param string $field название поля
+	 * @param string $message сообщение
+	 */
+	public function setMessageManual($field, $message)
+	{
+		$this->messages[$field][] = $message;
+	}
 }

@@ -12,7 +12,7 @@
 
 			<li class="divider-vertical"></li>
 
-			{% if url is '/admin/products' %}
+			{% if url is '/admin/products' or url is '/admin/addproduct' %}
 				<li class="active"><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
 			{% else %}
 				<li><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
@@ -48,6 +48,14 @@
 				<li class="active"><a href="/admin/pages">Статические страницы</a></li>
 			{% else %}
 				<li><a href="/admin/pages">Статические страницы</a></li>
+			{% endif %}
+
+			<li class="divider-vertical"></li>
+
+			{% if url is '/admin/settings' %}
+				<li class="active"><a href="/admin/settings">Настройки</a></li>
+			{% else %}
+				<li><a href="/admin/settings">Настройки</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>

@@ -48,10 +48,22 @@
 							<th>Бренд</th>
 							<td><?php echo $product->brand; ?></td>
 						</tr>
-						<tr>
-							<th>Цена</th>
-							<td>Временно не доступно</td> 
-						</tr>
+						<?php if ($product->main_curancy == 'uah') { ?>
+							<tr>
+								<th>Цена</th>
+								<td><?php echo $product->price_uah; ?> грн.</td>
+							</tr>
+						<?php } elseif ($product->main_curancy == 'usd') { ?>
+							<tr>
+								<th>Цена</th>
+								<td><?php echo $product->price_usd; ?> $</td>
+							</tr>
+						<?php } elseif ($product->main_curancy == 'eur') { ?>
+							<tr>
+								<th>Цена</th>
+								<td><?php echo $product->price_eur; ?> евро</td>
+							</tr>
+						<?php } ?>
 					</table>
 					
 					<?php if (isset($errors) && $errors == !$empty) { ?>

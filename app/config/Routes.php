@@ -113,5 +113,21 @@ $di->set('router', function() {
 		]
 	);
 
+	$router->add(
+		'/admin/addcategorytoproduct/{categoryId}/{productId}',
+		[
+			'controller' => 'admin',
+			'action' => 'addcategorytoproduct'
+		]
+	);
+
+	$router->add(
+		'/admin/deleteproductcategory/{categoryId}/{productId}',
+		[
+			'controller' => 'admin',
+			'action' => 'deleteproductcategory'
+		]
+	);
+
 	return $router;
 });

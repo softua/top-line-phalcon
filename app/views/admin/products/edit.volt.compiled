@@ -13,7 +13,15 @@
 			
 	<div class="span12">
 		<?php if (isset($product) && $product == !null) { ?>
-			<h2>Дальнейшее редактирование</h2>
+
+			<h2>Редактирование товара</h2>
+			<?php if (isset($success) && $success == !null) { ?>
+				<div class="alert alert-success">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<h4>Поздравляем!</h4><?php echo $success; ?>
+				</div>
+			<?php } ?>
+
 			<?php if (isset($errors) && $errors == !$empty) { ?>
 				<?php foreach ($errors as $error) { ?>
 					<?php foreach ($error as $err) { ?>
@@ -21,78 +29,134 @@
 					<?php } ?>
 				<?php } ?>
 			<?php } ?>
-			<form action="/admin/edit/product" method="POST">
+
+			<form action="/admin/editproduct/<?php echo $id; ?>" method="POST">
 				<table class="table table-bordered table-hover">
 					<tbody>
 						<tr>
+							<th><label for="seo-name">SEO название</label></th>
+							<td>
+								<input type="text" name="seo-name" id="seo-name" value="<?php echo $product['seo_name']; ?>"/>
+							</td>
+						</tr>
+						<tr>
 							<th><label for="type">Тип:</label></th>
 							<td>
-								<input type="text" name="type" value="<?php echo $data['type']; ?>" id="type" data-provide="typeahead" data-items="5" data-source='<?php echo $types; ?>'/>
+								<input type="text" name="type" value="<?php echo $product['type']; ?>" id="type" data-provide="typeahead" data-items="5" data-source='<?php echo $types; ?>' autocomplete="off"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="articul">Артикул:</label></th>
 							<td>
-								<input type="text" name="articul" value="<?php echo $data['articul']; ?>" id="articul"/>
+								<input type="text" name="articul" value="<?php echo $product['articul']; ?>" id="articul"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="model">Модель:</label></th>
 							<td>
-								<input type="text" name="model" value="<?php echo $data['model']; ?>" id="model"/>
+								<input type="text" name="model" value="<?php echo $product['model']; ?>" id="model"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="country">Страна-производитель:</label></th>
 							<td>
-								<input type="text" name="country" value="<?php echo $data['country']; ?>" id="country" data-provide="typeahead" data-items="5" data-source='<?php echo $countries; ?>'/>
+								<input type="text" name="country" value="<?php echo $product['country']; ?>" id="country" data-provide="typeahead" data-items="5" data-source='<?php echo $countries; ?>' autocomplete="off"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="brand">Бренд:</label></th>
 							<td>
-								<input type="text" name="brand" value="<?php echo $data['brand']; ?>" id="brand" data-provide="typeahead" data-items="5" data-source='<?php echo $brands; ?>'/>
+								<input type="text" name="brand" value="<?php echo $product['brand']; ?>" id="brand" data-provide="typeahead" data-items="5" data-source='<?php echo $brands; ?>' autocomplete="off"/>
 							</td>
 						</tr>
 						<tr>
 							<td><label for="main_curancy">Основная валюта:</label></td>
 							<td>
 								<select name="main_curancy" id="main_curancy">
-									<option value="eur">Евро</option>
-									<option value="usd">Доллар США</option>
-									<option value="uah">Гривна</option>
+									<?php if ($product['main_curancy'] == 'eur') { ?>
+										<option value="eur" selected>Евро</option>
+									<?php } else { ?>
+										<option value="eur">Евро</option>
+									<?php } ?>
+									<?php if ($product['main_curancy'] == 'usd') { ?>
+										<option value="usd" selected>Доллар США</option>
+									<?php } else { ?>
+										<option value="usd">Доллар США</option>
+									<?php } ?>
+									<?php if ($product['main_curancy'] == 'uah') { ?>
+										<option value="uah" selected>Гривна</option>
+									<?php } else { ?>
+										<option value="uah">Гривна</option>
+									<?php } ?>
 								</select>
 							</td>
 						</tr>
+						<?php if ($product['main_curancy'] == 'eur') { ?>
+							<tr>
+								<th><label for="price_eur">Цена:</label></th>
+								<td><input type="text" name="price_eur" value="<?php echo $product['price_eur']; ?>" id="price_eur"/></td>
+							</tr>
+						<?php } ?>
+						<?php if ($product['main_curancy'] == 'usd') { ?>
+							<tr>
+								<th><label for="price_usd">Цена:</label></th>
+								<td><input type="text" name="price_usd" value="<?php echo $product['price_usd']; ?>" id="price_usd"/></td>
+							</tr>
+						<?php } ?>
+						<?php if ($product['main_curancy'] == 'uah') { ?>
+							<tr>
+								<th><label for="price_uah">Цена:</label></th>
+								<td><input type="text" name="price_uah" value="<?php echo $product['price_uah']; ?>" id="price_uah"/></td>
+							</tr>
+						<?php } ?>
 						<tr>
-							<th><label for="price">Цена:</label></th>
+							<th>Категории</th>
 							<td>
-								<input type="text" name="price" value="<?php echo $data['price']; ?>" id="price"/>
+								<a href="<?php echo $id; ?>" class="btn btn-primary" data-addcategory data-categories-list='<?php echo $categories; ?>'>Добавить категорию</a>
+								<div data-categories>
+									<?php if (isset($productCats) && $productCats == !$empty) { ?>
+										<?php foreach ($productCats as $cat) { ?>
+											<br>
+											<a data-delete-category href="/admin/deleteproductcategory/<?php echo $cat['id']; ?>/<?php echo $id; ?>" class="btn btn-danger">Удалить</a>
+											<span><?php echo $cat['full_name']; ?></span><br>
+										<?php } ?>
+									<?php } ?>
+								</div>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="short_desc">Короткое описание:</label></th>
-							<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10"></textarea><?php echo $data['short_description']; ?></td>
+							<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10"><?php echo $product['short_description']; ?></textarea></td>
 						</tr>
 						<tr>
 							<th><label for="full_desc">Полное описание:</label></th>
-							<td><textarea class="tinymce" name="full_desc" id="full_desc" rows="20"><?php echo $data['full_description']; ?></textarea></td>
+							<td><textarea class="tinymce" name="full_desc" id="full_desc" rows="20"><?php echo $product['full_description']; ?></textarea></td>
 						</tr>
 						<tr>
 							<th><label for="keywords">Meta keywords:</label></th>
 							<td>
-								<input type="text" name="keywords" value="<?php echo $data['meta_keywords']; ?>" id="keywords"/>
+								<input type="text" name="keywords" value="<?php echo $product['meta_keywords']; ?>" id="keywords"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="description">Meta description:</label></th>
 							<td>
-								<textarea name="description" id="description" rows="10"><?php echo $data['meta_description']; ?></textarea>
+								<textarea name="description" id="description" rows="10"><?php echo $product['meta_description']; ?></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="public">public</label></th>
+							<td>
+								<?php if ($product['public'] == 'on') { ?>
+									<input type="checkbox" id="public" name="public" checked/>
+								<?php } else { ?>
+									<input type="checkbox" id="public" name="public"/>
+								<?php } ?>
 							</td>
 						</tr>
 						<tr>
 							<td><a class="btn btn-primary" href="/admin/products">Вернуться к списку</a></td>
-							<td><input class="btn btn-success" type="submit" value="Создать"/></td>
+							<td><input class="btn btn-success" type="submit" value="Сохранить"/></td>
 						</tr>
 					</tbody>
 				</table>

@@ -12,7 +12,7 @@
 
 			<li class="divider-vertical"></li>
 
-			<?php if ($url == '/admin/products') { ?>
+			<?php if ($url == '/admin/products' || $url == '/admin/addproduct') { ?>
 				<li class="active"><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
 			<?php } else { ?>
 				<li><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
@@ -48,6 +48,14 @@
 				<li class="active"><a href="/admin/pages">Статические страницы</a></li>
 			<?php } else { ?>
 				<li><a href="/admin/pages">Статические страницы</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/settings') { ?>
+				<li class="active"><a href="/admin/settings">Настройки</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/settings">Настройки</a></li>
 			<?php } ?>
 
 			<li class="divider-vertical"></li>

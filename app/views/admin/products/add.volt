@@ -20,7 +20,7 @@
 					<tr>
 						<th><label for="type">Тип:</label></th>
 						<td>
-							<input type="text" name="type" value="{{ data['type'] }}" id="type" data-provide="typeahead" data-items="5" data-source='{{ types }}'/>
+							<input type="text" name="type" value="{{ data['type'] }}" id="type" data-provide="typeahead" data-items="5" data-source='{{ types }}' autocomplete="off"/>
 						</td>
 					</tr>
 					<tr>
@@ -38,13 +38,13 @@
 					<tr>
 						<th><label for="country">Страна-производитель:</label></th>
 						<td>
-							<input type="text" name="country" value="{{ data['country'] }}" id="country" data-provide="typeahead" data-items="5" data-source='{{ countries }}'/>
+							<input type="text" name="country" value="{{ data['country'] }}" id="country" data-provide="typeahead" data-items="5" data-source='{{ countries }}' autocomplete="off"/>
 						</td>
 					</tr>
 					<tr>
 						<th><label for="brand">Бренд:</label></th>
 						<td>
-							<input type="text" name="brand" value="{{ data['brand'] }}" id="brand" data-provide="typeahead" data-items="5" data-source='{{ brands }}'/>
+							<input type="text" name="brand" value="{{ data['brand'] }}" id="brand" data-provide="typeahead" data-items="5" data-source='{{ brands }}' autocomplete="off"/>
 						</td>
 					</tr>
 					<tr>

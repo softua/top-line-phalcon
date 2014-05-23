@@ -126,10 +126,10 @@ class AdminController extends BaseAdminController
 
 			$validation = new \App\Validation();
 
-			$validation->isEmpty([
+			$validation->isNotEmpty([
 				'Имя' => $name,
 				'Права' => $role
-			]);
+			], false);
 
 			if ($validation->validate()) {
 				$user->name = $name;
@@ -173,14 +173,14 @@ class AdminController extends BaseAdminController
 			$email = $this->request->getPost('email', ['striptags', 'trim', 'email']);
 			$role = $this->request->getPost('role', ['striptags', 'trim', 'alphanum']);
 
-			$validation->isEmpty([
+			$validation->isNotEmpty([
 				'login' => $login,
 				'password' => $password,
 				'name' => $name,
 				'role' => $role
-			]);
+			], false);
 
-			$validation->isUniqueUser($login);
+			$validation->isUniqueUser($login, false);
 
 			if ($validation->validate()) { // Создаем юзера и переходим к их списку
 				$user = new Models\Users();
@@ -232,11 +232,10 @@ class AdminController extends BaseAdminController
 		if($this->request->isAjax() && $parent != null) {
 			$categories = Models\Category::getCategories($parent);
 
-			if($categories != null)
+			if($categories)
 				echo json_encode($categories);
-			else {
+			else
 				echo json_encode(null);
-			}
 
 		} else {
 			$this->response->redirect('admin/categories');
@@ -264,10 +263,10 @@ class AdminController extends BaseAdminController
 
 			$validation = new \App\Validation();
 
-			$validation->isEmpty([
+			$validation->isNotEmpty([
 				'Категория' => $name,
 				'Порядок' => $sort
-			]);
+			], false);
 
 			if ($validation->validate()) {
 				$category->name = $name;
@@ -305,10 +304,10 @@ class AdminController extends BaseAdminController
 			$sort = $this->request->getPost('sort', ['striptags', 'trim', 'int']);
 
 			$validation = new \App\Validation();
-			$validation->isEmpty([
+			$validation->isNotEmpty([
 				'Категория' => $name,
 				'Порядок' => $sort
-			]);
+			], false);
 			if ($validation->validate()) {
 				$category->name = $name;
 				$category->seo = \App\Translit::get_seo_keyword($name, true);
@@ -352,10 +351,23 @@ class AdminController extends BaseAdminController
 
 	public function getProductsAction($categoryId = null)
 	{
-		if($this->request->isAjax()) {
-			echo $categoryId;
-		} else {
-			$this->response->redirect('admin/notfound');
+		if ($this->request->isAjax()) // Если AJAX запрос, обрабатываем его
+		{
+			if ($categoryId && strlen($categoryId) == 24)
+			{
+				$products = Models\Product::getProducts($categoryId);
+
+				if ($products)
+					echo json_encode($products);
+				else
+					echo json_encode(null);
+
+			} else
+				echo json_encode(null);
+
+		} else // иначе перенаправляем ...
+		{
+			return $this->response->redirect('admin/products');
 		}
 	}
 
@@ -451,7 +463,7 @@ class AdminController extends BaseAdminController
 				// Название цены на основании основной валюты
 				$priceName = 'price_' . $curancy;
 
-				$product->$priceName = $price;
+				$product->$priceName = floatval($price);
 				if ($short_desc)
 					$product->short_description = $short_desc;
 
@@ -470,11 +482,11 @@ class AdminController extends BaseAdminController
 				Models\ProductType::addType($product->type);
 
 				$product->seo_name = Models\Product::generateSeoName($product);
+				$product->public = false;
 
 				$product->save();
 
-				// Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
-				if(Models\Product::isUniqueSeoName($product->seo_name))
+				if (Models\Product::isUniqueSeoName($product->seo_name)) // Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
 				{
 					return $this->response->redirect('admin/editproduct/' . $product->_id);
 
@@ -502,15 +514,162 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Редактирование');
 
-		// Если ID есть,...
-		if ($id && strlen($id) == 24)
+		if ($id && strlen($id) == 24) // Если ID есть, обрабатываем запрос
 		{
-
-
-		} else // иначе отправляемся ...
+			$productObj = Models\Product::getProductById($id);  // объект товара, с которым работаем
+			$product = $productObj->toArray();                  // этот же объект в виде массива для представления
+		}
+		else // иначе отправляемся ...
 		{
 			return $this->response->redirect('admin');
 		}
+
+		if ($productObj->categories && count($productObj->categories) > 0)
+		{
+			$productCats = [];
+			foreach ($productObj->categories as $catId)
+			{
+				$productCats[] = Models\Category::getCategoryWithFullName($catId);
+			}
+			$this->view->productCats = $productCats;
+		}
+
+		if ($this->request->isPost()) // Если POST запрос
+		{
+			$inputs = [
+				'seo_name' => $this->request->getPost('seo-name', ['trim', 'striptags']),
+				'type' => $this->request->getPost('type', ['trim', 'striptags']),
+				'articul' => $this->request->getPost('articul', ['trim', 'striptags']),
+				'model' => $this->request->getPost('model', ['trim', 'striptags']),
+				'country' => $this->request->getPost('country', ['trim', 'striptags']),
+				'brand' => $this->request->getPost('brand', ['trim', 'striptags']),
+				'main_curancy' => $this->request->getPost('main_curancy', ['trim', 'striptags'])
+			];
+
+			// Устанавливаем соответствующую цену
+			if ($inputs['main_curancy'] == 'eur')
+				$inputs['price_eur'] = $this->request->getPost('price_eur', ['trim', 'striptags']);
+			elseif ($inputs['main_curancy'] == 'usd')
+				$inputs['price_usd'] = $this->request->getPost('price_usd', ['trim', 'striptags']);
+			elseif ($inputs['main_curancy'] == 'uah')
+				$inputs['price_uah'] = $this->request->getPost('price_uah', ['trim', 'striptags']);
+
+			$inputs['short_description'] = $this->request->getPost('short_desc', ['trim']);
+			$inputs['full_description'] = $this->request->getPost('full_desc', ['trim']);
+			$inputs['meta_keywords'] = $this->request->getPost('keywords', ['trim', 'striptags']);
+			$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
+			$inputs['public'] = $this->request->getPost('public', ['trim', 'striptags']);
+
+			$validation = new \App\Validation();
+
+			$validation->isNotEmpty([
+				'Тип' => $inputs['type'],
+				'Страна-производитель' => $inputs['country'],
+				'Основная валюта' => $inputs['main_curancy']
+			], false);
+
+			if ($inputs['main_curancy'] == 'eur')
+				$validation->isNotEmpty(['Цена', $inputs['price_eur']], false);
+			elseif ($inputs['main_curancy'] == 'usd')
+				$validation->isNotEmpty(['Цена', $inputs['price_usd']], false);
+			elseif ($inputs['main_curancy'] == 'uah')
+				$validation->isNotEmpty(['Цена', $inputs['price_uah']], false);
+
+			if (!$inputs['articul'])
+			{
+				// Если артикул не указан, пытаемся взять его значение из Модели
+				if ($validation->isNotEmpty(['Модель' => $inputs['model']], true))
+				{
+					$inputs['articul'] = $inputs['model'];
+
+				} else // Если Модель тоже не указана, генерируем ошибку артикула
+				{
+					$validation->isNotEmpty([
+						'Артикул' => $inputs['articul']
+					], false);
+				}
+			}
+
+			$validation->isInRangeString([
+				'Тип' => $inputs['type'],
+				'Страна-производитель' => $inputs['country']
+			], 3, 20, false);
+
+			if ($inputs['main_curancy'] == 'eur')
+			{
+				if ($validation->isFloat(['Цена' => $inputs['price_eur']], true))
+					$inputs['price_eur'] = preg_replace('/,/', '.', $inputs['price_eur']); // меняем "," на "."
+			}
+			elseif ($inputs['main_curancy'] == 'usd')
+			{
+				if ($validation->isFloat(['Цена' => $inputs['price_usd']], true))
+					$inputs['price_usd'] = preg_replace('/,/', '.', $inputs['price_usd']); // меняем "," на "."
+			}
+			elseif ($inputs['main_curancy'] == 'uah')
+			{
+				if ($validation->isFloat(['Цена' => $inputs['price_usd']], true))
+					$inputs['price_usd'] = preg_replace('/,/', '.', $inputs['price_usd']); // меняем "," на "."
+			}
+
+			if (!Models\Product::isUniqueSeoName($inputs['seo_name']))
+				$validation->setMessageManual('SEO название', 'SEO название не уникально');
+
+			// Если пройдена вся валидация
+			if ($validation->validate())
+			{
+				$productObj->type = $inputs['type'];
+				$productObj->articul = $inputs['articul'];
+				if ($inputs['model'])
+					$productObj->model = $inputs['model'];
+				$productObj->country = $inputs['country'];
+				if ($inputs['brand'])
+					$productObj->brand = $inputs['brand'];
+				$productObj->main_curancy = $inputs['main_curancy'];
+
+				// Название цены на основании основной валюты
+				$priceName = 'price_' . $inputs['main_curancy'];
+
+				$productObj->$priceName = floatval($inputs[$priceName]);
+				if ($inputs['short_description'])
+					$productObj->short_description = $inputs['short_description'];
+
+				if ($inputs['full_description'])
+					$productObj->full_description = $inputs['full_description'];
+
+				if ($inputs['meta_keywords'])
+					$productObj->meta_keywords = $inputs['meta_keywords'];
+
+				if ($inputs['meta_description'])
+					$productObj->meta_description = $inputs['meta_description'];
+
+				$productObj->public = ($inputs['public'] == 'on') ? true : false;
+
+				// Добавляем возможные варианты стран, типов и брендов для автодополнения
+				Models\Country::addCountry($productObj->country);
+				Models\ProductBrands::addBrand($productObj->brand);
+				Models\ProductType::addType($productObj->type);
+
+				$productObj->save();
+
+				$this->view->success = 'Данные успешно сохранены';
+
+			} else // Иначе передаем ошибки в представление
+			{
+				$this->view->errors = $validation->getMessages();
+			}
+
+			$this->view->product = $inputs;
+
+		} elseif ($this->request->isGet())
+		{
+			$this->view->product = $product;
+		}
+
+		$this->view->id = $id;
+		$this->view->categories = json_encode(Models\Category::getAllCategories());
+		$this->view->types = Models\ProductType::getAllTypesAsString();
+		$this->view->countries = Models\Country::getAllTypesAsString();
+		$this->view->brands = Models\ProductBrands::getAllTypesAsString();
 
 		echo $this->view->render('admin/products/edit');
 	}
@@ -572,5 +731,60 @@ class AdminController extends BaseAdminController
 		}
 
 		echo $this->view->render('admin/products/editseo');
+	}
+
+	public function addCategoryToProductAction($categoryId, $productId)
+	{
+		if ($this->request->isAjax() && $categoryId && $productId && strlen($categoryId) == 24 && strlen($productId) == 24)
+		{
+			$product = Models\Product::findById($productId);
+
+			$product->categories[] = $categoryId;
+
+			if ($product->save())
+			{
+				echo json_encode(Models\Category::getCategoryWithFullName($categoryId));
+			}
+			else
+				echo null;
+		} else
+		{
+			return $this->response->redirect('admin');
+		}
+	}
+
+	public function deleteProductCategoryAction($catId = null, $productId = null)
+	{
+		if ($this->request->isAjax())
+		{
+			if ($catId && strlen($catId) == 24 && $productId && strlen($productId) == 24)
+			{
+				$product = Models\Product::getProductById($productId);
+
+				if ($product && count($product) > 0)
+				{
+					foreach ($product->categories as $key => $value)
+					{
+						if ($value == $catId)
+						{
+							unset($product->categories[$key]);
+						}
+					}
+
+					$product->save();
+					echo json_encode(true);
+				} else
+				{
+					echo json_encode(false);
+				}
+			} else
+			{
+				echo json_encode(false);
+			}
+		} else
+		{
+			echo json_encode(false);
+			return $this->response->redirect('admin');
+		}
 	}
 }
