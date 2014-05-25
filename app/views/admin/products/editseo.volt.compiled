@@ -20,11 +20,11 @@
 			<?php if (isset($sameProducts) && $sameProducts == !$empty) { ?>
 				<ul>
 					<?php foreach ($sameProducts as $product) { ?>
-						<li><a href="/admin/editproduct/<?php echo $product->_id; ?>" target="_blank"><?php echo $product->seo_name; ?></a></li>
+						<li><a href="/admin/editproduct/<?php echo $product->_id; ?>/" target="_blank"><?php echo $product->seo_name; ?></a></li>
 					<?php } ?>
 				</ul>
 			<?php } ?>
-			<form action="/admin/editseoname/<?php echo $product->_id; ?>" method="POST">
+			<form action="/admin/editseoname/<?php echo $product->_id; ?>/" method="POST">
 				<fieldset>
 					<legend><?php echo $product->seo_name; ?></legend>
 					<table class="table-bordered">

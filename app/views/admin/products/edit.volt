@@ -6,6 +6,7 @@
 
 {% block content %}
 	<div class="span12">
+		<a class="btn btn-primary" href="/admin/products">Вернуться к списку</a>
 		{% if product is defined and product is not null %}
 
 			<h2>Редактирование товара</h2>
@@ -24,13 +25,19 @@
 				{% endfor %}
 			{% endif %}
 
-			<form action="/admin/editproduct/{{ id }}" method="POST">
+			<form action="/admin/editproduct/{{ id }}/" method="POST">
 				<table class="table table-bordered table-hover">
 					<tbody>
 						<tr>
 							<th><label for="seo-name">SEO название</label></th>
 							<td>
 								<input type="text" name="seo-name" id="seo-name" value="{{ product['seo_name'] }}"/>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="name">Название</label></th>
+							<td>
+								<input type="text" name="name" id="name" value="{{ product['name'] }}"/>
 							</td>
 						</tr>
 						<tr>
@@ -64,9 +71,19 @@
 							</td>
 						</tr>
 						<tr>
-							<td><label for="main_curancy">Основная валюта:</label></td>
+							<th><label for="price">Цена:</label></th>
 							<td>
-								<select name="main_curancy" id="main_curancy">
+								{% if product['main_curancy'] is 'eur' %}
+									<input type="text" name="price" value="{{ product['price_eur'] }}" id="price"/>
+								{% endif %}
+								{% if product['main_curancy'] is 'usd' %}
+									<input type="text" name="price" value="{{ product['price_usd'] }}" id="price"/>
+								{% endif %}
+								{% if product['main_curancy'] is 'uah' %}
+									<input type="text" name="price" value="{{ product['price_uah'] }}" id="price"/>
+								{% endif %}
+
+								<select name="main_curancy">
 									{% if product['main_curancy'] is 'eur' %}
 										<option value="eur" selected>Евро</option>
 									{% else %}
@@ -85,33 +102,21 @@
 								</select>
 							</td>
 						</tr>
-						{% if product['main_curancy'] is 'eur' %}
-							<tr>
-								<th><label for="price_eur">Цена:</label></th>
-								<td><input type="text" name="price_eur" value="{{ product['price_eur'] }}" id="price_eur"/></td>
-							</tr>
-						{% endif %}
-						{% if product['main_curancy'] is 'usd' %}
-							<tr>
-								<th><label for="price_usd">Цена:</label></th>
-								<td><input type="text" name="price_usd" value="{{ product['price_usd'] }}" id="price_usd"/></td>
-							</tr>
-						{% endif %}
-						{% if product['main_curancy'] is 'uah' %}
-							<tr>
-								<th><label for="price_uah">Цена:</label></th>
-								<td><input type="text" name="price_uah" value="{{ product['price_uah'] }}" id="price_uah"/></td>
-							</tr>
-						{% endif %}
+						<tr>
+							<th>Технические характеристики:</th>
+							<td>
+								<a href="#" class="btn" data-parameter-add="true">Добавить параметр</a>
+							</td>
+						</tr>
 						<tr>
 							<th>Категории</th>
 							<td>
-								<a href="{{ id }}" class="btn btn-primary" data-addcategory data-categories-list='{{ categories }}'>Добавить категорию</a>
+								<a href="{{ id }}" class="btn" data-addcategory data-categories-list='{{ categories }}'>Добавить категорию</a>
 								<div data-categories>
 									{% if productCats is defined and productCats is not empty %}
 										{% for cat in productCats %}
 											<br>
-											<a data-delete-category href="/admin/deleteproductcategory/{{ cat['id'] }}/{{ id }}" class="btn btn-danger">Удалить</a>
+											<a data-delete-category href="/admin/deleteproductcategory/{{ cat['id'] }}/{{ id }}/" class="btn btn-danger">Удалить</a>
 											<span>{{ cat['full_name'] }}</span><br>
 										{% endfor %}
 									{% endif %}
@@ -149,8 +154,10 @@
 							</td>
 						</tr>
 						<tr>
-							<td><a class="btn btn-primary" href="/admin/products">Вернуться к списку</a></td>
-							<td><input class="btn btn-success" type="submit" value="Сохранить"/></td>
+							<td><a href="/admin/deleteproduct/{{ product['_id'] }}/" class="btn btn-danger">Удалить СОВСЕМ</a></td>
+							<td>
+								<input class="btn btn-success" type="submit" value="Сохранить"/>
+							</td>
 						</tr>
 					</tbody>
 				</table>

@@ -37,8 +37,8 @@
 						{% endfor %}
 					</td>
 					<td>
-						<a class="btn" href="/admin/user/{{ user._id }}" title="Редактировать пользователя">Редактировать</a>
-						<a class="btn btn-danger" href="/admin/delete/user/{{ user._id }}" title="Удалить пользователя">Удалить</a>
+						<a class="btn" href="/admin/user/{{ user._id }}/" title="Редактировать пользователя">Редактировать</a>
+						<a class="btn btn-danger" href="/admin/deleteUser/{{ user._id }}/" title="Удалить пользователя">Удалить</a>
 					</td>
 				</tr>
 			{% endfor %}

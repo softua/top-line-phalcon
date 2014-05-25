@@ -23,9 +23,9 @@
 			<?php } ?>
 		<?php } ?>
 		<?php if (isset($parent) && $parent == !null) { ?>
-			<form class="form-horizontal" action="/admin/category/add/<?php echo $parent; ?>" method="post">
+			<form class="form-horizontal" action="/admin/addcategory/<?php echo $parent; ?>/" method="post">
 		<?php } else { ?>
-			<form class="form-horizontal" action="/admin/category/add/0" method="post">
+			<form class="form-horizontal" action="/admin/addcategory/0/" method="post">
 		<?php } ?>
 			<div class="control-group">
 				<label class="control-label" for="name">Категория:</label>

@@ -14,11 +14,11 @@
 			{% if sameProducts is defined and sameProducts is not empty %}
 				<ul>
 					{% for product in sameProducts %}
-						<li><a href="/admin/editproduct/{{ product._id }}" target="_blank">{{ product.seo_name }}</a></li>
+						<li><a href="/admin/editproduct/{{ product._id }}/" target="_blank">{{ product.seo_name }}</a></li>
 					{% endfor %}
 				</ul>
 			{% endif %}
-			<form action="/admin/editseoname/{{ product._id }}" method="POST">
+			<form action="/admin/editseoname/{{ product._id }}/" method="POST">
 				<fieldset>
 					<legend>{{ product.seo_name }}</legend>
 					<table class="table-bordered">

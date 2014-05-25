@@ -13,7 +13,7 @@
 				{% endfor %}
 			{% endfor %}
 		{% endif %}
-		<form class="form-horizontal" action="/admin/user/{{ user._id }}" method="post">
+		<form class="form-horizontal" action="/admin/user/{{ user._id }}/" method="post">
 			{% for key, value in user %}
 				{% if key is 'login' %}
 					<h2>{{ value }}</h2>

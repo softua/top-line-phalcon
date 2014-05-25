@@ -18,6 +18,10 @@
 			<table class="table table-bordered table-hover">
 				<tbody>
 					<tr>
+						<th><label for="name">Название:</label></th>
+						<td><input type="text" name="name" value="{{ data['name'] }}" id="name" /></td>
+					</tr>
+					<tr>
 						<th><label for="type">Тип:</label></th>
 						<td>
 							<input type="text" name="type" value="{{ data['type'] }}" id="type" data-provide="typeahead" data-items="5" data-source='{{ types }}' autocomplete="off"/>
@@ -48,19 +52,14 @@
 						</td>
 					</tr>
 					<tr>
-						<td><label for="main_curancy">Основная валюта:</label></td>
-						<td>
-							<select name="main_curancy" id="main_curancy">
-								<option value="eur">Евро</option>
-								<option value="usd">Доллар США</option>
-								<option value="uah">Гривна</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
 						<th><label for="price">Цена:</label></th>
 						<td>
 							<input type="text" name="price" value="{{ data['price'] }}" id="price"/>
+							<select name="main_curancy" id="main_curancy">
+								<option value="eur" selected>Евро</option>
+								<option value="usd">Доллар США</option>
+								<option value="uah">Гривна</option>
+							</select>
 						</td>
 					</tr>
 					<tr>

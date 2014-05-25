@@ -17,9 +17,9 @@
 			{% endfor %}
 		{% endif %}
 		{% if parent is defined and parent is not null %}
-			<form class="form-horizontal" action="/admin/category/add/{{ parent }}" method="post">
+			<form class="form-horizontal" action="/admin/addcategory/{{ parent }}/" method="post">
 		{% else %}
-			<form class="form-horizontal" action="/admin/category/add/0" method="post">
+			<form class="form-horizontal" action="/admin/addcategory/0/" method="post">
 		{% endif %}
 			<div class="control-group">
 				<label class="control-label" for="name">Категория:</label>

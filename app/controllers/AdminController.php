@@ -111,8 +111,9 @@ class AdminController extends BaseAdminController
 		echo $this->view->render('admin/users/list');
 	}
 
-	public function userAction($id)
+	public function userAction()
 	{
+		$id = $this->dispatcher->getParams()[0];
 		$this->tag->prependTitle('Редактирование');
 		$user = Models\Users::findById($id);
 		$roles = Models\Roles::find();
@@ -206,7 +207,7 @@ class AdminController extends BaseAdminController
 
 	public function deleteUserAction()
 	{
-		$id = $this->dispatcher->getParam('id');
+		$id = $this->dispatcher->getParams()[0];
 
 		$user = Models\Users::findById($id);
 		$user->delete();
@@ -227,8 +228,9 @@ class AdminController extends BaseAdminController
 		echo $this->view->render('admin/categories/categories');
 	}
 
-	public function getCategoriesAction($parent = null)
+	public function getCategoriesAction()
 	{
+		$parent = $this->dispatcher->getParams()[0];
 		if($this->request->isAjax() && $parent != null) {
 			$categories = Models\Category::getCategories($parent);
 
@@ -242,8 +244,9 @@ class AdminController extends BaseAdminController
 		}
 	}
 
-	public function addCategoryAction($parent)
+	public function addCategoryAction()
 	{
+		$parent = $this->dispatcher->getParams()[0];
 		$this->tag->prependTitle('Редактирование');
 
 		$fullParentCategory = Models\Category::getFullCategoryName($parent);
@@ -286,8 +289,9 @@ class AdminController extends BaseAdminController
 		echo $this->view->render('admin/categories/add');
 	}
 
-	public function editCategoryAction($id = null)
+	public function editCategoryAction()
 	{
+		$id = $this->dispatcher->getParams()[0];
 		if($id == null)
 			return $this->response->redirect('admin/categories');
 
@@ -322,8 +326,9 @@ class AdminController extends BaseAdminController
 		echo $this->view->render('admin/categories/edit');
 	}
 
-	public function deleteCategoryAction($id = null)
+	public function deleteCategoryAction()
 	{
+		$id = $this->dispatcher->getParams()[0];
 		if($id && $id != '0') {
 			$category = Models\Category::findById($id);
 			$children = Models\Category::getCategories($id);
@@ -341,16 +346,24 @@ class AdminController extends BaseAdminController
 		$mainCats = Models\Category::getMainCategories();
 		$products = Models\Product::getProducts();
 
-		$this->view->setVars([
-			'mainCategories' => $mainCats,
-			'products' => $products
-		]);
+		$productsWithoutCategories = [];
+		$allProducts = Models\Product::find();
+		foreach ($allProducts as $product)
+		{
+			if (!$product->categories)
+				$productsWithoutCategories[] = $product;
+		}
+
+		$this->view->mainCategories = $mainCats;
+		$this->view->products = $products;
+		$this->view->productsWithoutCategories = $productsWithoutCategories;
 
 		echo $this->view->render('admin/products/index');
 	}
 
-	public function getProductsAction($categoryId = null)
+	public function getProductsAction()
 	{
+		$categoryId = $this->dispatcher->getParams()[0];
 		if ($this->request->isAjax()) // Если AJAX запрос, обрабатываем его
 		{
 			if ($categoryId && strlen($categoryId) == 24)
@@ -388,6 +401,7 @@ class AdminController extends BaseAdminController
 		// POST запрос
 		if($this->request->isPost())
 		{
+			$name = $this->request->getPost('name', ['trim', 'striptags']);
 			$type = $this->request->getPost('type', ['trim', 'striptags']);
 			$articul = $this->request->getPost('articul', ['trim', 'striptags']);
 			$model = $this->request->getPost('model', ['trim', 'striptags']);
@@ -403,6 +417,7 @@ class AdminController extends BaseAdminController
 			$validation = new \App\Validation();
 
 			$validation->isNotEmpty([
+				'Название' => $name,
 				'Тип' => $type,
 				'Страна-производитель' => $country,
 				'Основная валюта' => $curancy,
@@ -434,6 +449,7 @@ class AdminController extends BaseAdminController
 
 			// Внесенные значения
 			$inputs = [
+				'name' => $name,
 				'type' => $type,
 				'articul' => $articul,
 				'model' => $model,
@@ -451,6 +467,7 @@ class AdminController extends BaseAdminController
 			{
 				$product = new Models\Product();
 
+				$product->name = $name;
 				$product->type = $type;
 				$product->articul = $articul;
 				if ($model)
@@ -488,11 +505,11 @@ class AdminController extends BaseAdminController
 
 				if (Models\Product::isUniqueSeoName($product->seo_name)) // Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
 				{
-					return $this->response->redirect('admin/editproduct/' . $product->_id);
+					return $this->response->redirect('admin/editproduct/' . $product->_id . '/');
 
 				} else // Иначе идем на страницу для редактирования SEO-названия
 				{
-					return $this->response->redirect('admin/editseoname/' . $product->_id);
+					return $this->response->redirect('admin/editseoname/' . $product->_id . '/');
 				}
 
 
@@ -510,8 +527,9 @@ class AdminController extends BaseAdminController
 		echo $this->view->render('admin/products/add');
 	}
 
-	public function editProductAction($id = null)
+	public function editProductAction()
 	{
+		$id = $this->dispatcher->getParams()[0];
 		$this->tag->prependTitle('Редактирование');
 
 		if ($id && strlen($id) == 24) // Если ID есть, обрабатываем запрос
@@ -538,6 +556,7 @@ class AdminController extends BaseAdminController
 		{
 			$inputs = [
 				'seo_name' => $this->request->getPost('seo-name', ['trim', 'striptags']),
+				'name' => $this->request->getPost('name', ['trim', 'striptags']),
 				'type' => $this->request->getPost('type', ['trim', 'striptags']),
 				'articul' => $this->request->getPost('articul', ['trim', 'striptags']),
 				'model' => $this->request->getPost('model', ['trim', 'striptags']),
@@ -548,11 +567,11 @@ class AdminController extends BaseAdminController
 
 			// Устанавливаем соответствующую цену
 			if ($inputs['main_curancy'] == 'eur')
-				$inputs['price_eur'] = $this->request->getPost('price_eur', ['trim', 'striptags']);
+				$inputs['price_eur'] = $this->request->getPost('price', ['trim', 'striptags']);
 			elseif ($inputs['main_curancy'] == 'usd')
-				$inputs['price_usd'] = $this->request->getPost('price_usd', ['trim', 'striptags']);
+				$inputs['price_usd'] = $this->request->getPost('price', ['trim', 'striptags']);
 			elseif ($inputs['main_curancy'] == 'uah')
-				$inputs['price_uah'] = $this->request->getPost('price_uah', ['trim', 'striptags']);
+				$inputs['price_uah'] = $this->request->getPost('price', ['trim', 'striptags']);
 
 			$inputs['short_description'] = $this->request->getPost('short_desc', ['trim']);
 			$inputs['full_description'] = $this->request->getPost('full_desc', ['trim']);
@@ -563,6 +582,7 @@ class AdminController extends BaseAdminController
 			$validation = new \App\Validation();
 
 			$validation->isNotEmpty([
+				'Название' => $inputs['name'],
 				'Тип' => $inputs['type'],
 				'Страна-производитель' => $inputs['country'],
 				'Основная валюта' => $inputs['main_curancy']
@@ -607,8 +627,8 @@ class AdminController extends BaseAdminController
 			}
 			elseif ($inputs['main_curancy'] == 'uah')
 			{
-				if ($validation->isFloat(['Цена' => $inputs['price_usd']], true))
-					$inputs['price_usd'] = preg_replace('/,/', '.', $inputs['price_usd']); // меняем "," на "."
+				if ($validation->isFloat(['Цена' => $inputs['price_uah']], true))
+					$inputs['price_usd'] = preg_replace('/,/', '.', $inputs['price_uah']); // меняем "," на "."
 			}
 
 			if (!Models\Product::isUniqueSeoName($inputs['seo_name']))
@@ -617,6 +637,7 @@ class AdminController extends BaseAdminController
 			// Если пройдена вся валидация
 			if ($validation->validate())
 			{
+				$productObj->name = $inputs['name'];
 				$productObj->type = $inputs['type'];
 				$productObj->articul = $inputs['articul'];
 				if ($inputs['model'])
@@ -674,8 +695,26 @@ class AdminController extends BaseAdminController
 		echo $this->view->render('admin/products/edit');
 	}
 
-	public function editSeoNameAction($id = null)
+	public function deleteProductAction()
 	{
+		$id = $this->dispatcher->getParams()[0];
+
+		if ($id)
+		{
+			$product = Models\Product::findById($id);
+			$product->delete();
+
+			$this->response->redirect('admin/products');
+
+		} else
+		{
+			$this->response->redirect('admin/products');
+		}
+	}
+
+	public function editSeoNameAction()
+	{
+		$id = $this->dispatcher->getParams()[0];
 		$this->tag->prependTitle('SEO-название');
 
 		if ($id)
@@ -733,8 +772,10 @@ class AdminController extends BaseAdminController
 		echo $this->view->render('admin/products/editseo');
 	}
 
-	public function addCategoryToProductAction($categoryId, $productId)
+	public function addCategoryToProductAction()
 	{
+		$categoryId = $this->dispatcher->getParams()[0];
+		$productId = $this->dispatcher->getParams()[1];
 		if ($this->request->isAjax() && $categoryId && $productId && strlen($categoryId) == 24 && strlen($productId) == 24)
 		{
 			$product = Models\Product::findById($productId);
@@ -753,8 +794,11 @@ class AdminController extends BaseAdminController
 		}
 	}
 
-	public function deleteProductCategoryAction($catId = null, $productId = null)
+	public function deleteProductCategoryAction()
 	{
+		$catId = $this->dispatcher->getParams()[0];
+		$productId = $this->dispatcher->getParams()[1];
+
 		if ($this->request->isAjax())
 		{
 			if ($catId && strlen($catId) == 24 && $productId && strlen($productId) == 24)

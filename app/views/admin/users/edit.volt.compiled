@@ -2,7 +2,7 @@
 <html>
 <?php echo $this->partial('admin/partials/head'); ?>
 <body>
-	<section class="container-fluid">
+	<section class="container-fluid admin">
 		<div class="row-fluid" style="margin-top: 5px">
 			
 	<?php echo $this->partial('admin/partials/menu'); ?>
@@ -19,7 +19,7 @@
 				<?php } ?>
 			<?php } ?>
 		<?php } ?>
-		<form class="form-horizontal" action="/admin/user/<?php echo $user->_id; ?>" method="post">
+		<form class="form-horizontal" action="/admin/user/<?php echo $user->_id; ?>/" method="post">
 			<?php foreach ($user as $key => $value) { ?>
 				<?php if ($key == 'login') { ?>
 					<h2><?php echo $value; ?></h2>
