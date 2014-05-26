@@ -111,7 +111,19 @@
 						<tr>
 							<th>Технические характеристики:</th>
 							<td>
-								<a href="#" class="btn" data-parameter-add="true">Добавить параметр</a>
+								<a href="<?php echo $product['_id']; ?>" class="btn" data-add-param="true">Добавить параметр</a>
+								<ul class="parameters" data-parameters>
+									<?php if (isset($parameters) && $parameters == !$empty) { ?>
+										<?php foreach ($parameters as $key => $value) { ?>
+											<li class="parameters__item">
+												<a href="/admin/deleteparam/<?php echo $product['_id']; ?>/<?php echo $key; ?>/" data-delete-param="true" class="btn btn-mini btn-danger">Удалить параметр</a>
+												<span><?php echo $key; ?></span>
+												<span> - </span>
+												<span><?php echo $value; ?></span>
+											</li>
+										<?php } ?>
+									<?php } ?>
+								</ul>
 							</td>
 						</tr>
 						<tr>
@@ -122,7 +134,7 @@
 									<?php if (isset($productCats) && $productCats == !$empty) { ?>
 										<?php foreach ($productCats as $cat) { ?>
 											<br>
-											<a data-delete-category href="/admin/deleteproductcategory/<?php echo $cat['id']; ?>/<?php echo $id; ?>/" class="btn btn-danger">Удалить</a>
+											<a data-delete-category href="/admin/deleteproductcategory/<?php echo $cat['id']; ?>/<?php echo $id; ?>/" class="btn btn-mini btn-danger">Удалить категорию</a>
 											<span><?php echo $cat['full_name']; ?></span><br>
 										<?php } ?>
 									<?php } ?>

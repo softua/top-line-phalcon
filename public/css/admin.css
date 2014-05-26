@@ -16,3 +16,12 @@
 .admin__categories__item > .btn {
 	margin-right: 10px;
 }
+
+.parameters {
+	margin: 20px 0;
+	list-style: none;
+}
+
+.parameters__item {
+	margin: 10px 0;
+}

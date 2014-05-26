@@ -105,7 +105,19 @@
 						<tr>
 							<th>Технические характеристики:</th>
 							<td>
-								<a href="#" class="btn" data-parameter-add="true">Добавить параметр</a>
+								<a href="{{ product['_id'] }}" class="btn" data-add-param="true">Добавить параметр</a>
+								<ul class="parameters" data-parameters>
+									{% if parameters is defined and parameters is not empty %}
+										{% for key, value in parameters %}
+											<li class="parameters__item">
+												<a href="/admin/deleteparam/{{ product['_id'] }}/{{ key }}/" data-delete-param="true" class="btn btn-mini btn-danger">Удалить параметр</a>
+												<span>{{ key }}</span>
+												<span> - </span>
+												<span>{{ value }}</span>
+											</li>
+										{% endfor %}
+									{% endif %}
+								</ul>
 							</td>
 						</tr>
 						<tr>
@@ -116,7 +128,7 @@
 									{% if productCats is defined and productCats is not empty %}
 										{% for cat in productCats %}
 											<br>
-											<a data-delete-category href="/admin/deleteproductcategory/{{ cat['id'] }}/{{ id }}/" class="btn btn-danger">Удалить</a>
+											<a data-delete-category href="/admin/deleteproductcategory/{{ cat['id'] }}/{{ id }}/" class="btn btn-mini btn-danger">Удалить категорию</a>
 											<span>{{ cat['full_name'] }}</span><br>
 										{% endfor %}
 									{% endif %}

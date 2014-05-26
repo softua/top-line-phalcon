@@ -37,6 +37,24 @@ $(document).ready(function() {
 		admin.deleteProductCategory(e);
 	});
 
+	// Удаление параметра
+	$('body').on('click', '[data-delete-param]', function(e) {
+		e.preventDefault();
+		admin.parameter.deleteParam(e);
+	});
+
+	// Добавление полей для внесения параметров
+	$('body').on('click', '[data-add-param]', function(e) {
+		e.preventDefault();
+		admin.parameter.addFields(e);
+	});
+
+	// Сохранение нового параметра
+	$('body').on('click', '[data-save-parameter]', function(e) {
+		e.preventDefault();
+		admin.parameter.save(e);
+	});
+
 	// Загружаем и открываем категории
 	admin.openCategory = function(e) {
 		var href = $(e.target);
@@ -275,10 +293,88 @@ $(document).ready(function() {
 	admin.parameter = {}; // Объект для работы с дополнительными параметрами
 
 	// Обработка события клика на кнопку "Добавить параметр"
-	admin.parameter.add = function()
+	admin.parameter.add = function(e)
 	{
 		/*$.ajax({
 			url:
 		});*/
+	}
+
+	// Добавление полей для нового параметра
+	admin.parameter.addFields = function(e)
+	{
+		var prodId = $(e.target).attr('href');
+
+		$('[data-fields-for-adding-parameters]').remove(); // удалить предыдущие поля
+
+		$.ajax({
+			url: '/admin/getjsonparameters',
+			type: 'POST',
+			success: function(parameters) {
+				var container = $('<div class="parameters-fields" data-fields-for-adding-parameters="true"></div>');
+				var key = $('<input type="text" name="param_key" data-provide="typeahead" data-items="5" data-source=\'' + parameters + '\' autocomplete="off"/>');
+				var value = $('<input type="text" name="param_value" />');
+				var btn = $('<a class="btn btn-success" href="/admin/addparam/' + prodId + '/" data-save-parameter="true">Сохранить</a>');
+
+				container.append(key, value, btn);
+				$('[data-parameters]').prepend(container);
+			}
+		});
+	}
+
+	// Сохранение нового параметра
+	admin.parameter.save = function(e)
+	{
+		var target = $(e.target);
+		var url = target.attr('href') + '';
+		var paramName = $('[name="param_key"]', '[data-fields-for-adding-parameters]').val();
+		var paramValue = $('[name="param_value"]', '[data-fields-for-adding-parameters]').val();
+
+		var prodId = $('[data-add-param]').attr('href');
+		var paramsList = $('[data-parameters]');
+		var paramsItem = $('<li class="parameters__item"></li>');
+		var deletingAncor = $('<a href="/admin/deleteparam/' + prodId + '/' + paramName + '/" data-delete-param="true" class="btn btn-mini btn-danger">Удалить параметр</a>');
+		var span = $('<span> - </span>');
+		var spanKey = $('<span>' + paramName + '</span>');
+		var spanValue = $('<span>' + paramValue + '</span>');
+
+		$.ajax({
+			url: url + paramName + '/' + paramValue + '/',
+			type: 'POST',
+			dataType: 'JSON',
+			success: function(data) {
+				if (data)
+				{
+					console.log(data);
+					paramsItem.append(deletingAncor, spanKey, span, spanValue);
+					paramsList.append(paramsItem);
+				}
+			},
+			complete: function() {
+				$('[data-fields-for-adding-parameters]').remove();
+			}
+		});
+	}
+
+	// Удаление параметра
+	admin.parameter.deleteParam = function(e)
+	{
+		var $target = $(e.target); // кнопка удаления
+		var href = $target.attr('href'); // ссылка
+		var parent = $target.parent(); // родитель - <li>, который нужно убрать из списка
+
+		// запрос на удаление параметра
+		$.ajax({
+			url: href,
+			type: 'POST',
+			dataType: 'JSON',
+			success: function(data)
+			{
+				if (data)
+				{
+					parent.remove();
+				}
+			}
+		});
 	}
 });

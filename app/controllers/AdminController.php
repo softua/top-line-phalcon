@@ -691,6 +691,7 @@ class AdminController extends BaseAdminController
 		$this->view->types = Models\ProductType::getAllTypesAsString();
 		$this->view->countries = Models\Country::getAllTypesAsString();
 		$this->view->brands = Models\ProductBrands::getAllTypesAsString();
+		$this->view->parameters = $productObj->parameters;
 
 		echo $this->view->render('admin/products/edit');
 	}
@@ -830,5 +831,104 @@ class AdminController extends BaseAdminController
 			echo json_encode(false);
 			return $this->response->redirect('admin');
 		}
+	}
+
+	public function getJsonParametersAction()
+	{
+		if ($this->request->isAjax())
+		{
+			echo Models\ProductParameter::getAllParameters(true);
+
+		} else
+		{
+			$this->response->redirect('admin');
+		}
+	}
+
+	public function addParamAction()
+	{
+		if ($this->request->isAjax())
+		{
+			$prodId = $this->dispatcher->getParams()[0];
+			$paramName = strtolower(strip_tags(trim($this->dispatcher->getParams()[1])));
+			$paramValue = strip_tags(trim($this->dispatcher->getParams()[2]));
+
+			if ($prodId && strlen($prodId) == 24 && $paramName && $paramValue)
+			{
+				Models\ProductParameter::addParameter($paramName); // добавляем название параметра в ощий список
+
+				if ($product = Models\Product::getProductById($prodId))
+				{
+					$isParameterThere = false;
+					foreach ($product->parameters as $key => $value)
+					{
+						if ($key == $paramName)
+						{
+							$isParameterThere = true;
+							break;
+						}
+					}
+
+					if ($isParameterThere)
+					{
+						echo json_encode(false);
+					} else
+					{
+						$product->parameters[$paramName] = $paramValue;
+						$product->save();
+						echo json_encode(true);
+					}
+				}
+
+			} else
+			{
+				echo json_encode(false);
+			}
+		}
+	}
+
+	public function deleteParamAction()
+	{
+		if ($this->request->isAjax())
+		{
+			$prodId = $this->dispatcher->getParams()[0];
+			$paramName = $this->dispatcher->getParams()[1];
+
+			if ($prodId && strlen($prodId) == 24 && $paramName)
+			{
+				if ($product = Models\Product::getProductById($prodId))
+				{
+					foreach ($product->parameters as $key => $value)
+					{
+						if ($key == $paramName)
+						{
+							unset($product->parameters[$key]);
+							break;
+						}
+					}
+
+					if ($product->save())
+					{
+						echo json_encode(true);
+					} else
+					{
+						echo json_encode(false);
+					}
+
+				} else
+				{
+					echo json_encode(false);
+				}
+
+			} else
+			{
+				echo json_encode(false);
+			}
+		} else
+		{
+			$this->response->redirect('admin');
+		}
+
+
 	}
 }
