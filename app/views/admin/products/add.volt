@@ -60,11 +60,33 @@
 								<option value="usd">Доллар США</option>
 								<option value="uah">Гривна</option>
 							</select>
+							<select name="price_alternative">
+								{% if data['price_alternative'] %}
+									<option value="" disabled>Если цена = 0</option>
+								{% else %}
+									<option value="" disabled selected>Если цена = 0</option>
+								{% endif %}
+								{% if data['price_alternative'] and data['price_alternative'] is 'Нет в наличии' %}
+									<option value="Нет в наличии" selected>Нет в наличии</option>
+								{% else %}
+									<option value="Нет в наличии">Нет в наличии</option>
+								{% endif %}
+								{% if data['price_alternative'] and data['price_alternative'] is 'Под заказ' %}
+									<option value="Под заказ" selected>Под заказ</option>
+								{% else %}
+									<option value="Под заказ">Под заказ</option>
+								{% endif %}
+								{% if data['price_alternative'] and data['price_alternative'] is 'Еще какой-то вариант' %}
+									<option value="Еще какой-то вариант" selected>Еще какой-то вариант</option>
+								{% else %}
+									<option value="Еще какой-то вариант">Еще какой-то вариант</option>
+								{% endif %}
+							</select>
 						</td>
 					</tr>
 					<tr>
 						<th><label for="short_desc">Короткое описание:</label></th>
-						<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10"></textarea>{{ data['short_description'] }}</td>
+						<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10">{{ data['short_description'] }}</textarea></td>
 					</tr>
 					<tr>
 						<th><label for="full_desc">Полное описание:</label></th>

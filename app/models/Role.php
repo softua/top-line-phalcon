@@ -1,11 +1,11 @@
 <?
 namespace App\Models;
 
-class Users extends \Phalcon\Mvc\Collection
+class Role extends \Phalcon\Mvc\Model
 {
 
 	public function getSource()
 	{
-		return 'users';
+		return 'roles';
 	}
 }

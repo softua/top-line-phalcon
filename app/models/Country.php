@@ -7,7 +7,7 @@
 
 namespace App\Models;
 
-class Country extends \Phalcon\Mvc\Collection
+class Country extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
@@ -42,9 +42,10 @@ class Country extends \Phalcon\Mvc\Collection
 	{
 		if ($country)
 		{
-			$countries = Country::find([
-				'conditions' => ['name' => $country]
-			]);
+			$countries = Country::query()
+				->where('name = :country:')
+				->bind(['country' => $country])
+				->execute();
 
 			if (count($countries) < 1)
 			{
@@ -54,4 +55,4 @@ class Country extends \Phalcon\Mvc\Collection
 			}
 		}
 	}
-} 
+}

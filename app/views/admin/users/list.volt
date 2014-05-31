@@ -30,15 +30,17 @@
 					<td>{{ user.login }}</td>
 					<td>{{ user.name }}</td>
 					<td>
-						{% for role in roles %}
-							{% if role._id == user.role %}
-								{{ role.description }}
-							{% endif %}
-						{% endfor %}
+						{% if user.role_id %}
+							{% for role in roles %}
+								{% if user.role_id is role.id %}
+									{{ role.description }}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
 					</td>
 					<td>
-						<a class="btn" href="/admin/user/{{ user._id }}/" title="Редактировать пользователя">Редактировать</a>
-						<a class="btn btn-danger" href="/admin/deleteUser/{{ user._id }}/" title="Удалить пользователя">Удалить</a>
+						<a class="btn" href="/admin/user/{{ user.id }}/" title="Редактировать пользователя">Редактировать</a>
+						<a class="btn btn-danger" href="/admin/deleteUser/{{ user.id }}/" title="Удалить пользователя">Удалить</a>
 					</td>
 				</tr>
 			{% endfor %}

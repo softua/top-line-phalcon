@@ -1,0 +1,176 @@
+@font-face {
+  font-family: 'segoe_uiregular';
+  src: url("/public_html/fonts/segoeui-webfont.eot");
+  src: url("/public_html/fonts/segoeui-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public_html/fonts/segoeui-webfont.woff") format('woff');
+  src: url("/public_html/fonts/segoeui-webfont.ttf") format('truetype');
+  src: url("/public_html/fonts/segoeui-webfont.svg#segoe_uiregular") format('svg');
+}
+@font-face {
+  font-family: 'segoe_uibold';
+  src: url("/public_html/fonts/segoeuib-webfont.eot");
+  src: url("/public_html/fonts/segoeuib-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public_html/fonts/segoeuib-webfont.woff") format('woff');
+  src: url("/public_html/fonts/segoeuib-webfont.ttf") format('truetype');
+  src: url("/public_html/fonts/segoeuib-webfont.svg#segoe_uibold") format('svg');
+}
+@font-face {
+  font-family: 'segoe_uiitalic';
+  src: url("/public_html/fonts/segoeuii-webfont.eot");
+  src: url("/public_html/fonts/segoeuii-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public_html/fonts/segoeuii-webfont.woff") format('woff');
+  src: url("/public_html/fonts/segoeuii-webfont.ttf") format('truetype');
+  src: url("/public_html/fonts/segoeuii-webfont.svg#segoe_uiitalic") format('svg');
+}
+@font-face {
+  font-family: 'segoe_uilight';
+  src: url("/public_html/fonts/segoeuil-webfont.eot");
+  src: url("/public_html/fonts/segoeuil-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public_html/fonts/segoeuil-webfont.woff") format('woff');
+  src: url("/public_html/fonts/segoeuil-webfont.ttf") format('truetype');
+  src: url("/public_html/fonts/segoeuil-webfont.svg#segoe_uilight") format('svg');
+}
+@font-face {
+  font-family: 'segoe_uibold_italic';
+  src: url("/public_html/fonts/segoeuiz-webfont.eot");
+  src: url("/public_html/fonts/segoeuiz-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public_html/fonts/segoeuiz-webfont.woff") format('woff');
+  src: url("/public_html/fonts/segoeuiz-webfont.ttf") format('truetype');
+  src: url("/public_html/fonts/segoeuiz-webfont.svg#segoe_uibold_italic") format('svg');
+}
+@font-face {
+  font-family: 'segoe_uisemibold';
+  src: url("/public_html/fonts/seguisb-webfont.eot");
+  src: url("/public_html/fonts/seguisb-webfont.eot?#iefix") format('embedded-opentype');
+  src: url("/public_html/fonts/seguisb-webfont.woff") format('woff');
+  src: url("/public_html/fonts/seguisb-webfont.ttf") format('truetype');
+  src: url("/public_html/fonts/seguisb-webfont.svg#segoe_uisemibold") format('svg');
+}
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquotebefore,
+blockquoteafter,
+qbefore,
+qafter {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+body {
+  line-height: 1;
+  font: 14px Segoe UI, segoe_uiregular, Lucida Grande, Helvetica, Arial, sans-serif;
+  background: url("images/bg.png");
+}
+a {
+  color: #00b7ff;
+}

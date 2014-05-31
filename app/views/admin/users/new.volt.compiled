@@ -2,7 +2,7 @@
 <html>
 <?php echo $this->partial('admin/partials/head'); ?>
 <body>
-	<section class="container-fluid">
+	<section class="container-fluid admin">
 		<div class="row-fluid" style="margin-top: 5px">
 			
 		</div>
@@ -27,7 +27,7 @@
 			<select name="role" id="role">
 				<option value="">Выберите права...</option>
 				<?php foreach ($roles as $role) { ?>
-					<option value="<?php echo $role->_id; ?>"><?php echo $role->description; ?></option>
+					<option value="<?php echo $role->id; ?>"><?php echo $role->description; ?></option>
 				<?php } ?>
 			</select>
 			<?php echo $this->tag->submitButton(array('Создать', 'class' => 'btn btn-success')); ?>

@@ -6,7 +6,15 @@
 $(document).ready(function() {
 
 	tinymce.init({
-		selector: '.tinymce'
+		selector: '.tinymce',
+		element_format: 'html',
+		language: 'ru',
+		menu : {
+			file   : {title : 'File'  , items : 'newdocument | undo redo | cut copy paste pastetext | selectall | removeformat'},
+			insert : {title : 'Insert', items : 'link media | template hr'},
+			table  : {title : 'Table' , items : 'inserttable tableprops deletetable | cell row column'},
+			tools  : {title : 'Tools' , items : 'spellchecker code'}
+		}
 	});
 
 	var admin = {};
@@ -71,7 +79,7 @@ $(document).ready(function() {
 					if(data != null) {
 						innerList.empty();
 						for(var i = 0; i < data.length; i++) {
-							innerList.append('<li class="admin__categories__item" data-category-id="' + data[i]._id.$id + '"><a href="/admin/getproducts/' + data[i]._id.$id + '/" data-action="open" data-editing="false">' + data[i].name + '</a><ul class="admin__categories admin__categories--hidden"></ul></li>');
+							innerList.append('<li class="admin__categories__item" data-category-id="' + data[i].id + '"><a href="/admin/getproducts/' + data[i].id + '/" data-action="open" data-editing="false">' + data[i].name + '</a><ul class="admin__categories admin__categories--hidden"></ul></li>');
 						}
 						innerList.removeClass('admin__categories--hidden');
 					} else {
@@ -102,7 +110,7 @@ $(document).ready(function() {
 					if(data != null) {
 						innerList.empty();
 						for(var i = 0; i < data.length; i++) {
-							innerList.append('<li class="admin__categories__item" data-category-id="' + data[i]._id.$id + '"><a href="/" class="btn btn-mini btn-primary" data-action="open" data-editing="true">+</a><a href="/admin/editcategory/' + data[i]._id.$id + '/" title="Редактировать">' + data[i].name + ' (' + 'SEO - ' + data[i].seo + ', sort = ' + data[i].sort + ')' + '</a><ul class="admin__categories admin__categories--hidden"><li class="admin__categories__item"><a href="/admin/addcategory/' + data[i]._id.$id + '/" class="btn btn-success">Добавить категорию</a></li></ul></li>');
+							innerList.append('<li class="admin__categories__item" data-category-id="' + data[i].id + '"><a href="/" class="btn btn-mini btn-primary" data-action="open" data-editing="true">+</a><a href="/admin/editcategory/' + data[i].id + '/" title="Редактировать">' + data[i].name + ' (' + 'SEO - ' + data[i].seo_name + ', sort = ' + data[i].sort + ')' + '</a><ul class="admin__categories admin__categories--hidden"><li class="admin__categories__item"><a href="/admin/addcategory/' + data[i].id + '/" class="btn btn-success">Добавить категорию</a></li></ul></li>');
 						}
 
 						innerList.append('<li class="admin__categories__item"><a href="/admin/addcategory/' + parentId + '/" class="btn btn-success">Добавить категорию</a></li>');
@@ -121,7 +129,7 @@ $(document).ready(function() {
 	// Показывает товары соответствующей категории
 	admin.showProductsInCategory = function(id) {
 
-		if (id.length == 24)
+		if (id)
 		{
 			$.ajax({
 				url: '/admin/getproducts/' + id + '/',
@@ -129,6 +137,7 @@ $(document).ready(function() {
 				dataType: 'JSON',
 				success: function(prods)
 				{
+					console.warn(prods);
 					if (prods)
 					{
 						$('.products').empty();
@@ -160,7 +169,7 @@ $(document).ready(function() {
 							else
 								var pub = 'Не показывать';
 
-							var editBtn = '<a href="/admin/editproduct/' + prods[i]._id.$id + '/" class="btn">Редактировать</a>';
+							var editBtn = '<a href="/admin/editproduct/' + prods[i].id + '/" class="btn">Редактировать</a>';
 
 								$('table tbody', '.products').append('<tr><td>' + i + '</td><td>' + type + '</td><td>' + articul + '</td><td>' + model + '</td><td>' + brand + '</td><td>' + price + '</td><td>' + pub + '</td><td>' + editBtn + '</td></tr>');
 						}
@@ -197,7 +206,7 @@ $(document).ready(function() {
 
 		for (var i = 0; i < mainCats.length; i++)
 		{
-			var option = $('<option value="' + mainCats[i]._id.$id + '">' + mainCats[i].name + '</option>');
+			var option = $('<option value="' + mainCats[i].id + '">' + mainCats[i].name + '</option>');
 			select.append(option);
 		}
 
@@ -230,7 +239,7 @@ $(document).ready(function() {
 
 			for (var i = 0; i < result.length; i++)
 			{
-				var option = $('<option value="' + result[i]._id.$id + '">' + result[i].name + '</option>');
+				var option = $('<option value="' + result[i].id + '">' + result[i].name + '</option>');
 				select.append(option);
 			}
 
@@ -292,14 +301,6 @@ $(document).ready(function() {
 
 	admin.parameter = {}; // Объект для работы с дополнительными параметрами
 
-	// Обработка события клика на кнопку "Добавить параметр"
-	admin.parameter.add = function(e)
-	{
-		/*$.ajax({
-			url:
-		});*/
-	}
-
 	// Добавление полей для нового параметра
 	admin.parameter.addFields = function(e)
 	{
@@ -313,7 +314,7 @@ $(document).ready(function() {
 			success: function(parameters) {
 				var container = $('<div class="parameters-fields" data-fields-for-adding-parameters="true"></div>');
 				var key = $('<input type="text" name="param_key" data-provide="typeahead" data-items="5" data-source=\'' + parameters + '\' autocomplete="off"/>');
-				var value = $('<input type="text" name="param_value" />');
+				var value = $('<input type="text" name="param_value" data-provide="typeahead" data-items="5" data-source=\'' + parameters + '\' autocomplete="off"/>');
 				var btn = $('<a class="btn btn-success" href="/admin/addparam/' + prodId + '/" data-save-parameter="true">Сохранить</a>');
 
 				container.append(key, value, btn);
@@ -333,19 +334,19 @@ $(document).ready(function() {
 		var prodId = $('[data-add-param]').attr('href');
 		var paramsList = $('[data-parameters]');
 		var paramsItem = $('<li class="parameters__item"></li>');
-		var deletingAncor = $('<a href="/admin/deleteparam/' + prodId + '/' + paramName + '/" data-delete-param="true" class="btn btn-mini btn-danger">Удалить параметр</a>');
+		var deletingAncor = $('<a href="/admin/deleteparam/' + prodId + '/" data-delete-param="true" data-param-name="' + paramName + '" class="btn btn-mini btn-danger">Удалить параметр</a>');
 		var span = $('<span> - </span>');
 		var spanKey = $('<span>' + paramName + '</span>');
 		var spanValue = $('<span>' + paramValue + '</span>');
 
 		$.ajax({
-			url: url + paramName + '/' + paramValue + '/',
+			url: url,
 			type: 'POST',
 			dataType: 'JSON',
+			data: 'key=' + paramName + '&value=' + paramValue,
 			success: function(data) {
 				if (data)
 				{
-					console.log(data);
 					paramsItem.append(deletingAncor, spanKey, span, spanValue);
 					paramsList.append(paramsItem);
 				}
@@ -367,6 +368,7 @@ $(document).ready(function() {
 		$.ajax({
 			url: href,
 			type: 'POST',
+			data: 'param-name=' + $target.data('param-name'),
 			dataType: 'JSON',
 			success: function(data)
 			{

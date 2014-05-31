@@ -7,7 +7,7 @@
 
 namespace App\Models;
 
-class Category extends \Phalcon\Mvc\Collection
+class Category extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
@@ -16,10 +16,10 @@ class Category extends \Phalcon\Mvc\Collection
 
 	public static  function getMainCategories()
 	{
-		$mainCats = Category::find([
-			'conditions' => ['parent' => '0'],
-			'sort' => ['sort' => 1, 'name' => 1]
-		]);
+		$mainCats = Category::query()
+			->where('parent_id = 0')
+			->orderBy('sort, name')
+			->execute();
 
 		if(count($mainCats) > 0)
 			return $mainCats;
@@ -29,9 +29,9 @@ class Category extends \Phalcon\Mvc\Collection
 
 	public static function getAllCategories()
 	{
-		$cats = Category::find([
-			'sort' => ['sort' => 1, 'name' => 1]
-		]);
+		$cats = Category::query()
+			->order('sort, name')
+			->execute();
 
 		if (count($cats) > 0)
 			return $cats;
@@ -44,21 +44,30 @@ class Category extends \Phalcon\Mvc\Collection
 		if($parentId == 0)
 			return null;
 
-		$result = Category::find([
-			'conditions' => ['parent' => $parentId],
-			'sort' => ['sort' => 1, 'name' => 1]
-		]);
+		$result = Category::query()
+			->where('parent_id = :parentId:')
+			->bind(['parentId' => $parentId])
+			->order('sort, name')
+			->execute();
 
+		$arrayResult = [];
 		if(count($result) > 0)
-			return $result;
+		{
+			foreach ($result as $cat)
+			{
+				$arrayResult[] = $cat;
+			}
+
+			return $arrayResult;
+		}
 		else
 			return null;
 	}
 
 	public static function getCategory($id)
 	{
-		if($id != 0) {
-			$category = Category::findById($id);
+		if($id) {
+			$category = Category::findFirst($id);
 			if(count($category) > 0)
 				return $category;
 			else return null;
@@ -73,10 +82,10 @@ class Category extends \Phalcon\Mvc\Collection
 		$index = 0;
 
 		function recursiveGetParent($id, &$array) {
-			$cat = Category::findById($id);
+			$cat = Category::find($id);
 			array_unshift($array, $cat->name);
-			if($cat->parent != 0)
-				recursiveGetParent($cat->parent, $array);
+			if($cat->parent_id != 0)
+				recursiveGetParent($cat->parent_id, $array);
 		}
 
 		if($parentId == 0) {
@@ -100,7 +109,7 @@ class Category extends \Phalcon\Mvc\Collection
 
 	public static function getCategoryWithFullName($id)
 	{
-		if ($id)
+		if ($id && preg_match('/\d+/', $id))
 		{
 			$flag = true;
 			$resultArray = [];
@@ -108,13 +117,13 @@ class Category extends \Phalcon\Mvc\Collection
 
 			while($flag)
 			{
-				if (!$result[count($result)-1]->parent || $result[count($result)-1]->parent == '0')
+				if (!$result[count($result)-1]->parent_id || $result[count($result)-1]->parent_id == '0')
 				{
 					$flag = false;
 					break;
 				} else
 				{
-					$result[] = Category::getCategory($result[count($result)-1]->parent);
+					$result[] = Category::getCategory($result[count($result)-1]->parent_id);
 				}
 			}
 
@@ -125,9 +134,9 @@ class Category extends \Phalcon\Mvc\Collection
 			{
 				if ($i == count($result) - 1)
 				{
-					$resultArray['id'] = (string)$result[$i]->_id;
-					$resultArray['parent'] = $result[$i]->parent;
-					$resultArray['seo'] = $result[$i]->seo;
+					$resultArray['id'] = $result[$i]->id;
+					$resultArray['parent'] = $result[$i]->parent_id;
+					$resultArray['seo'] = $result[$i]->seo_name;
 					$resultArray['sort'] = $result[$i]->sort;
 					$resultArray['name'] = $result[$i]->name;
 					$resultArray['full_name'] .= $result[$i]->name;

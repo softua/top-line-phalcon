@@ -5,7 +5,8 @@
  * Time: 13:53
  */
 
-$di->set('router', function() {
+$di['router'] = function()
+{
 	$router = new \Phalcon\Mvc\Router(false);
 
 	$router->setDefaults([
@@ -43,4 +44,4 @@ $di->set('router', function() {
 	);
 
 	return $router;
-});
+};

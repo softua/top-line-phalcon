@@ -39,15 +39,17 @@
 					<td><?php echo $user->login; ?></td>
 					<td><?php echo $user->name; ?></td>
 					<td>
-						<?php foreach ($roles as $role) { ?>
-							<?php if ($role->_id == $user->role) { ?>
-								<?php echo $role->description; ?>
+						<?php if ($user->role_id) { ?>
+							<?php foreach ($roles as $role) { ?>
+								<?php if ($user->role_id == $role->id) { ?>
+									<?php echo $role->description; ?>
+								<?php } ?>
 							<?php } ?>
 						<?php } ?>
 					</td>
 					<td>
-						<a class="btn" href="/admin/user/<?php echo $user->_id; ?>/" title="Редактировать пользователя">Редактировать</a>
-						<a class="btn btn-danger" href="/admin/deleteUser/<?php echo $user->_id; ?>/" title="Удалить пользователя">Удалить</a>
+						<a class="btn" href="/admin/user/<?php echo $user->id; ?>/" title="Редактировать пользователя">Редактировать</a>
+						<a class="btn btn-danger" href="/admin/deleteUser/<?php echo $user->id; ?>/" title="Удалить пользователя">Удалить</a>
 					</td>
 				</tr>
 			<?php $v6574623411incr++; } ?>

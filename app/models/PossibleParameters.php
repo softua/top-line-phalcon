@@ -8,11 +8,11 @@
 namespace App\Models;
 
 
-class ProductParameter extends \Phalcon\Mvc\Collection
+class PossibleParameters extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
-		return 'product_parameters';
+		return 'possible_params';
 	}
 
 	/**
@@ -22,9 +22,9 @@ class ProductParameter extends \Phalcon\Mvc\Collection
 	 */
 	public static function getAllParameters($needJson = false)
 	{
-		$paramsObjs = ProductParameter::find([
-			'sort' => ['name' => 1]
-		]);
+		$paramsObjs = PossibleParameters::query()
+			->order('name')
+			->execute();
 
 		if ($needJson)
 		{
@@ -46,7 +46,7 @@ class ProductParameter extends \Phalcon\Mvc\Collection
 
 	public static function addParameter($paramName)
 	{
-		$params = ProductParameter::find();
+		$params = PossibleParameters::find();
 		$result = 0;
 
 		foreach ($params as $param)
@@ -60,9 +60,9 @@ class ProductParameter extends \Phalcon\Mvc\Collection
 
 		if ($result == 0)
 		{
-			$parameter = new ProductParameter();
+			$parameter = new PossibleParameters();
 			$parameter->name = $paramName;
 			$parameter->save();
 		}
 	}
-} 
+}

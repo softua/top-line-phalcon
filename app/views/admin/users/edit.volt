@@ -13,7 +13,7 @@
 				{% endfor %}
 			{% endfor %}
 		{% endif %}
-		<form class="form-horizontal" action="/admin/user/{{ user._id }}/" method="post">
+		<form class="form-horizontal" action="/admin/user/{{ user.id }}/" method="post">
 			{% for key, value in user %}
 				{% if key is 'login' %}
 					<h2>{{ value }}</h2>
@@ -24,7 +24,7 @@
 							<input type="text" name="{{ key }}" id="{{ key }}" value="{{ value }}">
 						</div>
 					</div>
-				{% elseif key is 'password' or key is '_id' %}
+				{% elseif key is 'password' or key is 'id' %}
 					{% continue %}
 				{% elseif key is 'email' %}
 					<div class="control-group">
@@ -33,16 +33,16 @@
 							<input type="text" name="{{ key }}" id="{{ key }}" value="{{ value }}">
 						</div>
 					</div>
-				{% elseif key is 'role' %}
+				{% elseif key is 'role_id' %}
 					<div class="control-group">
 						<label class="control-label" for="{{ key }}">Права:</label>
 						<div class="controls">
 							<select name="{{ key }}" id="{{ key }}">
 								{% for role in roles %}
-									{% if role._id == value %}
-										<option selected value="{{ role._id }}">{{ role.description }}</option>
+									{% if role.id == value %}
+										<option selected value="{{ role.id }}">{{ role.description }}</option>
 									{% else %}
-										<option value="{{ role._id }}">{{ role.description }}</option>
+										<option value="{{ role.id }}">{{ role.description }}</option>
 									{% endif %}
 								{% endfor %}
 							</select>

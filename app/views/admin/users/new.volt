@@ -19,7 +19,7 @@
 			<select name="role" id="role">
 				<option value="">Выберите права...</option>
 				{% for role in roles %}
-					<option value="{{ role._id }}">{{ role.description }}</option>
+					<option value="{{ role.id }}">{{ role.description }}</option>
 				{% endfor %}
 			</select>
 			{{ submit_button('Создать', 'class': 'btn btn-success') }}

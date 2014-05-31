@@ -7,16 +7,16 @@
 
 namespace App\Models;
 
-class ProductBrands extends \Phalcon\Mvc\Collection
+class PossibleBrands extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
-		return 'product_brands';
+		return 'possible_brands';
 	}
 
 	public static function getAllTypes()
 	{
-		$brands = ProductBrands::find();
+		$brands = PossibleBrands::find();
 
 		if(count($brands) > 0) return $brands;
 		else return null;
@@ -42,16 +42,18 @@ class ProductBrands extends \Phalcon\Mvc\Collection
 	{
 		if ($brand)
 		{
-			$brands = ProductBrands::find([
-				'conditions' => ['name' => $brand]
+
+			$brands = PossibleBrands::find([
+				'name = :name:',
+				'bind' => ['name' => $brand]
 			]);
 
 			if (count($brands) < 1)
 			{
-				$newBrand = new ProductBrands();
+				$newBrand = new PossibleBrands();
 				$newBrand->name = $brand;
 				$newBrand->save();
 			}
 		}
 	}
-} 
+}

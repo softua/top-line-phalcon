@@ -8,7 +8,7 @@
 namespace App\Models;
 
 
-class Product extends \Phalcon\Mvc\Collection
+class Product extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
@@ -29,7 +29,12 @@ class Product extends \Phalcon\Mvc\Collection
 			'conditions' => ['seo_name' => $name]
 		]);
 
-		if (count($products) > 1)
+		$products = Product::query()
+			->where('seo_name = :name:')
+			->bind(['name' => $name])
+			->execute();
+
+		if ($products->count() > 1)
 			return false;
 		else
 			return true;
@@ -47,7 +52,10 @@ class Product extends \Phalcon\Mvc\Collection
 		if ($product->brand)
 			$seoNameArray[] = $product->brand;
 		else
-			$seoNameArray[] = $product->country;
+		{
+			$country = Country::findFirst($product->country_id);
+			$seoNameArray[] = $country->name;
+		}
 
 		if ($product->articul != $product->model)
 			$seoNameArray[] = $product->model;
@@ -66,9 +74,9 @@ class Product extends \Phalcon\Mvc\Collection
 	 */
 	public static function getProductById($id)
 	{
-		if ($id && strlen($id) == 24)
+		if ($id)
 		{
-			$product = Product::findById($id);
+			$product = Product::findFirst($id);
 
 			if (count($product) > 0)
 				return $product;
@@ -78,29 +86,49 @@ class Product extends \Phalcon\Mvc\Collection
 	}
 
 	/**
-	 * @param string|null $categoryId
-	 * @return [Product]|null Возвращает товары
+	 * @param int|null $categoryId
+	 * @return Product[]|null Возвращает товары
 	 */
 	public static function getProducts($categoryId = null)
 	{
 		if ($categoryId)
 		{
-			$products = Product::find([
-				'conditions' => ['categories' => $categoryId]
+			$productIds = ProductCategory::find([
+				'category_id = ?1',
+				'bind' => [1 => $categoryId]
 			]);
 
-			if (count($products) > 0)
+			if (count($productIds))
+			{
+				$products = [];
+				foreach ($productIds as $productId)
+				{
+					$tempProduct = Product::findFirst($productId->product_id);
+
+					if ($tempProduct)
+						$products[] = $tempProduct;
+				}
+
 				return $products;
+			}
 			else
 				return null;
 		} else
 		{
-			$products = Product::find();
+			$tempProducts = Product::find();
 
-			if (count($products) > 0)
+			if (count($tempProducts))
+			{
+				$products = [];
+				foreach ($tempProducts as $product)
+				{
+					$products[] = $product;
+				}
+
 				return $products;
+			}
 			else
 				return null;
 		}
 	}
-} 
+}

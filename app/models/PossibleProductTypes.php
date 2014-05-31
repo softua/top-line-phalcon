@@ -7,16 +7,16 @@
 
 namespace App\Models;
 
-class ProductType extends \Phalcon\Mvc\Collection
+class PossibleProductTypes extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
-		return 'product_types';
+		return 'possible_product_types';
 	}
 
 	public static function getAllTypes()
 	{
-		$types = ProductType::find();
+		$types = PossibleProductTypes::find();
 
 		if(count($types) > 0) return $types;
 		else return null;
@@ -41,13 +41,14 @@ class ProductType extends \Phalcon\Mvc\Collection
 	{
 		if ($type)
 		{
-			$types = ProductType::find([
-				'conditions' => ['name' => $type]
-			]);
+			$types = PossibleProductTypes::query()
+				->where('name = :name:')
+				->bind(['name' => $type])
+				->execute();
 
 			if (count($types) < 1)
 			{
-				$newType = new ProductType();
+				$newType = new PossibleProductTypes();
 				$newType->name = $type;
 				$newType->save();
 			}

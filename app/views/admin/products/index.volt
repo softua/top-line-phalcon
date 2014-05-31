@@ -8,8 +8,8 @@
 	{% if mainCategories is defined and mainCategories is not null %}
 		<ul class="admin__catogories">
 			{% for category in mainCategories %}
-				<li class="admin__categories__item" data-category-id="{{ category._id }}">
-					<a href="/admin/getproducts/{{ category._id }}/" data-action="open" data-editing="false">{{ category.name }}</a>
+				<li class="admin__categories__item" data-category-id="{{ category.id }}">
+					<a href="/admin/getproducts/{{ category.id }}/" data-action="open" data-editing="false">{{ category.name }}</a>
 					<ul class="admin__categories admin__categories--hidden"></ul>
 				</li>
 			{% endfor %}
@@ -64,7 +64,7 @@
 						{% else %}
 							<td>Не показывать</td>
 						{% endif %}
-						<td><a href="/admin/editproduct/{{ product._id }}/" class="btn">Редактировать</a></td>
+						<td><a href="/admin/editproduct/{{ product.id }}/" class="btn">Редактировать</a></td>
 					</tr>
 				{% endfor %}
 			</tbody>

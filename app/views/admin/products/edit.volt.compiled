@@ -13,13 +13,20 @@
 			
 	<div class="span12">
 		<a class="btn btn-primary" href="/admin/products">Вернуться к списку</a>
-		<?php if (isset($product) && $product == !null) { ?>
+		<?php if (isset($data) && $data == !null) { ?>
 
 			<h2>Редактирование товара</h2>
 			<?php if (isset($success) && $success == !null) { ?>
 				<div class="alert alert-success">
 					<button type="button" class="close" data-dismiss="alert">&times;</button>
 					<h4>Поздравляем!</h4><?php echo $success; ?>
+				</div>
+			<?php } ?>
+
+			<?php if (isset($alert) && $alert == !null) { ?>
+				<div class="alert alert-success">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<h4>Внимание!</h4><?php echo $alert; ?>
 				</div>
 			<?php } ?>
 
@@ -37,73 +44,86 @@
 						<tr>
 							<th><label for="seo-name">SEO название</label></th>
 							<td>
-								<input type="text" name="seo-name" id="seo-name" value="<?php echo $product['seo_name']; ?>"/>
+								<input type="text" name="seo-name" id="seo-name" value="<?php echo $data['seo_name']; ?>"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="name">Название</label></th>
 							<td>
-								<input type="text" name="name" id="name" value="<?php echo $product['name']; ?>"/>
+								<input type="text" name="name" id="name" value="<?php echo $data['name']; ?>"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="type">Тип:</label></th>
 							<td>
-								<input type="text" name="type" value="<?php echo $product['type']; ?>" id="type" data-provide="typeahead" data-items="5" data-source='<?php echo $types; ?>' autocomplete="off"/>
+								<input type="text" name="type" value="<?php echo $data['type']; ?>" id="type" data-provide="typeahead" data-items="5" data-source='<?php echo $types; ?>' autocomplete="off"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="articul">Артикул:</label></th>
 							<td>
-								<input type="text" name="articul" value="<?php echo $product['articul']; ?>" id="articul"/>
+								<input type="text" name="articul" value="<?php echo $data['articul']; ?>" id="articul"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="model">Модель:</label></th>
 							<td>
-								<input type="text" name="model" value="<?php echo $product['model']; ?>" id="model"/>
+								<input type="text" name="model" value="<?php echo $data['model']; ?>" id="model"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="country">Страна-производитель:</label></th>
 							<td>
-								<input type="text" name="country" value="<?php echo $product['country']; ?>" id="country" data-provide="typeahead" data-items="5" data-source='<?php echo $countries; ?>' autocomplete="off"/>
+								<input type="text" name="country" value="<?php echo $data['country']; ?>" id="country" data-provide="typeahead" data-items="5" data-source='<?php echo $countries; ?>' autocomplete="off"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="brand">Бренд:</label></th>
 							<td>
-								<input type="text" name="brand" value="<?php echo $product['brand']; ?>" id="brand" data-provide="typeahead" data-items="5" data-source='<?php echo $brands; ?>' autocomplete="off"/>
+								<input type="text" name="brand" value="<?php echo $data['brand']; ?>" id="brand" data-provide="typeahead" data-items="5" data-source='<?php echo $brands; ?>' autocomplete="off"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="price">Цена:</label></th>
 							<td>
-								<?php if ($product['main_curancy'] == 'eur') { ?>
-									<input type="text" name="price" value="<?php echo $product['price_eur']; ?>" id="price"/>
-								<?php } ?>
-								<?php if ($product['main_curancy'] == 'usd') { ?>
-									<input type="text" name="price" value="<?php echo $product['price_usd']; ?>" id="price"/>
-								<?php } ?>
-								<?php if ($product['main_curancy'] == 'uah') { ?>
-									<input type="text" name="price" value="<?php echo $product['price_uah']; ?>" id="price"/>
-								<?php } ?>
-
+								<input type="text" name="price" value="<?php echo $data['price']; ?>" id="price"/>
 								<select name="main_curancy">
-									<?php if ($product['main_curancy'] == 'eur') { ?>
+									<?php if ($data['main_curancy'] == 'eur') { ?>
 										<option value="eur" selected>Евро</option>
 									<?php } else { ?>
 										<option value="eur">Евро</option>
 									<?php } ?>
-									<?php if ($product['main_curancy'] == 'usd') { ?>
+									<?php if ($data['main_curancy'] == 'usd') { ?>
 										<option value="usd" selected>Доллар США</option>
 									<?php } else { ?>
 										<option value="usd">Доллар США</option>
 									<?php } ?>
-									<?php if ($product['main_curancy'] == 'uah') { ?>
+									<?php if ($data['main_curancy'] == 'uah') { ?>
 										<option value="uah" selected>Гривна</option>
 									<?php } else { ?>
 										<option value="uah">Гривна</option>
+									<?php } ?>
+								</select>
+								<select name="price_alternative">
+									<?php if ($data['price_alternative']) { ?>
+										<option value="" disabled>Если цена = 0</option>
+									<?php } else { ?>
+										<option value="" disabled selected>Если цена = 0</option>
+									<?php } ?>
+									<?php if ($data['price_alternative'] && $data['price_alternative'] == 'Нет в наличии') { ?>
+										<option value="Нет в наличии" selected>Нет в наличии</option>
+									<?php } else { ?>
+										<option value="Нет в наличии">Нет в наличии</option>
+									<?php } ?>
+									<?php if ($data['price_alternative'] && $data['price_alternative'] == 'Под заказ') { ?>
+										<option value="Под заказ" selected>Под заказ</option>
+									<?php } else { ?>
+										<option value="Под заказ">Под заказ</option>
+									<?php } ?>
+									<?php if ($data['price_alternative'] && $data['price_alternative'] == 'Еще какой-то вариант') { ?>
+										<option value="Еще какой-то вариант" selected>Еще какой-то вариант</option>
+									<?php } else { ?>
+										<option value="Еще какой-то вариант">Еще какой-то вариант</option>
 									<?php } ?>
 								</select>
 							</td>
@@ -111,15 +131,16 @@
 						<tr>
 							<th>Технические характеристики:</th>
 							<td>
-								<a href="<?php echo $product['_id']; ?>" class="btn" data-add-param="true">Добавить параметр</a>
+								<a href="<?php echo $data['id']; ?>" class="btn" data-add-param="true">Добавить параметр</a>
 								<ul class="parameters" data-parameters>
 									<?php if (isset($parameters) && $parameters == !$empty) { ?>
-										<?php foreach ($parameters as $key => $value) { ?>
+										<?php foreach ($parameters as $param) { ?>
 											<li class="parameters__item">
-												<a href="/admin/deleteparam/<?php echo $product['_id']; ?>/<?php echo $key; ?>/" data-delete-param="true" class="btn btn-mini btn-danger">Удалить параметр</a>
-												<span><?php echo $key; ?></span>
+												<a href="/admin/deleteparam/<?php echo $param->id; ?>/" data-delete-param="true" data-param-name="<?php echo $param->name; ?>" class="btn btn-mini btn-danger">Удалить параметр</a>
+												<a href="/admin/editparam/<?php echo $param->id; ?>/" data-param-name="<?php echo $param->name; ?>" class="btn btn-mini">Редактировать</a>
+												<span><?php echo $param->name; ?></span>
 												<span> - </span>
-												<span><?php echo $value; ?></span>
+												<span><?php echo $param->value; ?></span>
 											</li>
 										<?php } ?>
 									<?php } ?>
@@ -131,8 +152,8 @@
 							<td>
 								<a href="<?php echo $id; ?>" class="btn" data-addcategory data-categories-list='<?php echo $categories; ?>'>Добавить категорию</a>
 								<div data-categories>
-									<?php if (isset($productCats) && $productCats == !$empty) { ?>
-										<?php foreach ($productCats as $cat) { ?>
+									<?php if (isset($data['categories']) && $data['categories'] == !$empty) { ?>
+										<?php foreach ($data['categories'] as $cat) { ?>
 											<br>
 											<a data-delete-category href="/admin/deleteproductcategory/<?php echo $cat['id']; ?>/<?php echo $id; ?>/" class="btn btn-mini btn-danger">Удалить категорию</a>
 											<span><?php echo $cat['full_name']; ?></span><br>
@@ -143,28 +164,28 @@
 						</tr>
 						<tr>
 							<th><label for="short_desc">Короткое описание:</label></th>
-							<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10"><?php echo $product['short_description']; ?></textarea></td>
+							<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10"><?php echo $data['short_description']; ?></textarea></td>
 						</tr>
 						<tr>
 							<th><label for="full_desc">Полное описание:</label></th>
-							<td><textarea class="tinymce" name="full_desc" id="full_desc" rows="20"><?php echo $product['full_description']; ?></textarea></td>
+							<td><textarea class="tinymce" name="full_desc" id="full_desc" rows="20"><?php echo $data['full_description']; ?></textarea></td>
 						</tr>
 						<tr>
 							<th><label for="keywords">Meta keywords:</label></th>
 							<td>
-								<input type="text" name="keywords" value="<?php echo $product['meta_keywords']; ?>" id="keywords"/>
+								<input type="text" name="keywords" value="<?php echo $data['meta_keywords']; ?>" id="keywords"/>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="description">Meta description:</label></th>
 							<td>
-								<textarea name="description" id="description" rows="10"><?php echo $product['meta_description']; ?></textarea>
+								<textarea name="description" id="description" rows="10"><?php echo $data['meta_description']; ?></textarea>
 							</td>
 						</tr>
 						<tr>
 							<th><label for="public">public</label></th>
 							<td>
-								<?php if ($product['public'] == 'on') { ?>
+								<?php if ($data['public'] == 1) { ?>
 									<input type="checkbox" id="public" name="public" checked/>
 								<?php } else { ?>
 									<input type="checkbox" id="public" name="public"/>
@@ -172,7 +193,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td><a href="/admin/deleteproduct/<?php echo $product['_id']; ?>/" class="btn btn-danger">Удалить СОВСЕМ</a></td>
+							<td><a href="/admin/deleteproduct/<?php echo $data['id']; ?>/" class="btn btn-danger">Удалить СОВСЕМ</a></td>
 							<td>
 								<input class="btn btn-success" type="submit" value="Сохранить"/>
 							</td>

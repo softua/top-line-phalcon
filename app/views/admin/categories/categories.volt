@@ -8,12 +8,12 @@
 	{% if mainCategories is not null %}
 		<ul class="admin__catogories">
 			{% for category in mainCategories %}
-				<li class="admin__categories__item" data-category-id="{{ category._id }}">
+				<li class="admin__categories__item" data-category-id="{{ category.id }}">
 					<a href="/" class="btn btn-mini btn-primary" data-action="open" data-editing="true">+</a>
-					<a href="/admin/editcategory/{{ category._id }}/" title="Редактировать">{{ category.name }} (SEO - {{ category.seo }}, sort = {{ category.sort }})</a>
+					<a href="/admin/editcategory/{{ category.id }}/" title="Редактировать">{{ category.name }} (SEO - {{ category.seo_name }}, sort = {{ category.sort }})</a>
 					<ul class="admin__categories admin__categories--hidden">
 						<li class="admin__categories__item">
-							<a href="/admin/addcategory/{{ category._id }}/" class="btn btn-success">Добавить категорию</a>
+							<a href="/admin/addcategory/{{ category.id }}/" class="btn btn-success">Добавить категорию</a>
 						</li>
 					</ul>
 				</li>

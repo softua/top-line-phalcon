@@ -13,7 +13,7 @@ class BaseAdminController extends \Phalcon\Mvc\Controller
 	{
 		$this->tag->setDoctype(\Phalcon\Tag::HTML5);
 
-		$this->tag->setTitle($this->di->get('config')->name);
+		$this->tag->setTitle($this->di['config']->name);
 		$this->tag->setTitleSeparator(' :: ');
 	}
 } 

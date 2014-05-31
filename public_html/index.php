@@ -8,13 +8,7 @@ try {
 	define('BASE_URL', '../app/');
 
 	// Создание DI
-	$di = new Phalcon\DI\FactoryDefault();
-
-	// Подключаем конфигурацию как сервис
-	require BASE_URL . 'config/config.php';
-	$di->set('config', function() use ($settings) {
-		return new \Phalcon\Config($settings);
-	}, true);
+	$di = new \Phalcon\DI\FactoryDefault();
 
     // Регистрация автозагрузчика
 	$loader = new \Phalcon\Loader();
@@ -24,36 +18,29 @@ try {
 		'App\Models' => BASE_URL . 'models/'
 	])->register();
 
-    // Сервиса для работы с БД
-    $di->set('db', function($di) {
-	    return new \Phalcon\Db\Adapter\Pdo\Mysql([
-		    'host' => $di->getShared('config')->database->host,
-		    'username' => $di->getShared('config')->database->username,
-		    'password' => $di->getShared('config')->database->password,
-		    'dbname' => $di->getShared('config')->database->dbname
-	    ]);
-    });
+	// Подключаем конфигурацию как сервис
+	$di->setShared('config', function() {
+		return new \App\Config('development');
+	});
+
+    // Сервис для работы с БД
+	$di->setShared('db', function() use($di)
+	{
+		return new \Phalcon\Db\Adapter\Pdo\Mysql([
+			'host' => $di['config']->db['host'],
+			'username' => $di['config']->db['username'],
+			'password' => $di['config']->db['password'],
+			'dbname' => $di['config']->db['dbname']
+		]);
+	});
 
 	// Collection Manager
 	$di->set('collectionManager', function(){
-		return new Phalcon\Mvc\Collection\Manager();
-	}, true);
-
-	// Сервис для работы с MongoDB
-	$di->set('mongo', function() use($di) {
-		$username = $di->get('config')->mongo->username;
-		$password = $di->get('config')->mongo->password;
-		$host = $di->get('config')->mongo->host;
-		$dbname = $di->get('config')->mongo->dbname;
-
-		$connectionString = 'mongodb://' . $username . ':' . $password . '@' . $host;
-		$connectionString2 = 'mongodb://' . $host;
-		$mongo = new Mongo($connectionString2);
-		return $mongo->selectDb($dbname);
+		return new \Phalcon\Mvc\Collection\Manager();
 	}, true);
 
 	// Шаблонизатор Volt в DI
-	$di->set('voltService', function($view, $di) {
+	$di->setShared('voltService', function($view, $di) {
 
 		$volt = new Phalcon\Mvc\View\Engine\Volt($view, $di);
 
@@ -65,7 +52,7 @@ try {
 	});
 
     // Настраиваем компонент View/Simple с шаблонизатором
-    $di->set('view', function(){
+    $di->setShared('view', function(){
         $view = new \Phalcon\Mvc\View\Simple();
         $view->setViewsDir('../app/views/');
 	    $view->registerEngines([
@@ -75,22 +62,22 @@ try {
     });
 
 	// Шифрование
-	$di->set('crypt', function() use($di) {
+	$di->setShared('crypt', function() use($di) {
 		$crypt = new \Phalcon\Crypt();
-		$crypt->setKey($di->get('config')->secret);
+		$crypt->setKey($di['config']->secret);
 		$crypt->setMode('ecb');
 		return $crypt;
-	}, true);
+	});
 
 	// Куки
-	$di->set('cookies', function() {
+	$di->setShared('cookies', function() {
 		$cookies = new \Phalcon\Http\Response\Cookies();
 		$cookies->useEncryption(true);
 		return $cookies;
-	}, true);
+	});
 
 	// Роуты
-	require BASE_URL . 'config/Routes.php';
+	require BASE_URL . 'classes/Routes.php';
 
     // Обработка запроса
     $application = new \Phalcon\Mvc\Application($di);

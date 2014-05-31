@@ -19,7 +19,7 @@
 				<?php } ?>
 			<?php } ?>
 		<?php } ?>
-		<form class="form-horizontal" action="/admin/user/<?php echo $user->_id; ?>/" method="post">
+		<form class="form-horizontal" action="/admin/user/<?php echo $user->id; ?>/" method="post">
 			<?php foreach ($user as $key => $value) { ?>
 				<?php if ($key == 'login') { ?>
 					<h2><?php echo $value; ?></h2>
@@ -30,7 +30,7 @@
 							<input type="text" name="<?php echo $key; ?>" id="<?php echo $key; ?>" value="<?php echo $value; ?>">
 						</div>
 					</div>
-				<?php } elseif ($key == 'password' || $key == '_id') { ?>
+				<?php } elseif ($key == 'password' || $key == 'id') { ?>
 					<?php continue; ?>
 				<?php } elseif ($key == 'email') { ?>
 					<div class="control-group">
@@ -39,16 +39,16 @@
 							<input type="text" name="<?php echo $key; ?>" id="<?php echo $key; ?>" value="<?php echo $value; ?>">
 						</div>
 					</div>
-				<?php } elseif ($key == 'role') { ?>
+				<?php } elseif ($key == 'role_id') { ?>
 					<div class="control-group">
 						<label class="control-label" for="<?php echo $key; ?>">Права:</label>
 						<div class="controls">
 							<select name="<?php echo $key; ?>" id="<?php echo $key; ?>">
 								<?php foreach ($roles as $role) { ?>
-									<?php if ($role->_id == $value) { ?>
-										<option selected value="<?php echo $role->_id; ?>"><?php echo $role->description; ?></option>
+									<?php if ($role->id == $value) { ?>
+										<option selected value="<?php echo $role->id; ?>"><?php echo $role->description; ?></option>
 									<?php } else { ?>
-										<option value="<?php echo $role->_id; ?>"><?php echo $role->description; ?></option>
+										<option value="<?php echo $role->id; ?>"><?php echo $role->description; ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>

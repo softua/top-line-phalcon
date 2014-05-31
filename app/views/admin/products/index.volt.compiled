@@ -15,8 +15,8 @@
 	<?php if (isset($mainCategories) && $mainCategories == !null) { ?>
 		<ul class="admin__catogories">
 			<?php foreach ($mainCategories as $category) { ?>
-				<li class="admin__categories__item" data-category-id="<?php echo $category->_id; ?>">
-					<a href="/admin/getproducts/<?php echo $category->_id; ?>/" data-action="open" data-editing="false"><?php echo $category->name; ?></a>
+				<li class="admin__categories__item" data-category-id="<?php echo $category->id; ?>">
+					<a href="/admin/getproducts/<?php echo $category->id; ?>/" data-action="open" data-editing="false"><?php echo $category->name; ?></a>
 					<ul class="admin__categories admin__categories--hidden"></ul>
 				</li>
 			<?php } ?>
@@ -73,7 +73,7 @@
 						<?php } else { ?>
 							<td>Не показывать</td>
 						<?php } ?>
-						<td><a href="/admin/editproduct/<?php echo $product->_id; ?>/" class="btn">Редактировать</a></td>
+						<td><a href="/admin/editproduct/<?php echo $product->id; ?>/" class="btn">Редактировать</a></td>
 					</tr>
 				<?php $v14877520991incr++; } ?>
 			</tbody>
