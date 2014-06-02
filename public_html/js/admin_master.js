@@ -191,7 +191,7 @@ $(document).ready(function() {
 
 		for (var i = 0, l = cats.length; i < l; i++)
 		{
-			if (cats[i].parent == 0) {
+			if (cats[i].parent_id == 0) {
 				array.push(cats[i]);
 			}
 		}
@@ -221,7 +221,7 @@ $(document).ready(function() {
 
 		for (var i = 0, l = cats.length; i < l; i++)
 		{
-			if (cats[i].parent == parentId) {
+			if (cats[i].parent_id == parentId) {
 				array.push(cats[i]);
 			}
 		}
@@ -258,7 +258,7 @@ $(document).ready(function() {
 				type: 'POST',
 				dataType: 'JSON',
 				success: function(category) {
-					$('[data-categories]').append('<br><a data-delete-category href="/admin/deleteproductcategory/' + category.id + '/' + productId + '/" class="btn btn-danger">Удалить</a> <span>' + category.full_name + '</span><br>');
+					$('[data-categories]').append('<br><a data-delete-category href="/admin/deleteproductcategory/' + category.id + '/' + productId + '/" class="btn btn-mini btn-danger">Удалить</a> <span>' + category.full_name + '</span><br>');
 				}
 			});
 		}
@@ -327,14 +327,12 @@ $(document).ready(function() {
 	admin.parameter.save = function(e)
 	{
 		var target = $(e.target);
-		var url = target.attr('href') + '';
+		var url = target.attr('href');
 		var paramName = $('[name="param_key"]', '[data-fields-for-adding-parameters]').val();
 		var paramValue = $('[name="param_value"]', '[data-fields-for-adding-parameters]').val();
-
 		var prodId = $('[data-add-param]').attr('href');
 		var paramsList = $('[data-parameters]');
 		var paramsItem = $('<li class="parameters__item"></li>');
-		var deletingAncor = $('<a href="/admin/deleteparam/' + prodId + '/" data-delete-param="true" data-param-name="' + paramName + '" class="btn btn-mini btn-danger">Удалить параметр</a>');
 		var span = $('<span> - </span>');
 		var spanKey = $('<span>' + paramName + '</span>');
 		var spanValue = $('<span>' + paramValue + '</span>');
@@ -342,12 +340,16 @@ $(document).ready(function() {
 		$.ajax({
 			url: url,
 			type: 'POST',
-			dataType: 'JSON',
 			data: 'key=' + paramName + '&value=' + paramValue,
 			success: function(data) {
-				if (data)
+				console.log(data);
+				if (data > 0)
 				{
-					paramsItem.append(deletingAncor, spanKey, span, spanValue);
+					var deletingAncor = $('<a href="/admin/deleteparam/' + data + '/" data-delete-param="true" data-param-name="' + paramName + '" class="btn btn-mini btn-danger">Удалить параметр</a>');
+
+					var editBtn = $('<a href="/admin/editparam/' + data + '/" data-param-name="' + paramName + '" class="btn btn-mini">Редактировать</a>');
+
+					paramsItem.append(deletingAncor, editBtn, spanKey, span, spanValue);
 					paramsList.append(paramsItem);
 				}
 			},
@@ -368,8 +370,6 @@ $(document).ready(function() {
 		$.ajax({
 			url: href,
 			type: 'POST',
-			data: 'param-name=' + $target.data('param-name'),
-			dataType: 'JSON',
 			success: function(data)
 			{
 				if (data)

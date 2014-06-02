@@ -62,9 +62,21 @@
 						<td>
 							<input type="text" name="price" value="<?php echo $data['price']; ?>" id="price"/>
 							<select name="main_curancy" id="main_curancy">
-								<option value="eur" selected>Евро</option>
-								<option value="usd">Доллар США</option>
-								<option value="uah">Гривна</option>
+								<?php if ($data['main_curancy'] == 'eur') { ?>
+									<option value="eur" selected>Евро</option>
+								<?php } else { ?>
+									<option value="eur">Евро</option>
+								<?php } ?>
+								<?php if ($data['main_curancy'] == 'usd') { ?>
+									<option value="usd" selected>Доллар США</option>
+								<?php } else { ?>
+									<option value="usd">Доллар США</option>
+								<?php } ?>
+								<?php if ($data['main_curancy'] == 'uah') { ?>
+									<option value="uah" selected>Гривна</option>
+								<?php } else { ?>
+									<option value="uah">Гривна</option>
+								<?php } ?>
 							</select>
 							<select name="price_alternative">
 								<?php if ($data['price_alternative']) { ?>

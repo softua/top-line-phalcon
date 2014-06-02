@@ -14,4 +14,8 @@ class ProductCategory extends \Phalcon\Mvc\Model
 	{
 		return 'products_categories';
 	}
+
+	public $id;
+	public $product_id;
+	public $category_id;
 }

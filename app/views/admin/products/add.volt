@@ -56,9 +56,21 @@
 						<td>
 							<input type="text" name="price" value="{{ data['price'] }}" id="price"/>
 							<select name="main_curancy" id="main_curancy">
-								<option value="eur" selected>Евро</option>
-								<option value="usd">Доллар США</option>
-								<option value="uah">Гривна</option>
+								{% if data['main_curancy'] is 'eur' %}
+									<option value="eur" selected>Евро</option>
+								{% else %}
+									<option value="eur">Евро</option>
+								{% endif %}
+								{% if data['main_curancy'] is 'usd' %}
+									<option value="usd" selected>Доллар США</option>
+								{% else %}
+									<option value="usd">Доллар США</option>
+								{% endif %}
+								{% if data['main_curancy'] is 'uah' %}
+									<option value="uah" selected>Гривна</option>
+								{% else %}
+									<option value="uah">Гривна</option>
+								{% endif %}
 							</select>
 							<select name="price_alternative">
 								{% if data['price_alternative'] %}

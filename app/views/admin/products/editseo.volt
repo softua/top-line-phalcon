@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	{% if product is defined and product is not null %}
+	{% if data is defined and data is not null %}
 		<div class="span12">
 			<h1>{{ get_title()|striptags }}</h1>
 			<h2>Такой товар возможно уже существует</h2>
@@ -14,48 +14,48 @@
 			{% if sameProducts is defined and sameProducts is not empty %}
 				<ul>
 					{% for product in sameProducts %}
-						<li><a href="/admin/editproduct/{{ product._id }}/" target="_blank">{{ product.seo_name }}</a></li>
+						<li><a href="/admin/editproduct/{{ product.id }}/" target="_blank">{{ product.seo_name }}</a></li>
 					{% endfor %}
 				</ul>
 			{% endif %}
-			<form action="/admin/editseoname/{{ product._id }}/" method="POST">
+			<form action="/admin/editseoname/{{ data['id'] }}/" method="POST">
 				<fieldset>
-					<legend>{{ product.seo_name }}</legend>
+					<legend>{{ data['seo_name'] }}</legend>
 					<table class="table-bordered">
 						<tr>
 							<th>Тип</th>
-							<td>{{ product.type }}</td>
+							<td>{{ data['type'] }}</td>
 						</tr>
 						<tr>
 							<th>Артикул</th>
-							<td>{{ product.articul }}</td>
+							<td>{{ data['articul'] }}</td>
 						</tr>
 						<tr>
 							<th>Модель</th>
-							<td>{{ product.model }}</td>
+							<td>{{ data['model'] }}</td>
 						</tr>
 						<tr>
 							<th>Страна-производитель</th>
-							<td>{{ product.country }}</td>
+							<td>{{ data['country'] }}</td>
 						</tr>
 						<tr>
 							<th>Бренд</th>
-							<td>{{ product.brand }}</td>
+							<td>{{ data['brand'] }}</td>
 						</tr>
-						{% if product.main_curancy is 'uah' %}
+						{% if data['main_curancy'] is 'uah' %}
 							<tr>
 								<th>Цена</th>
-								<td>{{ product.price_uah }} грн.</td>
+								<td>{{ data['price_uah'] }} грн.</td>
 							</tr>
-						{% elseif product.main_curancy is 'usd' %}
+						{% elseif data['main_curancy'] is 'usd' %}
 							<tr>
 								<th>Цена</th>
-								<td>{{ product.price_usd }} $</td>
+								<td>{{ data['price_usd'] }} $</td>
 							</tr>
-						{% elseif product.main_curancy is 'eur' %}
+						{% elseif data['main_curancy'] is 'eur' %}
 							<tr>
 								<th>Цена</th>
-								<td>{{ product.price_eur }} евро</td>
+								<td>{{ data['price_eur'] }} евро</td>
 							</tr>
 						{% endif %}
 					</table>
@@ -69,7 +69,7 @@
 					{% endif %}
 					{#----------#}
 					<label for="seo-name">SEO-название</label>
-					<input type="text" name="seo-name" id="seo-name" value="{{ product.seo_name }}"/>
+					<input type="text" name="seo-name" id="seo-name" value="{{ data['seo_name'] }}"/>
 					<input type="submit" class="btn btn-primary" value="Сохранить"/>
 				</fieldset>
 			</form>

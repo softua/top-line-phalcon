@@ -15,6 +15,25 @@ class Product extends \Phalcon\Mvc\Model
 		return 'products';
 	}
 
+	public $id;
+	public $name;
+	public $type;
+	public $articul;
+	public $model;
+	public $country_id;
+	public $brand;
+	public $main_curancy;
+	public $price_eur;
+	public $price_usd;
+	public $price_uah;
+	public $price_alternative;
+	public $short_description;
+	public $full_description;
+	public $seo_name;
+	public $public;
+	public $meta_keywords;
+	public $meta_description;
+
 	/***
 	 * Проверка является ли Seo-название уникальным
 	 * @param string $name seo-название, которое проверяется

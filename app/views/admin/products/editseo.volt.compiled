@@ -11,7 +11,7 @@
 		<div class="row-fluid">
 			<!-- Content -->
 			
-	<?php if (isset($product) && $product == !null) { ?>
+	<?php if (isset($data) && $data == !null) { ?>
 		<div class="span12">
 			<h1><?php echo strip_tags($this->tag->getTitle()); ?></h1>
 			<h2>Такой товар возможно уже существует</h2>
@@ -20,48 +20,48 @@
 			<?php if (isset($sameProducts) && $sameProducts == !$empty) { ?>
 				<ul>
 					<?php foreach ($sameProducts as $product) { ?>
-						<li><a href="/admin/editproduct/<?php echo $product->_id; ?>/" target="_blank"><?php echo $product->seo_name; ?></a></li>
+						<li><a href="/admin/editproduct/<?php echo $product->id; ?>/" target="_blank"><?php echo $product->seo_name; ?></a></li>
 					<?php } ?>
 				</ul>
 			<?php } ?>
-			<form action="/admin/editseoname/<?php echo $product->_id; ?>/" method="POST">
+			<form action="/admin/editseoname/<?php echo $data['id']; ?>/" method="POST">
 				<fieldset>
-					<legend><?php echo $product->seo_name; ?></legend>
+					<legend><?php echo $data['seo_name']; ?></legend>
 					<table class="table-bordered">
 						<tr>
 							<th>Тип</th>
-							<td><?php echo $product->type; ?></td>
+							<td><?php echo $data['type']; ?></td>
 						</tr>
 						<tr>
 							<th>Артикул</th>
-							<td><?php echo $product->articul; ?></td>
+							<td><?php echo $data['articul']; ?></td>
 						</tr>
 						<tr>
 							<th>Модель</th>
-							<td><?php echo $product->model; ?></td>
+							<td><?php echo $data['model']; ?></td>
 						</tr>
 						<tr>
 							<th>Страна-производитель</th>
-							<td><?php echo $product->country; ?></td>
+							<td><?php echo $data['country']; ?></td>
 						</tr>
 						<tr>
 							<th>Бренд</th>
-							<td><?php echo $product->brand; ?></td>
+							<td><?php echo $data['brand']; ?></td>
 						</tr>
-						<?php if ($product->main_curancy == 'uah') { ?>
+						<?php if ($data['main_curancy'] == 'uah') { ?>
 							<tr>
 								<th>Цена</th>
-								<td><?php echo $product->price_uah; ?> грн.</td>
+								<td><?php echo $data['price_uah']; ?> грн.</td>
 							</tr>
-						<?php } elseif ($product->main_curancy == 'usd') { ?>
+						<?php } elseif ($data['main_curancy'] == 'usd') { ?>
 							<tr>
 								<th>Цена</th>
-								<td><?php echo $product->price_usd; ?> $</td>
+								<td><?php echo $data['price_usd']; ?> $</td>
 							</tr>
-						<?php } elseif ($product->main_curancy == 'eur') { ?>
+						<?php } elseif ($data['main_curancy'] == 'eur') { ?>
 							<tr>
 								<th>Цена</th>
-								<td><?php echo $product->price_eur; ?> евро</td>
+								<td><?php echo $data['price_eur']; ?> евро</td>
 							</tr>
 						<?php } ?>
 					</table>
@@ -75,7 +75,7 @@
 					<?php } ?>
 					
 					<label for="seo-name">SEO-название</label>
-					<input type="text" name="seo-name" id="seo-name" value="<?php echo $product->seo_name; ?>"/>
+					<input type="text" name="seo-name" id="seo-name" value="<?php echo $data['seo_name']; ?>"/>
 					<input type="submit" class="btn btn-primary" value="Сохранить"/>
 				</fieldset>
 			</form>

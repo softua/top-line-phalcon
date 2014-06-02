@@ -46,23 +46,19 @@ class PossibleParameters extends \Phalcon\Mvc\Model
 
 	public static function addParameter($paramName)
 	{
-		$params = PossibleParameters::find();
-		$result = 0;
-
-		foreach ($params as $param)
+		if ($paramName)
 		{
-			if ($param->name == $paramName)
+			$params = PossibleParameters::findFirst([
+				'name = :name:',
+				'bind' => ['name' => $paramName]
+			]);
+
+			if (count($params) == 0)
 			{
-				$result++;
-				break;
+				$parameter = new PossibleParameters();
+				$parameter->name = $paramName;
+				$parameter->save();
 			}
-		}
-
-		if ($result == 0)
-		{
-			$parameter = new PossibleParameters();
-			$parameter->name = $paramName;
-			$parameter->save();
 		}
 	}
 }

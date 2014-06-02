@@ -393,143 +393,118 @@ class AdminController extends BaseAdminController
 		$this->view->countries = $countries;
 		$this->view->brands = $brands;
 
+		$inputs = [];
+
 		// POST запрос
 		if($this->request->isPost())
 		{
-			$name = $this->request->getPost('name', ['trim', 'striptags']);
-			$type = $this->request->getPost('type', ['trim', 'striptags']);
-			$articul = $this->request->getPost('articul', ['trim', 'striptags']);
-			$model = $this->request->getPost('model', ['trim', 'striptags']);
-			$country = $this->request->getPost('country', ['trim', 'striptags']);
-			$brand = $this->request->getPost('brand', ['trim', 'striptags']);
-			$curancy = $this->request->getPost('main_curancy', ['trim', 'striptags']);
-			$price = $this->request->getPost('price', ['trim', 'striptags']);
-			$priceAlternative = $this->request->getPost('price_alternative', ['trim', 'striptags']);
-			$short_desc = $this->request->getPost('short_desc', ['trim']);
-			$full_desc = $this->request->getPost('full_desc', ['trim']);
-			$meta_keywords = $this->request->getPost('keywords', ['trim', 'striptags']);
-			$meta_description = $this->request->getPost('description', ['trim', 'striptags']);
+			$inputs['name'] = $this->request->getPost('name', ['trim', 'striptags']);
+			$inputs['type'] = $this->request->getPost('type', ['trim', 'striptags']);
+			$inputs['articul'] = $this->request->getPost('articul', ['trim', 'striptags']);
+			$inputs['model'] = $this->request->getPost('model', ['trim', 'striptags']);
+			$inputs['country'] = $this->request->getPost('country', ['trim', 'striptags']);
+			$inputs['brand'] = $this->request->getPost('brand', ['trim', 'striptags']);
+			$inputs['main_curancy'] = $this->request->getPost('main_curancy', ['trim', 'striptags']);
+			$inputs['price'] = $this->request->getPost('price', ['trim', 'striptags']);
+			$inputs['price_alternative'] = $this->request->getPost('price_alternative', ['trim', 'striptags']);
+			$inputs['short_description'] = $this->request->getPost('short_desc', ['trim', 'striptags']);
+			$inputs['full_description'] = $this->request->getPost('full_desc', ['trim', 'striptags']);
+			$inputs['meta_keywords'] = $this->request->getPost('keywords', ['trim', 'striptags']);
+			$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
 
 			$validation = new \App\Validation();
 
 			$validation->isNotEmpty([
-				'Название' => $name,
-				'Тип' => $type,
-				'Страна-производитель' => $country,
-				'Основная валюта' => $curancy,
-				'Цена' => $price
+				'Название' => $inputs['name'],
+				'Тип' => $inputs['type'],
+				'Страна-производитель' => $inputs['country'],
+				'Основная валюта' => $inputs['main_curancy'],
+				'Цена' => $inputs['price']
 			], false);
 
-			if (!$articul)
+			if (!$inputs['articul'])
 			{
 				// Если артикул не указан, пытаемся взять его значение из Модели
-				if ($validation->isNotEmpty(['Модель' => $model], true))
+				if ($validation->isNotEmpty(['Модель' => $inputs['model']], true))
 				{
-					$articul = $model;
+					$inputs['articul'] = $inputs['model'];
 
 				} else // Если Модель тоже не указана, генерируем ошибку артикула
 				{
 					$validation->isNotEmpty([
-						'Артикул' => $articul
+						'Артикул' => $inputs['articul']
 					], false);
 				}
 			}
 
 			$validation->isInRangeString([
-				'Страна-производитель' => $country
+				'Страна-производитель' => $inputs['country']
 			], 3, 20, false);
 
 			$validation->isInRangeString([
-				'Тип' => $type
+				'Тип' => $inputs['type']
 			], 3, 50, false);
 
-			if ($validation->isFloat(['Цена' => $price], true))
-				$price = preg_replace('/,/', '.', $price); // меняем "," на "."
-
-			// Внесенные значения
-			$inputs = [
-				'name' => $name,
-				'type' => $type,
-				'articul' => $articul,
-				'model' => $model,
-				'country' => $country,
-				'brand' => $brand,
-				'price' => $price,
-				'price_alternative' => $priceAlternative,
-				'short_description' => $short_desc,
-				'full_description' => $full_desc,
-				'meta_keywords' => $meta_keywords,
-				'meta_description' => $meta_description
-			];
+			if ($validation->isFloat(['Цена' => $inputs['price']], true))
+				$inputs['price'] = preg_replace('/,/', '.', $inputs['price']); // меняем "," на "."
 
 			// Если пройдена вся валидация
 			if ($validation->validate())
 			{
 				// Добавляем возможные варианты стран, типов и брендов для автодополнения
-				Models\Country::addCountry($country);
-				Models\PossibleBrands::addBrand($brand);
-				Models\PossibleProductTypes::addType($type);
+				Models\Country::addCountry($inputs['country']);
+				Models\PossibleBrands::addBrand($inputs['brand']);
+				Models\PossibleProductTypes::addType($inputs['type']);
 
 				$product = new Models\Product();
 
-				$product->name = $name;
-				$product->type = $type;
-				$product->articul = $articul;
-				if ($model)
-					$product->model = $model;
-
-				$countryId = Models\Country::findFirst([
-					'name = ?1',
-					'bind' => [1 => $country]
-				]);
-				$product->country_id = $countryId->id;
-
-				if ($brand)
-					$product->brand = $brand;
-
-				$product->main_curancy = $curancy;
-
-				// Название цены на основании основной валюты
-				$priceName = 'price_' . $curancy;
-
-				$product->$priceName = floatval($price);
-				$product->price_alternative = $priceAlternative;
-				if ($short_desc)
-					$product->short_description = $short_desc;
-
-				if ($full_desc)
-					$product->full_description = $full_desc;
-
-				if ($meta_keywords)
-					$product->meta_keywords = $meta_keywords;
-
-				if ($meta_description)
-					$product->meta_description = $meta_description;
-
-				$product->seo_name = Models\Product::generateSeoName($product);
+				$product->name = $inputs['name'];
+				$product->type = $inputs['type'];
+				$product->articul = $inputs['articul'];
+				$product->model = $inputs['model'];
+				$product->brand = $inputs['brand'];
+				$product->main_curancy = $inputs['main_curancy'];
+				$product->price_alternative = $inputs['price_alternative'];
+				$product->short_description = $inputs['short_desc'];
+				$product->full_description = $inputs['full_desc'];
+				$product->meta_keywords = $inputs['keywords'];
+				$product->meta_description = $inputs['description'];
 				$product->public = 0;
+				$product->country_id = Models\Country::findFirst([
+					'name = ?1',
+					'bind' => [1 => $inputs['country']]
+				])->id;
+				$product->seo_name = Models\Product::generateSeoName($product);
 
-				$product->save();
+				$prices = Models\Exchange::setPrices($product->main_curancy, floatval($inputs['price']));
+				$product->price_eur = $prices['price_eur'];
+				$product->price_usd = $prices['price_usd'];
+				$product->price_uah = $prices['price_uah'];
 
-				if (Models\Product::isUniqueSeoName($product->seo_name)) // Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
+				if ($product->save())
 				{
-					return $this->response->redirect('admin/editproduct/' . $product->id . '/');
+					if (Models\Product::isUniqueSeoName($product->seo_name)) // Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
+					{
+						return $this->response->redirect('admin/editproduct/' . $product->id . '/');
 
-				} else // Иначе идем на страницу для редактирования SEO-названия
+					} else // Иначе идем на страницу для редактирования SEO-названия
+					{
+						return $this->response->redirect('admin/editseoname/' . $product->id . '/');
+					}
+				} else
 				{
-					return $this->response->redirect('admin/editseoname/' . $product->id . '/');
+					foreach ($product->getMessages() as $message)
+					{
+						echo $message . '<br>';
+					}
 				}
-
-
 			} else // Иначе передаем ошибки в представление
 			{
-				$this->view->data = $inputs;
 				$this->view->errors = $validation->getMessages();
 			}
-
-
 		}
 
+		$this->view->data = $inputs;
 		echo $this->view->render('admin/products/add');
 	}
 
@@ -567,8 +542,7 @@ class AdminController extends BaseAdminController
 
 			$productCategoryObjects = Models\ProductCategory::find([
 				'product_id = ?1',
-				'bind' => [1 => $id],
-				'order' => 'sort'
+				'bind' => [1 => $id]
 			]);
 
 			if ($productCategoryObjects && count($productCategoryObjects) > 0)
@@ -663,9 +637,10 @@ class AdminController extends BaseAdminController
 
 					$product->main_curancy = $inputs['main_curancy'];
 
-					// Название цены на основании основной валюты
-					$priceName = 'price_' . $inputs['main_curancy'];
-					$product->$priceName = floatval($inputs['price']);
+					$prices = Models\Exchange::setPrices($inputs['main_curancy'], floatval($inputs['price']));
+					$product->price_eur = $prices['price_eur'];
+					$product->price_usd = $prices['price_usd'];
+					$product->price_uah = $prices['price_uah'];
 
 					$product->price_alternative = $inputs['price_alternative'];
 
@@ -689,7 +664,7 @@ class AdminController extends BaseAdminController
 					if ($product->save())
 						$this->view->success = 'Данные успешно сохранены';
 					else
-						$this->view->alert = 'Что-то не так !';
+						$this->view->alert = $product->getMessages()[0];
 
 				} else // Иначе передаем ошибки в представление
 				{
@@ -699,7 +674,7 @@ class AdminController extends BaseAdminController
 
 			$this->view->data = $inputs;
 			$this->view->id = $id;
-			$this->view->categories = json_encode(Models\Category::getAllCategories());
+			$this->view->categories = json_encode(Models\Category::find()->toArray());
 			$this->view->types = Models\PossibleProductTypes::getAllTypesAsString();
 			$this->view->countries = Models\Country::getAllTypesAsString();
 			$this->view->brands = Models\PossibleBrands::getAllTypesAsString();
@@ -718,7 +693,7 @@ class AdminController extends BaseAdminController
 	{
 		$id = $this->dispatcher->getParams()[0];
 
-		if ($id && preg_match('//\d+', $id))
+		if ($id && preg_match('/\d+/', $id))
 		{
 			$product = Models\Product::findFirst($id);
 			$product->delete();
@@ -742,15 +717,32 @@ class AdminController extends BaseAdminController
 
 			// Товары с таким же SEO-названием
 			$sameProducts = Models\Product::find([
-				'conditions' => ['seo_name' => $product->seo_name]
+				'seo_name = :name: AND id != :id:',
+				'bind' => ['name' => $product->seo_name, 'id' => $id]
 			]);
 
-			if (count($sameProducts) > 1)
+			if (count($sameProducts) > 0)
 			{
-				$this->view->setVar('sameProducts', $sameProducts);
+				$this->view->sameProducts = $sameProducts;
 			}
 
-			$this->view->setVar('product', $product);
+			$data = [
+				'id' => $product->id,
+				'seo_name' => $product->seo_name,
+				'type' => $product->type,
+				'articul' => $product->articul,
+				'model' => $product->model,
+				'brand' => $product->brand
+			];
+
+			$data['country'] = Models\Country::findFirst($product->country_id)->name;
+
+			if ($product->main_curancy == 'eur')
+				$data['price'] = $product->price_eur;
+			elseif ($product->main_curancy == 'usd')
+				$data['price'] = $product->price_usd;
+			elseif ($product->main_curancy == 'uah')
+				$data['price'] = $product->price_uah;
 
 			// POST запрос
 			if ($this->request->isPost())
@@ -766,26 +758,31 @@ class AdminController extends BaseAdminController
 					$product->seo_name = \App\Translit::get_seo_keyword($seo_name, true);
 					$product->save();
 
+					$data['seo_name'] = $product->seo_name;
+
 					// Товары с таким же SEO-названием
 					$sameProducts = Models\Product::find([
-						'conditions' => ['seo_name' => $product->seo_name]
+						'seo_name = :name: AND id != :id:',
+						'bind' => ['name' => $product->seo_name, 'id' => $product->id]
 					]);
 
 					// Если повторы все-равно есть
-					if (count($sameProducts) > 1)
+					if (count($sameProducts) > 0)
 					{
-						$this->view->setVar('sameProducts', $sameProducts);
+						$this->view->sameProducts = $sameProducts;
 
 					} else // иначе перенаправляемся к дальнейшему редактированию
 					{
-						return $this->response->redirect('admin/editproduct/' . $product->_id);
+						return $this->response->redirect('admin/editproduct/' . $product->id);
 					}
 
 				} else // иначе отправляем ошибки в представление
 				{
-					$this->view->setVar('errors', $validation->getMessages());
+					$this->view->errors = $validation->getMessages();
 				}
 			}
+
+			$this->view->data = $data;
 		}
 
 		echo $this->view->render('admin/products/editseo');
@@ -795,13 +792,14 @@ class AdminController extends BaseAdminController
 	{
 		$categoryId = $this->dispatcher->getParams()[0];
 		$productId = $this->dispatcher->getParams()[1];
-		if ($this->request->isAjax() && $categoryId && $productId && strlen($categoryId) == 24 && strlen($productId) == 24)
+
+		if ($this->request->isAjax() && $categoryId && $productId && preg_match('/\d+/', $categoryId) && preg_match('/\d+/', $productId))
 		{
-			$product = Models\Product::findById($productId);
+			$prodCat = new Models\ProductCategory();
+			$prodCat->product_id = $productId;
+			$prodCat->category_id = $categoryId;
 
-			$product->categories[] = $categoryId;
-
-			if ($product->save())
+			if ($prodCat->save())
 			{
 				echo json_encode(Models\Category::getCategoryWithFullName($categoryId));
 			}
@@ -820,33 +818,18 @@ class AdminController extends BaseAdminController
 
 		if ($this->request->isAjax())
 		{
-			if ($catId && strlen($catId) == 24 && $productId && strlen($productId) == 24)
-			{
-				$product = Models\Product::getProductById($productId);
+			$prodCat = Models\ProductCategory::findFirst([
+				'product_id = :prodId: AND category_id = :catId:',
+				'bind' => ['prodId' => $productId, 'catId' => $catId]
+			]);
 
-				if ($product && count($product) > 0)
-				{
-					foreach ($product->categories as $key => $value)
-					{
-						if ($value == $catId)
-						{
-							unset($product->categories[$key]);
-						}
-					}
-
-					$product->save();
-					echo json_encode(true);
-				} else
-				{
-					echo json_encode(false);
-				}
-			} else
-			{
+			if ($prodCat->delete())
+				echo json_encode(true);
+			else
 				echo json_encode(false);
-			}
+
 		} else
 		{
-			echo json_encode(false);
 			return $this->response->redirect('admin');
 		}
 	}
@@ -865,43 +848,47 @@ class AdminController extends BaseAdminController
 
 	public function addParamAction()
 	{
-		if ($this->request->isAjax())
+		if ($this->request->isAjax() && $this->request->isPost())
 		{
 			$prodId = $this->dispatcher->getParams()[0];
 			$paramName = strtolower(strip_tags(trim($this->request->getPost('key'))));
 			$paramValue = strip_tags(trim($this->request->getPost('value')));
 
-			if ($prodId && strlen($prodId) == 24 && $paramName && $paramValue)
+			if ($prodId && preg_match('/\d+/', $prodId) && $paramName && $paramValue)
 			{
 				Models\PossibleParameters::addParameter($paramName); // добавляем название параметра в ощий список
 				Models\PossibleParameters::addParameter($paramValue); // добавляем значение параметра в ощий список
 
-				if ($product = Models\Product::getProductById($prodId))
-				{
-					$isParameterThere = false;
-					foreach ($product->parameters as $key => $value)
-					{
-						if ($key == $paramName)
-						{
-							$isParameterThere = true;
-							break;
-						}
-					}
+				$prodParam = Models\ProductParam::findFirst([
+					'name = :name: AND product_id = :id:',
+					'bind' => ['name' => $paramName, 'id' => $prodId]
+				]);
 
-					if ($isParameterThere)
+				if (!$prodParam)
+				{
+					$param = new Models\ProductParam();
+					$param->name = $paramName;
+					$param->value = $paramValue;
+					$param->product_id = $prodId;
+					$param->sort = Models\ProductParam::find([
+						'product_id = :id:',
+						'bind' => ['id' => $prodId]
+					])->count();
+
+					if ($param->save())
 					{
-						echo json_encode(false);
-					} else
-					{
-						$product->parameters[$paramName] = $paramValue;
-						$product->save();
-						echo json_encode(true);
+						echo $param->id;
 					}
+					else
+						echo 0;
+				} else
+				{
+					echo 0;
 				}
 
 			} else
 			{
-				echo json_encode(false);
+				echo 0;
 			}
 		}
 	}
@@ -910,39 +897,16 @@ class AdminController extends BaseAdminController
 	{
 		if ($this->request->isAjax())
 		{
-			$prodId = $this->dispatcher->getParams()[0];
-			$paramName = $this->request->getPost('param-name');
-
-			if ($prodId && strlen($prodId) == 24 && $paramName)
+			$paramId = $this->dispatcher->getParams()[0];
+			if ($paramId && preg_match('/\d+/', $paramId))
 			{
-				if ($product = Models\Product::getProductById($prodId))
-				{
-					foreach ($product->parameters as $key => $value)
-					{
-						if ($key == $paramName)
-						{
-							unset($product->parameters[$key]);
-							break;
-						}
-					}
-
-					if ($product->save())
-					{
-						echo json_encode(true);
-					} else
-					{
-						echo json_encode(false);
-					}
-
-				} else
-				{
+				$param = Models\ProductParam::findFirst($paramId);
+				if ($param->delete())
+					echo json_encode(true);
+				else
 					echo json_encode(false);
-				}
-
-			} else
-			{
-				echo json_encode(false);
 			}
+
 		} else
 		{
 			$this->response->redirect('admin');

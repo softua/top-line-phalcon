@@ -30,7 +30,10 @@ try {
 			'host' => $di['config']->db['host'],
 			'username' => $di['config']->db['username'],
 			'password' => $di['config']->db['password'],
-			'dbname' => $di['config']->db['dbname']
+			'dbname' => $di['config']->db['dbname'],
+			'options' => [
+				PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
+			]
 		]);
 	});
 

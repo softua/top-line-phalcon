@@ -15,6 +15,12 @@ class ProductParam extends \Phalcon\Mvc\Model
 		return 'products_params';
 	}
 
+	public $id;
+	public $name;
+	public $value;
+	public $product_id;
+	public $sort;
+
 	public static function getParamsByProductId($prodId)
 	{
 		if ($prodId && preg_match('/\d+/', $prodId))
