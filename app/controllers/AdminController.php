@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models;
+use App\Validation;
 
 class AdminController extends BaseAdminController
 {
@@ -84,7 +85,7 @@ class AdminController extends BaseAdminController
 				}
 			} else {
 				$this->tag->prependTitle('Вход');
-				$this->view->setVar('error', 'Неверный логин или пароль');
+				$this->view->errors = ['Вход' => 'Неверный логин или пароль'];
 				echo $this->view->render('admin/auth/login');
 			}
 		}
@@ -118,11 +119,11 @@ class AdminController extends BaseAdminController
 		$roles = Models\Role::find();
 
 		// POST запрос
-		if ($this->request->isPost()) {
-
+		if ($this->request->isPost())
+		{
 			$name = $this->request->getPost('name', ['striptags', 'trim']);
 			$email = $this->request->getPost('email', ['email', 'trim']);
-			$role = $this->request->getPost('role', ['alphanum', 'trim']);
+			$role = $this->request->getPost('role_id', ['alphanum', 'trim']);
 
 			$validation = new \App\Validation();
 
@@ -131,15 +132,20 @@ class AdminController extends BaseAdminController
 				'Права' => $role
 			], false);
 
-			if ($validation->validate()) {
+			if ($validation->validate())
+			{
 				$user->name = $name;
 				$user->email = $email;
 				$user->role_id = $role;
 
-				$user->save();
+				if ($user->save())
+				{
+					$this->view->errors = ['success' => ['Данные успешно сохранены']];
+				} else {
+					$this->view->errors = ['БД' => $user->getMessages()];
+				}
 			} else {
-				$errors = $validation->getMessages();
-				$this->view->errors = $errors;
+				$this->view->errors = $validation->getMessages();
 			}
 		}
 
@@ -187,8 +193,11 @@ class AdminController extends BaseAdminController
 				$user->email = $email;
 				$user->role_id = $role;
 
-				if ($user->save()) {
+				if ($user->save())
+				{
 					$this->response->redirect('admin/users');
+				} else {
+					$this->view->errors = ['БД' => $user->getMessages()];
 				}
 			} else {
 				$this->view->roles = Models\Role::find();
@@ -263,18 +272,23 @@ class AdminController extends BaseAdminController
 				'Порядок' => $sort
 			], false);
 
-			if ($validation->validate()) {
+			if ($validation->validate())
+			{
 				$category->name = $name;
 				$category->parent_id = $parent;
 				$category->seo_name = \App\Translit::get_seo_keyword($name, true);
 				$category->sort = (int)$sort;
 
-				$category->save();
+				if ($category->save())
+				{
+					return $this->response->redirect('admin/categories');
 
-				return $this->response->redirect('admin/categories');
+				} else {
+					$this->view->errors = ['БД' => $category->getMessages];
+				}
+
 			} else {
-				$errors = $validation->getMessages();
-				$this->view->errors = $errors;
+				$this->view->errors = $validation->getMessages();
 			}
 		}
 
@@ -304,14 +318,20 @@ class AdminController extends BaseAdminController
 				'Категория' => $name,
 				'Порядок' => $sort
 			], false);
-			if ($validation->validate()) {
+			if ($validation->validate())
+			{
 				$category->name = $name;
 				$category->seo_name = \App\Translit::get_seo_keyword($name, true);
 				$category->sort = (int)$sort;
-				$category->save();
+
+				if ($category->save())
+				{
+					$this->view->errors = ['success' => ['Данные успешно сохранены']];
+				} else {
+					$this->view->errors = ['БД' => $category->getMessages()];
+				}
 			} else {
-				$errors = $validation->getMessages();
-				$this->view->errors = $errors;
+				$this->view->errors = $validation->getMessages();
 			}
 		}
 
@@ -407,8 +427,8 @@ class AdminController extends BaseAdminController
 			$inputs['main_curancy'] = $this->request->getPost('main_curancy', ['trim', 'striptags']);
 			$inputs['price'] = $this->request->getPost('price', ['trim', 'striptags']);
 			$inputs['price_alternative'] = $this->request->getPost('price_alternative', ['trim', 'striptags']);
-			$inputs['short_description'] = $this->request->getPost('short_desc', ['trim', 'striptags']);
-			$inputs['full_description'] = $this->request->getPost('full_desc', ['trim', 'striptags']);
+			$inputs['short_description'] = $this->request->getPost('short_desc', 'trim');
+			$inputs['full_description'] = $this->request->getPost('full_desc', 'trim');
 			$inputs['meta_keywords'] = $this->request->getPost('keywords', ['trim', 'striptags']);
 			$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
 
@@ -465,8 +485,8 @@ class AdminController extends BaseAdminController
 				$product->brand = $inputs['brand'];
 				$product->main_curancy = $inputs['main_curancy'];
 				$product->price_alternative = $inputs['price_alternative'];
-				$product->short_description = $inputs['short_desc'];
-				$product->full_description = $inputs['full_desc'];
+				$product->short_description = $inputs['short_description'];
+				$product->full_description = $inputs['full_description'];
 				$product->meta_keywords = $inputs['keywords'];
 				$product->meta_description = $inputs['description'];
 				$product->public = 0;
@@ -491,12 +511,8 @@ class AdminController extends BaseAdminController
 					{
 						return $this->response->redirect('admin/editseoname/' . $product->id . '/');
 					}
-				} else
-				{
-					foreach ($product->getMessages() as $message)
-					{
-						echo $message . '<br>';
-					}
+				} else{
+					$this->view->errors = ['БД' => $product->getMessages()];
 				}
 			} else // Иначе передаем ошибки в представление
 			{
@@ -513,9 +529,12 @@ class AdminController extends BaseAdminController
 		$id = $this->dispatcher->getParams()[0];
 		$this->tag->prependTitle('Редактирование');
 
-		if ($id && preg_match('/[0-9]+/', $id)) // Если ID есть, обрабатываем запрос
+		if ($id && preg_match('/\d+/', $id)) // Если ID есть, обрабатываем запрос
 		{
 			$product = Models\Product::getProductById($id);  // объект товара, с которым работаем
+
+			if (!$product)
+				return $this->response->redirect('admin');
 
 			$inputs['id'] = $product->id;
 			$inputs['seo_name'] = $product->seo_name;
@@ -567,8 +586,8 @@ class AdminController extends BaseAdminController
 				$inputs['price'] = $this->request->getPost('price', ['trim', 'striptags']);
 				$inputs['main_curancy'] = $this->request->getPost('main_curancy', ['trim', 'striptags']);
 				$inputs['price_alternative'] = $this->request->getPost('price_alternative', ['trim', 'striptags']);
-				$inputs['short_description'] = $this->request->getPost('short_desc', ['trim', 'striptags']);
-				$inputs['full_description'] = $this->request->getPost('full_desc', ['trim', 'striptags']);
+				$inputs['short_description'] = $this->request->getPost('short_desc', 'trim');
+				$inputs['full_description'] = $this->request->getPost('full_desc', 'trim');
 				$inputs['meta_keywords'] = $this->request->getPost('keywords', ['trim', 'striptags']);
 				$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
 				$inputs['public'] = $this->request->getPost('public', ['trim', 'striptags']);
@@ -662,9 +681,10 @@ class AdminController extends BaseAdminController
 						$product->public = $inputs['public'] = 0;
 
 					if ($product->save())
-						$this->view->success = 'Данные успешно сохранены';
-					else
-						$this->view->alert = $product->getMessages()[0];
+						$this->view->errors = ['success' => ['Данные успешно сохранены']];
+					else {
+						$this->view->errors = ['БД' => $product->getMessages()];
+					}
 
 				} else // Иначе передаем ошибки в представление
 				{
@@ -776,8 +796,7 @@ class AdminController extends BaseAdminController
 						return $this->response->redirect('admin/editproduct/' . $product->id);
 					}
 
-				} else // иначе отправляем ошибки в представление
-				{
+				} else { // иначе отправляем ошибки в представление
 					$this->view->errors = $validation->getMessages();
 				}
 			}
@@ -893,6 +912,99 @@ class AdminController extends BaseAdminController
 		}
 	}
 
+	public function editParamAction()
+	{
+		$id = $this->dispatcher->getParams()[0];
+		if ($id && preg_match('/\d+/', $id))
+		{
+			$param = Models\ProductParam::findFirst($id);
+
+			$this->view->data = [
+				'id' => $param->id,
+				'name' => $param->name,
+				'value' => $param->value,
+				'product_id' => $param->product_id,
+				'sort' => $param->sort
+			];
+
+			$allParams = Models\PossibleParameters::find();
+
+			$possibleParamsNames = [];
+
+			foreach ($allParams as $p) {
+				$possibleParamsNames[] = $p->name;
+			}
+
+			$this->view->possibleValues = json_encode($possibleParamsNames);
+
+			if ($this->request->isPost()) // POST запрос
+			{
+				$inputs['name'] = $this->request->getPost('name', ['trim', 'striptags']);
+				$inputs['value'] = $this->request->getPost('value', ['trim', 'striptags']);
+				$inputs['sort'] = $this->request->getPost('sort', ['trim', 'striptags', 'alphanum']);
+
+				$validation = new Validation();
+				$validation->isNotEmpty([
+					'Название параметра' => $inputs['name'],
+					'Значение параметра' => $inputs['value'],
+					'Порядок' => $inputs['sort']
+				], false);
+
+				if ($validation->validate())
+				{
+					Models\PossibleParameters::addParameter($inputs['name']);
+					Models\PossibleParameters::addParameter($inputs['value']);
+
+					$param->name = $inputs['name'];
+					$param->value = $inputs['value'];
+					$param->sort = $inputs['sort'];
+
+					if ($param->save())
+					{
+						$this->view->data = [
+							'id' => $param->id,
+							'name' => $param->name,
+							'value' => $param->value,
+							'product_id' => $param->product_id,
+							'sort' => $param->sort
+						];
+
+						$this->view->errors = ['success' => ['Данные успешно сохранены']];
+
+					} else {
+
+						$this->view->data = [
+							'id' => $param->id,
+							'name' => $inputs['name'],
+							'value' => $inputs['value'],
+							'product_id' => $param->product_id,
+							'sort' => $inputs['sort']
+						];
+
+						$this->view->errors = ['БД' => $param->getMessages()];
+					}
+				} else {
+
+					$this->view->data = [
+						'id' => $param->id,
+						'name' => $inputs['name'],
+						'value' => $inputs['value'],
+						'product_id' => $param->product_id,
+						'sort' => $inputs['sort']
+					];
+
+					$this->view->errors = $validation->getMessages();
+				}
+			}
+
+			echo $this->view->render('admin/products/editparam');
+
+		} else {
+
+			return $this->response->redirect('admin');
+		}
+	}
+
 	public function deleteParamAction()
 	{
 		if ($this->request->isAjax())
@@ -913,5 +1025,28 @@ class AdminController extends BaseAdminController
 		}
 
 
+	}
+
+	public function sortParamsAction ()
+	{
+		if ($this->request->isAjax() && $this->request->isPost())
+		{
+			$paramIds = json_decode($this->request->getPost('ids'));
+
+			for ($i = 0; $i < count($paramIds); $i++)
+			{
+				$param = Models\ProductParam::findFirst($paramIds[$i]);
+
+				if ($param)
+				{
+					$param->sort = $i;
+					$param->save();
+				}
+			}
+
+		} else
+		{
+			return $this->response->redirect('admin');
+		}
 	}
 }

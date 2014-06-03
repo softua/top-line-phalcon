@@ -10,28 +10,7 @@
 		{% if data is defined and data is not null %}
 
 			<h2>Редактирование товара</h2>
-			{% if success is defined and success is not null %}
-				<div class="alert alert-success">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<h4>Поздравляем!</h4>{{ success }}
-				</div>
-			{% endif %}
-
-			{% if alert is defined and alert is not null %}
-				<div class="alert alert-success">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<h4>Внимание!</h4>{{ alert }}
-				</div>
-			{% endif %}
-
-			{% if errors is defined and errors is not empty %}
-				{% for error in errors %}
-					{% for err in error %}
-						<h4 class="text-error">{{ err }}</h4>
-					{% endfor %}
-				{% endfor %}
-			{% endif %}
-
+			{{ partial('admin/partials/errors') }}
 			<form action="/admin/editproduct/{{ id }}/" method="POST">
 				<table class="table table-bordered table-hover">
 					<tbody>
@@ -129,7 +108,7 @@
 								<ul class="parameters" data-parameters>
 									{% if parameters is defined and parameters is not empty %}
 										{% for param in parameters %}
-											<li class="parameters__item">
+											<li id="{{ param.id }}" class="parameters__item">
 												<a href="/admin/deleteparam/{{ param.id }}/" data-delete-param="true" data-param-name="{{ param.name }}" class="btn btn-mini btn-danger">Удалить параметр</a>
 												<a href="/admin/editparam/{{ param.id }}/" data-param-name="{{ param.name }}" class="btn btn-mini">Редактировать</a>
 												<span>{{ param.name }}</span>

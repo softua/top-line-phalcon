@@ -9,13 +9,7 @@
 		{% if fullParentCategory is defined and fullParentCategory is not null %}
 			<h3>{{ fullParentCategory }}</h3>
 		{% endif %}
-		{% if errors is defined and errors is not empty %}
-			{% for error in errors %}
-				{% for message in error %}
-					<p class="text-error">{{ message }}</p>
-				{% endfor %}
-			{% endfor %}
-		{% endif %}
+		{{ partial('admin/partials/errors') }}
 		<form class="form-horizontal" action="/admin/editcategory/{{ category.id }}/" method="post">
 			<div class="control-group">
 				<label class="control-label" for="name">Категория:</label>

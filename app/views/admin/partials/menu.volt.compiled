@@ -1,0 +1,68 @@
+<div class="navbar">
+	<div class="navbar-inner">
+		<a class="brand" href="/" title="Показать сайт" target="_blank"><?php echo $name; ?></a>
+		<ul class="nav">
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin') { ?>
+				<li class="active"><a href="/admin">На главную</a></li>
+			<?php } else { ?>
+				<li><a href="/admin">На главную</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/products' || $url == '/admin/addproduct') { ?>
+				<li class="active"><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/categories') { ?>
+				<li class="active"><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/news') { ?>
+				<li class="active"><a href="/admin/news">Новости</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/news">Новости</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/users') { ?>
+				<li class="active"><a href="/admin/users">Пользователи</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/users">Пользователи</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/pages') { ?>
+				<li class="active"><a href="/admin/pages">Статические страницы</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/pages">Статические страницы</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($url == '/admin/settings') { ?>
+				<li class="active"><a href="/admin/settings">Настройки</a></li>
+			<?php } else { ?>
+				<li><a href="/admin/settings">Настройки</a></li>
+			<?php } ?>
+
+			<li class="divider-vertical"></li>
+
+			<?php if ($user == !null) { ?>
+				<li><a href="/admin/logout">Выход</a></li>
+			<?php } ?>
+		</ul>
+	</div>
+</div>

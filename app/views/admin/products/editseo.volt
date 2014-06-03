@@ -60,13 +60,7 @@
 						{% endif %}
 					</table>
 					{#--Если есть ошибки, выводим их--#}
-					{% if errors is defined and errors is not empty %}
-						{% for error in errors %}
-							{% for message in error %}
-								<p class="text-error">{{ message }}</p>
-							{% endfor %}
-						{% endfor %}
-					{% endif %}
+					{{ partial('admin/partials/errors') }}
 					{#----------#}
 					<label for="seo-name">SEO-название</label>
 					<input type="text" name="seo-name" id="seo-name" value="{{ data['seo_name'] }}"/>

@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+a:5:{i:0;s:183:"<!DOCTYPE html>
 <html>
-{{ partial('admin/partials/head') }}
+<?php echo $this->partial('admin/partials/head'); ?>
 <body>
 	<section class="container-fluid admin">
 		<div class="row-fluid" style="margin-top: 5px">
-			{% block menu %}{% endblock %}
+			";s:4:"menu";N;i:1;s:63:"
 		</div>
 		<div class="row-fluid">
 			<!-- Content -->
-			{% block content %}{% endblock %}
+			";s:7:"content";N;i:2;s:141:"
 		</div>
 	</section>
 	<script src="/js/vendor/bootstrap.min.js"></script>
 	<script src="/js/admin_master.js"></script>
 </body>
-</html>
+</html>";}

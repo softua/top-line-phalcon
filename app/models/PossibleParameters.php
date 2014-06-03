@@ -37,8 +37,9 @@ class PossibleParameters extends \Phalcon\Mvc\Model
 
 			if(count($names) > 0) echo json_encode($names);
 			else echo json_encode(null);
-		} else
-		{
+
+		} else {
+
 			if(count($paramsObjs) > 0) return $paramsObjs;
 			else return null;
 		}
@@ -53,7 +54,7 @@ class PossibleParameters extends \Phalcon\Mvc\Model
 				'bind' => ['name' => $paramName]
 			]);
 
-			if (count($params) == 0)
+			if (!$params)
 			{
 				$parameter = new PossibleParameters();
 				$parameter->name = $paramName;

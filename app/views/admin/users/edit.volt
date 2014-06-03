@@ -6,13 +6,7 @@
 
 {% block content %}
 	<div class="span12">
-		{% if errors is defined and errors is not empty %}
-			{% for error in errors %}
-				{% for message in error %}
-					<p class="text-error">{{ message }}</p>
-				{% endfor %}
-			{% endfor %}
-		{% endif %}
+		{{ partial('admin/partials/errors') }}
 		<form class="form-horizontal" action="/admin/user/{{ user.id }}/" method="post">
 			{% for key, value in user %}
 				{% if key is 'login' %}

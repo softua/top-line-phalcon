@@ -1,6 +1,6 @@
 {% extends 'admin/layout/admin_one_column.volt' %}
 {% block content %}
-	<h3 class="text-error" style="text-align: center">{{ error }}</h3>
+	{{ partial('admin/partials/errors') }}
 	<div class="span2 offset5">
 		{{ form('admin/login', 'style': 'text-align: center') }}
 		<fieldset>

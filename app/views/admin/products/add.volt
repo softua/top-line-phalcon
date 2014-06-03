@@ -7,13 +7,7 @@
 {% block content %}
 	<div class="span12">
 		<h2>Добавление основных параметров товара</h2>
-		{% if errors is defined and errors is not empty %}
-			{% for error in errors %}
-				{% for err in error %}
-					<h4 class="text-error">{{ err }}</h4>
-				{% endfor %}
-			{% endfor %}
-		{% endif %}
+		{{ partial('admin/partials/errors') }}
 		<form action="/admin/addproduct" method="POST">
 			<table class="table table-bordered table-hover">
 				<tbody>

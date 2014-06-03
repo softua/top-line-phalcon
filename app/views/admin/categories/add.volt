@@ -9,13 +9,7 @@
 		{% if fullParentCategory is not null %}
 			<h3>{{ fullParentCategory }}</h3>
 		{% endif %}
-		{% if errors is defined and errors is not empty %}
-			{% for error in errors %}
-				{% for message in error %}
-					<p class="text-error">{{ message }}</p>
-				{% endfor %}
-			{% endfor %}
-		{% endif %}
+		{{ partial('admin/partials/errors') }}
 		{% if parent is defined and parent is not null %}
 			<form class="form-horizontal" action="/admin/addcategory/{{ parent }}/" method="post">
 		{% else %}

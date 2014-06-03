@@ -2,13 +2,7 @@
 
 {% block content %}
 	<h3 style="text-align: center">Создание пользователя:</h3>
-	{% if errors is defined and errors is not empty %}
-		{% for error in errors %}
-			{% for er in error %}
-				<p class="text-error" style="text-align: center">{{ er }}</p>
-			{% endfor %}
-		{% endfor %}
-	{% endif %}
+	{{ partial('admin/partials/errors') }}
 	<div class="span1 offset5">
 		{{ form('admin/newuser', 'style': 'text-align: center') }}
 		<fieldset>
