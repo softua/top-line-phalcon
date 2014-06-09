@@ -42,16 +42,12 @@ class Product extends \Phalcon\Mvc\Model
 	public static function isUniqueSeoName($name)
 	{
 		if (!$name)
-			return false;
+			return false;;
 
 		$products = Product::find([
-			'conditions' => ['seo_name' => $name]
+			'seo_name = :name:',
+			'bind' => ['name' => $name]
 		]);
-
-		$products = Product::query()
-			->where('seo_name = :name:')
-			->bind(['name' => $name])
-			->execute();
 
 		if ($products->count() > 1)
 			return false;

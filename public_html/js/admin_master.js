@@ -60,17 +60,134 @@ $('body').on('click', '[data-action="open"]', function(e) {
 .on('click', '[data-save-parameter]', function(e) {
 	e.preventDefault();
 	admin.parameter.save(e);
+})
+
+// Удаление фоток
+.on('dblclick', '[data-delete-foto="true"]', function(e) {
+	admin.fotos.deleteFoto(e);
+})
+
+// Удаление файла
+.on('click', '[data-delete-file="true"]', function(e) {
+	e.preventDefault();
+	admin.files.deleteFile(e);
 });
 
 // Сортировка параметров
 $('[data-parameters]').sortable({
 	axis: 'y', // перемещение только по вертикали
+	opacity: 0.5,
 	stop: function(event, ui) { // событие окончания перетаскивания
 		$.ajax({
 			url: '/admin/sortparams',
 			type: 'POST',
 			data: 'ids=' + JSON.stringify($(event.target).sortable('toArray'))
 		});
+	}
+});
+
+// Сортировка фото товара
+$('[data-uploaded-list="fotos"]').sortable({
+	opacity: 0.5,
+	stop: function(event, ui) { // событие окончания перетаскивания
+		var postData = [];
+		$('li', '[data-uploaded-list="fotos"]').each(function(index, element) {
+			postData.push($(element).data('uploaded-id'));
+		});
+
+		$.ajax({
+			url: '/admin/sortfotos',
+			type: 'POST',
+			data: 'ids=' + JSON.stringify(postData)
+		});
+	}
+});
+
+// Загрузка фотографий товара
+$('[data-upload-foto="true"]').on('click', function(e) {
+	$(e.target).children('input').click();
+}).fileupload({
+	url: '/admin/uploadfoto?prodId=' + $('[data-upload-foto="true"]').data('product-id') + '&width=200&height=150',
+	sequentialUploads: true,
+	formData: {script: true},
+	add: function (e, data) {
+		var ajax = data.submit();
+
+		ajax.success(function (result, textStatus, jqXHR) {
+			if (result !== 'false')
+			{
+				var imgData = JSON.parse(result);
+				var ul = $('[data-uploaded-list="fotos"]');
+				var li = $('<li data-uploaded-id="' + imgData.id + '" data-delete-foto="true"><img src="' + imgData.path + '" alt="/" class="thumbnail"/></li>');
+				ul.append(li);
+
+			}
+		});
+	},
+	progressall: function(e, data) {
+		var progress = parseInt(data.loaded / data.total * 100);
+
+		if (progress < 100)
+		{
+			$('[data-progress-fotos="true"]')
+				.fadeIn()
+				.children('.bar')
+				.css('width', progress + '%')
+				.text(progress + ' %');
+		} else {
+			$('[data-progress-fotos="true"]')
+				.children('.bar')
+				.css('width', progress + '%')
+				.text('Загрузка завершена');
+
+			setTimeout(function() {
+				$('[data-progress-fotos="true"]').fadeOut();
+			}, 1000)
+		}
+	}
+});
+
+// Загрузка файлов
+$('[data-upload-file="true"]').on('click', function(e) {
+	$(e.target).children('input').click();
+}).fileupload({
+	url: '/admin/uploadfile?prodId=' + $('[data-upload-file="true"]').data('product-id'),
+	sequentialUploads: true,
+	formData: {script: true},
+	add: function (e, data) {
+		var ajax = data.submit();
+
+		ajax.success(function (result, textStatus, jqXHR) {
+			console.log(result);
+			if (result !== 'false')
+			{
+				var fileData = JSON.parse(result);
+				var ul = $('[data-uploaded-list="files"]');
+				var li = $('<li data-uploaded-id="' + fileData.id + '" data-delete-file="true"><a href="/admin/deletefile/' + fileData.id + '/" class="btn btn-danger">Удалить файл</a>' + fileData.name + '</li>');
+				ul.append(li);
+			}
+		});
+	},
+	progressall: function(e, data) {
+		var progress = parseInt(data.loaded / data.total * 100);
+
+		if (progress < 100)
+		{
+			$('[data-progress-files="true"]')
+				.fadeIn()
+				.children('.bar')
+				.css('width', progress + '%')
+				.text(progress + ' %');
+		} else {
+			$('[data-progress-files="true"]')
+				.children('.bar')
+				.css('width', progress + '%')
+				.text('Загрузка завершена');
+
+			setTimeout(function() {
+				$('[data-progress-files="true"]').fadeOut();
+			}, 1000)
+		}
 	}
 });
 
@@ -390,3 +507,40 @@ admin.parameter.deleteParam = function(e)
 			}
 		});
 	}
+
+admin.fotos = {}; // Объект для работы с картинками
+
+// Удаление картинок
+admin.fotos.deleteFoto = function(event) {
+	$.ajax({
+		url: '/admin/deleteproductfoto/',
+		type: 'post',
+		data: {
+			id: $(event.target).parent().data('uploaded-id'),
+			prodId: $(event.target).parents('ul').data('product-id')
+		},
+		success: function(data) {
+			if (data === 'true')
+			{
+				$(event.target).parent('li').remove();
+			}
+		}
+	});
+}
+
+// Работа с файлами продукта
+admin.files = {};
+
+// Удаление файлов
+admin.files.deleteFile = function(event) {
+	$.ajax({
+		url: $(event.target).attr('href'),
+		type: 'post',
+		success: function(data) {
+			if (data === 'true')
+			{
+				$(event.target).parent('li').remove();
+			}
+		}
+	});
+};

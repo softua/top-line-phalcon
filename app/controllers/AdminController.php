@@ -3,16 +3,18 @@
 namespace App\Controllers;
 
 use App\Models;
+use App\Translit;
 use App\Validation;
+use App\Upload;
 
 class AdminController extends BaseAdminController
 {
 	public function beforeExecuteRoute()
 	{
-		if (!$this->cookies->has('user')) {
-
-			if ($this->dispatcher->getActionName() != 'login') {
-
+		if (!$this->cookies->has('user'))
+		{
+			if ($this->dispatcher->getActionName() != 'login')
+			{
 				$this->dispatcher->forward([
 					'action' => 'login'
 				]);
@@ -680,6 +682,8 @@ class AdminController extends BaseAdminController
 					else
 						$product->public = $inputs['public'] = 0;
 
+					$product->seo_name = $inputs['seo_name'];
+
 					if ($product->save())
 						$this->view->errors = ['success' => ['Данные успешно сохранены']];
 					else {
@@ -692,6 +696,21 @@ class AdminController extends BaseAdminController
 				}
 			}
 
+			$fotos = [];
+			$i = 0;
+			$tempFotos = Models\ProductImage::find([
+				'product_id = :productId:',
+				'bind' => ['productId' => $product->id],
+				'order' => 'sort'
+			]);
+
+			foreach ($tempFotos as $bdFoto)
+			{
+				$fotos[$i]['id'] = $bdFoto->id;
+				$fotos[$i]['path'] = '/products/' . $bdFoto->product_id . '/images/' . $bdFoto->id . '__200x150.' . $bdFoto->ext;
+				$i++;
+			}
+
 			$this->view->data = $inputs;
 			$this->view->id = $id;
 			$this->view->categories = json_encode(Models\Category::find()->toArray());
@@ -699,6 +718,11 @@ class AdminController extends BaseAdminController
 			$this->view->countries = Models\Country::getAllTypesAsString();
 			$this->view->brands = Models\PossibleBrands::getAllTypesAsString();
 			$this->view->parameters = Models\ProductParam::getParamsByProductId($id);
+			$this->view->fotos = $fotos;
+			$this->view->files = Models\ProductFile::find([
+				'product_id = :product:',
+				'bind' => ['product' => $product->id]
+			]);
 
 			echo $this->view->render('admin/products/edit');
 
@@ -817,6 +841,17 @@ class AdminController extends BaseAdminController
 			$prodCat = new Models\ProductCategory();
 			$prodCat->product_id = $productId;
 			$prodCat->category_id = $categoryId;
+
+			$sameCats = Models\ProductCategory::find([
+				'product_id = :prod: AND category_id = :cat:',
+				'bind' => ['prod' => $productId, 'cat' => $categoryId]
+			]);
+
+			if (count($sameCats) > 0)
+			{
+				echo null;
+				return false;
+			}
 
 			if ($prodCat->save())
 			{
@@ -1047,6 +1082,205 @@ class AdminController extends BaseAdminController
 		} else
 		{
 			return $this->response->redirect('admin');
+		}
+	}
+
+	public function uploadFotoAction()
+	{
+		if (!$this->request->isAjax())
+		{
+			echo null;
+			return false;
+		}
+
+		$productId = trim(strip_tags($_GET['prodId']));
+		$sizes['width'] = trim(strip_tags($_GET['width']));
+		$sizes['height'] = trim(strip_tags($_GET['height']));
+
+		$file = new Upload($_FILES['fotos'], 'ru');
+
+		if (!$file->file_is_image || !preg_match('/\d+/', $productId) || !preg_match('/\d+/', $sizes['width']) || !preg_match('/\d+/', $sizes['height']))
+		{
+			$file->clean();
+			echo 'false';
+			return false;
+		}
+
+		$bdFile = new Models\ProductImage();
+		$bdFile->ext = $file->file_src_name_ext;
+		$bdFile->product_id = $productId;
+		$bdFile->sort = Models\ProductImage::find([
+			'product_id = :id:',
+			'bind' => ['id' => $productId]
+		])->count();
+
+		if ($bdFile->save()) // Создаем файлы
+		{
+			$folder = 'products/' . $bdFile->product_id . '/images';
+			if (!file_exists($folder))
+			{
+				mkdir($folder, 0777, true);
+			}
+
+			$file->file_new_name_body = $bdFile->id . '__origin';
+			$file->process($folder);
+
+			$file->file_new_name_body = $bdFile->id . '__' . $sizes['width'] . 'x' . $sizes['height'];
+			$file->image_resize = true;
+			$file->image_ratio_crop = true;
+			$file->image_x = $sizes['width'];
+			$file->image_y = $sizes['height'];
+			$file->process($folder);
+
+			if ($file->processed)
+			{
+				$result['id'] = $bdFile->id;
+				$result['path'] = '/' . $folder . '/' . $file->file_dst_name;
+
+				echo json_encode($result);
+				$file->clean();
+				return true;
+			}
+		} else {
+			$file->clean();
+			echo 'false';
+			return false;
+		}
+	}
+
+	public function sortFotosAction()
+	{
+		if ($this->request->isAjax() && $this->request->isPost())
+		{
+			$fotoIds = json_decode($this->request->getPost('ids'));
+
+			for ($i = 0; $i < count($fotoIds); $i++)
+			{
+				$foto = Models\ProductImage::findFirst($fotoIds[$i]);
+
+				if ($foto)
+				{
+					$foto->sort = $i;
+					$foto->save();
+				}
+			}
+
+		} else
+		{
+			return $this->response->redirect('admin');
+		}
+	}
+
+	public function deleteProductFotoAction()
+	{
+		if (!$this->request->isAjax() && !$this->request->isPost())
+		{
+			echo 'false';
+			return false;
+		}
+
+		$id = $this->request->getPost('id', ['trim', 'striptags']);
+		$productId = $this->request->getPost('prodId', ['trim', 'striptags']);
+		$folder = 'products/' . $productId . '/images';
+
+		foreach (scandir($folder) as $fileName)
+		{
+			if (preg_match('/' . $id . '__/', $fileName))
+			{
+				Models\ProductImage::deleteFiles($folder . '/' . $fileName);
+			}
+		}
+
+		$bdFile = Models\ProductImage::findFirst($id);
+
+		if ($bdFile && $bdFile->delete())
+		{
+			echo 'true';
+			return true;
+
+		} else {
+			echo 'false';
+			return false;
+		}
+
+	}
+
+	public function uploadFileAction()
+	{
+		if (!$this->request->isAjax())
+		{
+			echo null;
+			return false;
+		}
+
+		$productId = trim(strip_tags($_GET['prodId']));
+
+		$file = new Upload($_FILES['files'], 'ru');
+
+		if (!preg_match('/\d+/', $productId))
+		{
+			$file->clean();
+			echo 'false';
+			return false;
+		}
+
+		$bdFile = new Models\ProductFile();
+		$bdFile->name = $file->file_src_name_body;
+		$bdFile->pathname = '/';
+		$bdFile->product_id = $productId;
+
+		if ($bdFile->save()) // Создаем файлы
+		{
+			$folder = 'products/' . $bdFile->product_id;
+			if (!file_exists($folder))
+			{
+				mkdir($folder, 0777, true);
+			}
+
+			$file->file_new_name_body = $bdFile->id . '__' . Translit::get_seo_keyword($bdFile->name, true);
+			$file->process($folder);
+
+			if ($file->processed)
+			{
+				$bdFile->pathname = $folder . '/' . $file->file_dst_name;
+				$bdFile->save();
+
+				$result['id'] = $bdFile->id;
+				$result['name'] = $bdFile->name;
+				$result['path'] = $bdFile->pathname;
+
+				echo json_encode($result);
+				$file->clean();
+				return true;
+			}
+		} else {
+			$file->clean();
+			echo 'false';
+			return false;
+		}
+	}
+
+	public function deleteFileAction()
+	{
+		if (!$this->request->isAjax() && !$this->request->isPost())
+		{
+			echo 'false';
+			return false;
+		}
+
+		$id = trim(strip_tags($this->dispatcher->getParams()[0]));
+
+		$bdFile = Models\ProductFile::findFirst($id);
+
+		if (Models\ProductFile::deleteFiles($bdFile->pathname))
+		{
+			$bdFile->delete();
+			echo 'true';
+			return true;
+
+		} else {
+			echo 'false';
+			return false;
 		}
 	}
 }

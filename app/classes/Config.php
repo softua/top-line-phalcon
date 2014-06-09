@@ -36,10 +36,10 @@ class Config
 		} elseif ($this->env == 'development')
 		{
 			$this->db = [
-				'host' => '176.9.36.18',
-				'username' => 'softuane_admin',
+				'host' => '127.0.0.1',
+				'username' => 'softua',
 				'password' => '7TWaskME',
-				'dbname' => 'softuane_top_line'
+				'dbname' => 'top-line'
 			];
 		}
 	}

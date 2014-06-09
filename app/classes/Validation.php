@@ -220,7 +220,7 @@ class Validation
 		{
 			foreach ($params as $name => $value)
 			{
-				if (strlen($value) < $minValue || strlen($value) > $maxValue)
+				if (mb_strlen($value, 'UTF-8') < $minValue || mb_strlen($value, 'UTF-8') > $maxValue)
 				{
 					$flag = false;
 					$this->messages[$name][] = 'Поле "' . $name . '" должно находиться в диапазоне от ' . $minValue . ' до ' . $maxValue . ' символов';
@@ -230,7 +230,7 @@ class Validation
 		{
 			foreach ($params as $name => $value)
 			{
-				if (strlen($value) < $minValue || strlen($value) > $maxValue)
+				if (mb_strlen($value, 'UTF-8') < $minValue || mb_strlen($value, 'UTF-8') > $maxValue)
 				{
 					$this->messages[$name][] = 'Поле "' . $name . '" должно находиться в диапазоне от ' . $minValue . ' до ' . $maxValue . ' символов';
 				}

@@ -17,8 +17,8 @@
 
 			<h2>Редактирование товара</h2>
 			<?php echo $this->partial('admin/partials/errors'); ?>
-			<form action="/admin/editproduct/<?php echo $id; ?>/" method="POST">
-				<table class="table table-bordered table-hover">
+			<form action="/admin/editproduct/<?php echo $id; ?>/" method="POST" enctype="multipart/form-data">
+				<table class="table table-bordered table-hover product-editing">
 					<tbody>
 						<tr>
 							<th><label for="seo-name">SEO название</label></th>
@@ -169,6 +169,47 @@
 								<?php } else { ?>
 									<input type="checkbox" id="public" name="public"/>
 								<?php } ?>
+							</td>
+						</tr>
+						<tr>
+							<th style="max-width: 200px;">Картинки товара:</th>
+							<td>
+								<div data-upload-foto="true" data-product-id="<?php echo $data['id']; ?>" class="btn btn-primary" style="margin: 0 0 20px 0;">
+									Загрузить фото
+									<input type="file" name="fotos" multiple style="display: none;"/>
+								</div>
+								<div class="progress progress-striped active" data-progress-fotos="true" style="display: none;">
+									<div class="bar" style="width: 0;">0%</div>
+								</div>
+								<ul data-uploaded-list="fotos" data-product-id="<?php echo $data['id']; ?>" class="thumbnails">
+									<?php if (isset($fotos) && $fotos == !$enpty) { ?>
+										<?php foreach ($fotos as $foto) { ?>
+											<li data-uploaded-id="<?php echo $foto['id']; ?>" data-delete-foto="true"><img src="<?php echo $foto['path']; ?>" alt="/" class="thumbnail"/></li>
+										<?php } ?>
+									<?php } ?>
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<th style="max-width: 200px;">Файлы:</th>
+							<td>
+								<div data-upload-file="true" data-product-id="<?php echo $data['id']; ?>" class="btn btn-primary" style="margin: 0 0 20px 0;">
+									Добавить файлы
+									<input type="file" name="files" multiple style="display: none;"/>
+								</div>
+								<div class="progress progress-striped active" data-progress-files="true" style="display: none;">
+									<div class="bar" style="width: 0;">0%</div>
+								</div>
+								<ul data-uploaded-list="files" data-product-id="<?php echo $data['id']; ?>" class="thumbnails">
+									<?php if (isset($files) && $files == !$empty) { ?>
+										<?php foreach ($files as $file) { ?>
+											<li data-uploaded-id="<?php echo $file->id; ?>" data-delete-file="true">
+												<a href="/admin/deletefile/<?php echo $file->id; ?>/" class="btn btn-danger">Удалить файл</a>
+												<?php echo $file->name; ?>
+											</li>
+										<?php } ?>
+									<?php } ?>
+								</ul>
 							</td>
 						</tr>
 						<tr>

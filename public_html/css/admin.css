@@ -24,4 +24,14 @@
 
 .parameters__item {
 	margin: 10px 0;
+	cursor: move;
+}
+
+.product-editing th {
+	width: 20%;
+	min-width: 150px;
+}
+
+.thumbnail {
+	cursor: move;
 }

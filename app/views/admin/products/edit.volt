@@ -11,8 +11,8 @@
 
 			<h2>Редактирование товара</h2>
 			{{ partial('admin/partials/errors') }}
-			<form action="/admin/editproduct/{{ id }}/" method="POST">
-				<table class="table table-bordered table-hover">
+			<form action="/admin/editproduct/{{ id }}/" method="POST" enctype="multipart/form-data">
+				<table class="table table-bordered table-hover product-editing">
 					<tbody>
 						<tr>
 							<th><label for="seo-name">SEO название</label></th>
@@ -163,6 +163,47 @@
 								{% else %}
 									<input type="checkbox" id="public" name="public"/>
 								{% endif %}
+							</td>
+						</tr>
+						<tr>
+							<th style="max-width: 200px;">Картинки товара:</th>
+							<td>
+								<div data-upload-foto="true" data-product-id="{{ data['id'] }}" class="btn btn-primary" style="margin: 0 0 20px 0;">
+									Загрузить фото
+									<input type="file" name="fotos" multiple style="display: none;"/>
+								</div>
+								<div class="progress progress-striped active" data-progress-fotos="true" style="display: none;">
+									<div class="bar" style="width: 0;">0%</div>
+								</div>
+								<ul data-uploaded-list="fotos" data-product-id="{{ data['id'] }}" class="thumbnails">
+									{% if fotos is defined and fotos is not enpty %}
+										{% for foto in fotos %}
+											<li data-uploaded-id="{{ foto['id'] }}" data-delete-foto="true"><img src="{{ foto['path'] }}" alt="/" class="thumbnail"/></li>
+										{% endfor %}
+									{% endif %}
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<th style="max-width: 200px;">Файлы:</th>
+							<td>
+								<div data-upload-file="true" data-product-id="{{ data['id'] }}" class="btn btn-primary" style="margin: 0 0 20px 0;">
+									Добавить файлы
+									<input type="file" name="files" multiple style="display: none;"/>
+								</div>
+								<div class="progress progress-striped active" data-progress-files="true" style="display: none;">
+									<div class="bar" style="width: 0;">0%</div>
+								</div>
+								<ul data-uploaded-list="files" data-product-id="{{ data['id'] }}" class="thumbnails">
+									{% if files is defined and files is not empty %}
+										{% for file in files %}
+											<li data-uploaded-id="{{ file.id }}" data-delete-file="true">
+												<a href="/admin/deletefile/{{ file.id }}/" class="btn btn-danger">Удалить файл</a>
+												{{ file.name }}
+											</li>
+										{% endfor %}
+									{% endif %}
+								</ul>
 							</td>
 						</tr>
 						<tr>
