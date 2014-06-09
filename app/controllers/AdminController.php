@@ -594,7 +594,7 @@ class AdminController extends BaseAdminController
 				$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
 				$inputs['public'] = $this->request->getPost('public', ['trim', 'striptags']);
 
-				$validation = new \App\Validation();
+				$validation = new Validation();
 
 				$validation->isNotEmpty([
 					'Название' => $inputs['name'],
@@ -1282,5 +1282,70 @@ class AdminController extends BaseAdminController
 			echo 'false';
 			return false;
 		}
+	}
+
+	public function settingsAction()
+	{
+		$this->tag->prependTitle('Настройки');
+
+		$data['curancy_eur'] = Models\Exchange::findFirst(['curancy = \'eur\''])->value;
+		$data['curancy_usd'] = Models\Exchange::findFirst(['curancy = \'usd\''])->value;
+
+		if ($this->request->isPost())
+		{
+			$inputs['curancy_eur'] = $this->request->getPost('curancy_eur', ['trim', 'striptags']);
+			$inputs['curancy_usd'] = $this->request->getPost('curancy_usd', ['trim', 'striptags']);
+
+			$validation = new Validation();
+			$validation->isNotEmpty([
+				'курс евро' => $inputs['curancy_eur'],
+				'курс usd' => $inputs['curancy_usd']
+			], false);
+
+			$validation->isFloat([
+				'курс евро' => $inputs['curancy_eur'],
+				'курс usd' => $inputs['curancy_usd']
+			], false);
+
+			if ($validation->validate())
+			{
+				$curancyEur = Models\Exchange::findFirst(['curancy = \'eur\'']);
+				$curancyUsd = Models\Exchange::findFirst(['curancy = \'usd\'']);
+
+				$curancyEur->value = $inputs['curancy_eur'];
+				$curancyUsd->value = $inputs['curancy_usd'];
+
+				$data['curancy_eur'] = $inputs['curancy_eur'];
+				$data['curancy_usd'] = $inputs['curancy_usd'];
+
+				if ($curancyEur->save() && $curancyUsd->save())
+				{
+					$this->view->errors = ['success' => ['Данные успешно сохранены']];
+
+					// Пересчет всех цен
+					foreach (Models\Product::find() as $product)
+					{
+						$prices = [];
+						$priceName = 'price_' . $product->main_curancy;
+						$prices = Models\Exchange::setPrices($product->main_curancy, $product->$priceName);
+
+						$product->price_eur = $prices['price_eur'];
+						$product->price_usd = $prices['price_usd'];
+						$product->price_uah = $prices['price_uah'];
+
+						$product->save();
+					}
+				} else {
+					$errors['error'][] = $curancyEur->getMessages();
+					$errors['error'][] = $curancyUsd->getMessages();
+					$this->view->errors = $errors;
+				}
+			} else {
+				$this->view->errors = $validation->getMessages();
+			}
+		}
+
+		$this->view->data = $data;
+		echo $this->view->render('admin/settings/index');
 	}
 }
