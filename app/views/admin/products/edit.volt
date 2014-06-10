@@ -176,7 +176,7 @@
 									<div class="bar" style="width: 0;">0%</div>
 								</div>
 								<ul data-uploaded-list="fotos" data-product-id="{{ data['id'] }}" class="thumbnails">
-									{% if fotos is defined and fotos is not enpty %}
+									{% if fotos is defined and fotos is not empty %}
 										{% for foto in fotos %}
 											<li data-uploaded-id="{{ foto['id'] }}" data-delete-foto="true"><img src="{{ foto['path'] }}" alt="/" class="thumbnail"/></li>
 										{% endfor %}

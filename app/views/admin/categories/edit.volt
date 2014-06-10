@@ -26,6 +26,20 @@
 					<input type="text" name="sort" id="sort" value="{{ category.sort }}">
 				</div>
 			</div>
+			<div data-upload-foto-category="true" data-category-id="{{ category.id }}" class="btn btn-primary" style="margin: 0 0 20px 0;">
+				Загрузить фото
+				<input type="file" name="fotos" style="display: none;"/>
+			</div>
+			<div class="progress progress-striped active" data-progress-fotos="true" style="display: none;">
+				<div class="bar" style="width: 0;">0%</div>
+			</div>
+			<ul data-uploaded-list="fotos-categories" data-category-id="{{ category.id }}" class="thumbnails">
+				{% if fotos is defined and fotos is not empty %}
+					{% for foto in fotos %}
+						<li data-uploaded-id="{{ foto['id'] }}" data-delete-category-foto="true"><img src="{{ foto['path'] }}" alt="/" class="thumbnail"/></li>
+					{% endfor %}
+				{% endif %}
+			</ul>
 			<div class="control-group">
 				<div class="controls">
 					<input type="submit" class="btn btn-success" value="Сохранить"/>

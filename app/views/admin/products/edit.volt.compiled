@@ -182,7 +182,7 @@
 									<div class="bar" style="width: 0;">0%</div>
 								</div>
 								<ul data-uploaded-list="fotos" data-product-id="<?php echo $data['id']; ?>" class="thumbnails">
-									<?php if (isset($fotos) && $fotos == !$enpty) { ?>
+									<?php if (isset($fotos) && $fotos == !$empty) { ?>
 										<?php foreach ($fotos as $foto) { ?>
 											<li data-uploaded-id="<?php echo $foto['id']; ?>" data-delete-foto="true"><img src="<?php echo $foto['path']; ?>" alt="/" class="thumbnail"/></li>
 										<?php } ?>

@@ -300,7 +300,7 @@ class AdminController extends BaseAdminController
 	public function editCategoryAction()
 	{
 		$id = $this->dispatcher->getParams()[0];
-		if($id == null)
+		if ($id == null)
 			return $this->response->redirect('admin/categories');
 
 		$this->tag->prependTitle('Редактирование');
@@ -311,7 +311,8 @@ class AdminController extends BaseAdminController
 		$this->view->fullParentCategory = $fullParentCategory;
 
 		// POST
-		if($this->request->isPost()) {
+		if($this->request->isPost())
+		{
 			$name = $this->request->getPost('name', ['striptags', 'trim']);
 			$sort = $this->request->getPost('sort', ['striptags', 'trim', 'int']);
 
@@ -336,6 +337,22 @@ class AdminController extends BaseAdminController
 				$this->view->errors = $validation->getMessages();
 			}
 		}
+
+		$tempFotos = Models\CategoryImage::find([
+			'category_id = :cat:',
+			'bind' => ['cat' => $id]
+		]);
+
+		$i = 0;
+		$fotos = [];
+		foreach ($tempFotos as $foto)
+		{
+			$fotos[$i]['id'] = $foto->id;
+			$fotos[$i]['path'] = '/' . $foto->pathname;
+			$i++;
+		}
+
+		$this->view->fotos = $fotos;
 
 		echo $this->view->render('admin/categories/edit');
 	}
@@ -1347,5 +1364,108 @@ class AdminController extends BaseAdminController
 
 		$this->view->data = $data;
 		echo $this->view->render('admin/settings/index');
+	}
+
+	public function uploadFotoCategoryAction()
+	{
+		if (!$this->request->isAjax())
+		{
+			echo null;
+			return false;
+		}
+
+		$categoryId = trim(strip_tags($_GET['catId']));
+
+		$file = new Upload($_FILES['fotos'], 'ru');
+
+		if (!$file->file_is_image || !preg_match('/\d+/', $categoryId))
+		{
+			$file->clean();
+			echo 'false';
+			return false;
+		}
+
+		$bdFile = new Models\CategoryImage();
+		$bdFile->pathname = '/';
+		$bdFile->category_id = $categoryId;
+
+		if ($bdFile->save())
+		{
+			if (!file_exists('categories'))
+			{
+				mkdir('categories', 0777, true);
+			}
+
+			$file->image_resize = true;
+			$file->image_ratio_crop = true;
+			if ($file->image_src_x >= $file->image_src_y)
+			{
+				if ($file->image_src_x > 110)
+				{
+					$file->image_ratio_y = true;
+					$file->image_x = 110;
+				}
+			}
+			elseif ($file->image_src_x < $file->image_src_y)
+			{
+				if ($file->image_src_y > 110)
+				{
+					$file->image_ratio_x = true;
+					$file->image_y = 110;
+				}
+			}
+			$file->file_new_name_body = $bdFile->id;
+			$file->process('categories');
+
+			if ($file->processed)
+			{
+				$bdFile->pathname = $file->file_dst_pathname;
+				$bdFile->save();
+				$file->clean();
+				$result['id'] = $bdFile->id;
+				$result['path'] = '/' . $bdFile->pathname;
+
+				echo json_encode($result);
+				return true;
+			}
+		} else {
+			$file->clean();
+			echo 'false';
+			return false;
+		}
+
+	}
+
+	public function deleteCategoryFotoAction()
+	{
+		if (!$this->request->isAjax() && !$this->request->isPost())
+		{
+			echo 'false';
+			return false;
+		}
+
+		$id = $this->request->getPost('id', ['trim', 'striptags']);
+		$bdFile = Models\CategoryImage::findFirst($id);
+
+		if (!preg_match('/\d+/', $id))
+		{
+			echo 'false';
+			return false;
+		}
+
+		if ($bdFile && file_exists($bdFile->pathname))
+		{
+			Models\CategoryImage::deleteFiles($bdFile->pathname);
+		}
+
+		if ($bdFile->delete())
+		{
+			echo 'true';
+			return true;
+
+		} else {
+			echo 'false';
+			return false;
+		}
 	}
 }

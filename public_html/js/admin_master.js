@@ -62,9 +62,14 @@ $('body').on('click', '[data-action="open"]', function(e) {
 	admin.parameter.save(e);
 })
 
-// Удаление фоток
+// Удаление фоток товара
 .on('dblclick', '[data-delete-foto="true"]', function(e) {
 	admin.fotos.deleteFoto(e);
+})
+
+// Удаление фоток категории
+.on('dblclick', '[data-delete-category-foto="true"]', function(e) {
+	admin.categoryFoto.deleteFoto(e);
 })
 
 // Удаление файла
@@ -119,6 +124,50 @@ $('[data-upload-foto="true"]').on('click', function(e) {
 				var imgData = JSON.parse(result);
 				var ul = $('[data-uploaded-list="fotos"]');
 				var li = $('<li data-uploaded-id="' + imgData.id + '" data-delete-foto="true"><img src="' + imgData.path + '" alt="/" class="thumbnail"/></li>');
+				ul.append(li);
+
+			}
+		});
+	},
+	progressall: function(e, data) {
+		var progress = parseInt(data.loaded / data.total * 100);
+
+		if (progress < 100)
+		{
+			$('[data-progress-fotos="true"]')
+				.fadeIn()
+				.children('.bar')
+				.css('width', progress + '%')
+				.text(progress + ' %');
+		} else {
+			$('[data-progress-fotos="true"]')
+				.children('.bar')
+				.css('width', progress + '%')
+				.text('Загрузка завершена');
+
+			setTimeout(function() {
+				$('[data-progress-fotos="true"]').fadeOut();
+			}, 1000)
+		}
+	}
+});
+
+// Загрузка фотографий категорий
+$('[data-upload-foto-category="true"]').on('click', function(e) {
+	$(e.target).children('input').click();
+}).fileupload({
+	url: '/admin/uploadfotocategory?catId=' + $('[data-upload-foto-category="true"]').data('category-id'),
+	sequentialUploads: true,
+	formData: {script: true},
+	add: function (e, data) {
+		var ajax = data.submit();
+
+		ajax.success(function (result, textStatus, jqXHR) {
+			if (result !== 'false')
+			{
+				var imgData = JSON.parse(result);
+				var ul = $('[data-uploaded-list="fotos-categories"]');
+				var li = $('<li data-uploaded-id="' + imgData.id + '" data-delete-category-foto="true"><img src="' + imgData.path + '" alt="/" class="thumbnail"/></li>');
 				ul.append(li);
 
 			}
@@ -536,6 +585,24 @@ admin.files.deleteFile = function(event) {
 	$.ajax({
 		url: $(event.target).attr('href'),
 		type: 'post',
+		success: function(data) {
+			if (data === 'true')
+			{
+				$(event.target).parent('li').remove();
+			}
+		}
+	});
+};
+
+admin.categoryFoto = {};
+
+admin.categoryFoto.deleteFoto = function(event) {
+	$.ajax({
+		url: '/admin/deletecategoryfoto',
+		type: 'post',
+		data: {
+			id: $(event.target).parent('li').data('uploaded-id')
+		},
 		success: function(data) {
 			if (data === 'true')
 			{
