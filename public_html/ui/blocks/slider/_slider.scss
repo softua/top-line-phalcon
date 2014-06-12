@@ -1,0 +1,141 @@
+.slider {
+    $h: 338px;
+    &--outer-wrapper {
+        @include my-linear-gradient(#afb0b5, #e1e3e8);
+        position: relative;
+
+        @include ie-after {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: url('../img/css/slider_shadow.png') center 0 no-repeat;
+        }
+
+        .bounding-box {
+            overflow: hidden;
+            position: relative;
+            height: $h;
+        }
+
+        .left-arrow, .right-arrow {
+            @include my-sprite-dimensions($spriteMisc, left-arrow-slider);
+            position: absolute;
+            top: 105px;
+            border: none;
+            z-index: 9;
+        }
+
+        .left-arrow {
+            left: 0;
+
+            &:hover {
+                @include sprite($spriteMisc, left-arrow-slider_hover);
+            }
+        }
+
+        .right-arrow {
+            @include sprite($spriteMisc, right-arrow-slider);
+            right: 0;
+
+            &:hover {
+                @include sprite($spriteMisc, right-arrow-slider_hover);
+            }
+        }
+
+        .switcher {
+            position: absolute;
+            bottom: 17px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 9;
+
+            &__item {
+                @include my-border-radius(5px);
+                @include ie-inline-block();
+                width: 11px;
+                height: 11px;
+                margin: 0 4px;
+                background: #b8b8ba;
+                cursor: pointer;
+
+                &.active {
+                    background: $colorRed;
+                }
+            }
+        }
+    }
+
+    & {
+        @include my-reset-list();
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: $h;
+        background: url('../img/css/slider_wheel.png') right center no-repeat;
+    }
+
+    &__item {
+        @if $ie > 8 {
+            @include ie-opacity(0);
+        }
+        display: none;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        p {
+            @include my-text-shadow(#fff 0 1px);
+            color: $colorForeground;
+        }
+
+        &:first-child {
+            @if $ie > 8 {
+                @include ie-opacity(1);
+            }
+            display: block;
+        }
+    }
+
+    &__link {
+        $pt: 80px;
+        $pl: 460px;
+        display: block;
+        position: relative;
+        width: 990px - $pl;
+        height: $h - $pt;
+        margin: 0 auto;
+        padding: $pt 0 0 $pl;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    &__img {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+    &__title {
+        @include my-text-shadow(rgba(#16191d, .5) 0 6px 21px);
+        margin: 0;
+        font-size: 36px;
+        font-weight: 600;
+        line-height: 48px;
+    }
+
+    &__subtitle {
+        color: $colorRed;
+        font-size: 30px;
+        font-weight: 400;
+        line-height: 48px;
+    }
+}

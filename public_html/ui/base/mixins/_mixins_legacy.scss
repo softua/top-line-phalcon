@@ -1,0 +1,107 @@
+// ******************************************************************************
+// * fallback (ie features)
+// *****************************************************************************/
+// IE fix png alpha channel
+//@if $ie < 9 {
+//    $filename: '../img/css/sprites/misc/category.png';
+//    background: url($filename) no-repeat;
+//    background: transparent;
+//    -ms-filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=#{$filename},sizingMethod='crop');
+//    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=#{$filename},sizingMethod='crop');
+//}
+
+@mixin ie-box-shadow($color, $direction: 90, $strength: 1) {
+    @if $ie < 9 {
+        $hex: ie-hex-str($color);
+        filter: progid:DXImageTransform.Microsoft.Shadow(color='#{$hex}', Direction=#{$direction}, Strength=#{$strength});
+        @if $ie < 8 { zoom: 1; }
+    }
+}
+
+@mixin ie-before-after($ieVersion: 7, $ieClassPrefix: '') {
+    @if $ie >= $ieVersion {
+        @if $ie > $ieVersion {
+            &:before, &:after { @content; }
+        } @else {
+            .#{$ieClassPrefix}before, .#{$ieClassPrefix}after { @content; }
+        }
+    }
+}
+
+@mixin ie-after($ieVersion: 7, $ieClassPrefix: '') {
+    @if $ie >= $ieVersion {
+        @if $ie > $ieVersion {
+            &:after { @content; }
+        } @else {
+            .#{$ieClassPrefix}after { @content; }
+        }
+    }
+}
+
+@mixin ie-before($ieVersion: 7, $ieClassPrefix: '') {
+    @if $ie >= $ieVersion {
+        @if $ie > $ieVersion {
+            &:before { @content; }
+        } @else {
+            .#{$ieClassPrefix}before { @content; }
+        }
+    }
+}
+
+@mixin ie-icon-font($code, $makeIe: true) {
+    position: relative;
+
+    @if $ie < 8 {
+        @if $makeIe == true {
+            .before {
+                @extend %icon-font;
+                $code: str-slice($code, 2);
+                *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#x#{$code};');
+                @content;
+            }
+        }
+
+    } @else {
+        &:before {
+            @extend %icon-font;
+            content: $code;
+            @content;
+        }
+    }
+}
+
+@mixin ie-inline-block($verticalAlign: top) {
+    @if $ie > 7 {
+        display: inline-block;
+    } @else {
+        display: inline;
+        zoom: 1;
+    }
+    vertical-align: $verticalAlign;
+}
+
+@mixin ie-opacity($var) {
+    @if $ie > 8 {
+        opacity: $var;
+    } @else {
+        filter: alpha(opacity=$var * 100);
+    }
+}
+
+@mixin ie-background-opacity($color, $opacity) {
+    @if $ie == 7 {
+        @include rgba-background(rgba($color, $opacity));
+    } @else if $ie == 8 {
+        @include rgba-background-inline(rgba($color, $opacity));
+    } @else {
+        background: rgba($color, $opacity);
+    }
+}
+
+@mixin ie-justify {
+    text-align: justify;
+    @if $ie < 9 {
+        text-justify: newspaper;
+        zoom: 1;
+    }
+}

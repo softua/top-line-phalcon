@@ -1,0 +1,188 @@
+.slider-sales {
+    &--outer-wrapper {
+        @include my-border-radius(15px);
+        @include my-box-shadow(rgba(#16191d, .4) 0 10px 10px);
+        overflow: hidden;
+        position: relative;
+        background: #fff;
+        margin: 20px 0;
+        padding-bottom: 20px;
+
+        .bounding-box {
+            overflow: hidden;
+            position: relative;
+            height: 240px;
+            margin: 0 35px;
+        }
+
+        .left-arrow, .right-arrow {
+            @extend %arrow;
+        }
+
+        .left-arrow {
+            @extend %arrow-left;
+        }
+
+        .right-arrow {
+            @extend %arrow-right;
+        }
+
+        &__title {
+            @include my-linear-gradient(#727273, #8b8989);
+            margin: 0;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 48px;
+            text-align: center;
+
+            @include ie-before {
+                @include my-sprite-dimensions($spriteMisc, title_dots_left);
+                content: '';
+                display: inline-block;
+                margin-right: 30px;
+                vertical-align: middle;
+            }
+
+            @include ie-after {
+                @include my-sprite-dimensions($spriteMisc, title_dots_right);
+                content: '';
+                display: inline-block;
+                margin-left: 30px;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    & {
+        @include my-reset-list();
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 198%;
+    }
+
+    &__item {
+        $pt: 40px;
+        $pb: 17px;
+        float: left;
+        position: relative;
+        min-width: 303px;
+        width: 16.6%;
+        height: 240px - $pt - $pb;
+        padding: $pt 0 $pb;
+
+        @include my-media-queries(min, (350px * 4) + 80) {
+            width: floor(100% / 4 / 2 * 100) / 100;
+        }
+
+        @include ie-after {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 7px;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: url('../img/css/shadow-185x12.png') center 0 no-repeat;
+        }
+
+        p {
+            overflow: hidden;
+            position: relative;
+            max-height: 72px;
+            margin: 1em 0 0;
+            font-size: 14px;
+            font-weight: 400;
+        }
+    }
+
+    &__link {
+        $pt: 0;
+        $pl: 130px;
+        $pr: 15px;
+        @if $ie != 9 {
+            @include my-linear-gradient(#c8c9c9, #f4f4f4);
+        } @else {
+            background: #f4f4f4;
+        }
+        @include my-border-radius(15px);
+        display: block;
+        position: relative;
+        width: 298px - $pl - $pr - 6;
+        height: 183px - $pt - 6;
+        margin: 0 auto;
+        padding: $pt $pr 0 $pl;
+        border: 3px solid #fff;
+        color: $colorForeground;
+        text-decoration: none;
+        z-index: 2;
+
+        &:hover {
+            border-color: $colorLink;
+        }
+
+        &__wrapper {
+            @if $ie < 8 {
+                padding-top: 25px;
+            } @else {
+                display: table-cell;
+                width: 293px - $pl - $pr;
+                height: 140px;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &__img {
+        position: absolute;
+        margin: 0;
+        left: 5px;
+        bottom: 40px;
+        width: 120px;
+        height: 180px;
+        line-height: 180px;
+        text-align: center;
+
+        img {
+            vertical-align: middle;
+        }
+    }
+
+    &__value {
+        margin-top: 12px;
+        font-size: 14px;
+
+        mark {
+            background: none;
+            color: $colorRed;
+            font-size: 12px;
+        }
+
+        b {
+            font-size: 24px;
+            font-weight: 600;
+        }
+    }
+
+    &__remain {
+        @include my-border-radius(0 0 12px 12px);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0 20px;
+        background: #828282;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 40px;
+    }
+}

@@ -1,0 +1,134 @@
+@import 'extend';
+//    'js';
+
+//==============================================================================
+//* global rules
+//==============================================================================
+html {
+    height: 100%;
+    min-width: $containerMinWidth;
+}
+
+body {
+    @include my-base64(bg, 0 0, repeat, #edeef4, 'jpg');
+    position: relative;
+    @if $ie < 7 {
+        height: auto !important;
+        height: 100%;
+    }
+    min-height: 100%;
+    color: $colorForeground;
+    font-family: $fontBody;
+    font-size: $fontSize;
+    font-weight: 300;
+    line-height: $fontLineHeight;
+
+    @if $ie > 90 {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+#wrapper {
+    overflow: hidden;
+    position: relative;
+    padding: 0 10px $footerHeight;
+}
+
+#container {
+    @include responsive-mode($containerMinWidth - 28 - 20, $containerMaxWidth - 28 - 20);
+    @extend %clearfix;
+    position: relative;
+    margin: 0 auto;
+    padding: 0 14px;
+    background: #f8f8f8;
+    z-index: 1;
+
+    #main-page & {
+        @include responsive-mode($containerMinWidth - 20, $containerMaxWidth - 20);
+        padding: 0;
+        background: none;
+    }
+}
+
+#fade {
+    @include ie-opacity(.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 990;
+}
+
+.cf, .clear { @extend %clearfix; }
+
+a {
+    @include my-transition(color .2s);
+    color: $colorLink;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+p {
+    /* android browser hack */
+    // https://stackoverflow.com/questions/9418333/why-wont-the-android-browser-span-this-paragraph-over-the-full-browser-width
+    background: url('');
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+fieldset {
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+button, select { cursor: pointer; }
+iframe { border: none; }
+img { max-width: 100%; }
+input, textarea, th, td { padding: 0; }
+textarea { resize: vertical; }
+input:focus, textarea:focus, button { outline: 0; }
+
+:focus:-moz-placeholder { color:transparent !important; }
+:focus::-moz-placeholder { color:transparent !important; }
+:focus:-ms-input-placeholder { color:transparent !important; }
+:focus::-webkit-input-placeholder { color:transparent !important; }
+
+@import 'header/header',
+'nav/nav',
+
+'main/main',
+'about/about',
+'article/article',
+'breadcrumbs/breadcrumbs',
+'buttons/buttons',
+'catalog/catalog',
+'contacts/contacts',
+'filter/filter',
+'form/form',
+'js-select/js-select',
+'leaders/leaders',
+'new-products/new-products',
+'news-list/news-list',
+'news-main-list/news-man-list',
+'pagination/pagination',
+'partners/partners',
+'product/product',
+'products-list/products-list',
+'sales/sales',
+'services/services',
+'slider/slider',
+'slider-sales/slider-sales',
+'title/title',
+'video/video',
+
+'sidebar/sidebar',
+'footer/footer',
+'inline';

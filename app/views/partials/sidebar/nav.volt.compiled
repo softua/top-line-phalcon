@@ -1,0 +1,19 @@
+<nav class="sidebar__block sidebar__block--nav">
+	<h6 class="sidebar__block__title">Каталог</h6>
+	<a class="sidebar__block__btn" href="" title="">Акционные предложения</a>
+	<?php if (isset($sidebar_categories) && $sidebar_categories == !$empty) { ?>
+		<ul class="sidebar__nav">
+			<?php foreach ($sidebar_categories as $cat) { ?>
+				<?php if (isset($cat['active']) && $cat['active'] == true) { ?>
+					<li class="sidebar__nav__item active">
+						<a class="sidebar__nav__item__link" href="<?php echo $cat['path']; ?>" title="<?php echo $cat['name']; ?>"><?php echo $cat['name']; ?></a>
+					</li>
+				<?php } else { ?>
+					<li class="sidebar__nav__item">
+						<a class="sidebar__nav__item__link" href="<?php echo $cat['path']; ?>" title="<?php echo $cat['name']; ?>"><?php echo $cat['name']; ?></a>
+					</li>
+				<?php } ?>
+			<?php } ?>
+		</ul>
+	<?php } ?>
+</nav>

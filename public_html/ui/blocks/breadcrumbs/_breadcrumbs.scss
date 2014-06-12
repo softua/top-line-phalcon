@@ -1,0 +1,24 @@
+.breadcrumbs {
+    @include my-reset-list();
+    @include responsive-mode($containerMinWidth - 28, $containerMaxWidth - 28);
+    margin: 0 auto;
+    color: $colorLink;
+
+    &__item {
+        @include ie-inline-block();
+        font-size: 12px;
+        line-height: 30px;
+
+        &__link {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        &__current {
+            display: inline-block;
+            margin: 0 5px;
+            color: $colorForeground;
+        }
+    }
+
+}

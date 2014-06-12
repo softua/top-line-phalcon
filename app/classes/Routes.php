@@ -21,13 +21,13 @@ $di['router'] = function()
 	$router->add(
 		'/',
 		[
-			'controller' => 'index',
+			'controller' => 'main',
 			'action' => 'index'
 		]
 	);
 
 	$router->add(
-		'/:controller/',
+		'/:controller',
 		[
 			'controller' => 1,
 			'action' => 'index'

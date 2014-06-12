@@ -1,0 +1,68 @@
+.about-activities {
+    @include my-reset-list($p: 0 230px 0 0, $m: 20px 0);
+    border-bottom: 1px dashed $colorBorder;
+
+    &__item {
+        position: relative;
+        min-height: 140px;
+        padding: 15px 0 20px;
+
+        & + & {
+            border-top: 1px dashed $colorBorder;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        &__title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: normal;
+        }
+
+        &__img {
+            position: absolute;
+            top: 15px;
+            right: -225px;
+            margin: 0;
+
+            img {
+                @include my-border-radius(16px);
+                @include my-box-shadow(rgba(#16191c, .2) 0 6px 9px);
+                display: block;
+                width: 175px;
+                height: 130px;
+                border: 5px solid #fff;
+            }
+
+            @include ie-after {
+                @include my-sprite-dimensions($spriteMisc, nozzle_left);
+                content: '';
+                display: block;
+                position: absolute;
+                top: 56px;
+                left: -25px;
+                z-index: 2;
+            }
+        }
+    }
+}
+
+.about-intro {
+    position: relative;
+    min-height: 190px;
+    padding-left: 200px;
+
+    &__img {
+        @include my-border-radius(50%);
+        @include my-box-shadow(rgba(#16191c, .4) 0 6px 9px);
+        position: absolute;
+        top: 0;
+        left: 5px;
+        width: 163px;
+        height: 163px;
+        border: 5px solid #fff;
+    }
+}

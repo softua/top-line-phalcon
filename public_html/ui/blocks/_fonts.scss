@@ -1,0 +1,12 @@
+@mixin my-fonts {
+
+    //==============================================================================
+    //* Font: FontAwesome
+    //==============================================================================
+    @include my-font-face(fontawesome, fontawesome-webfont, 'FontAwesome');
+
+}
+
+@if $isFontFace == true {
+    @include my-fonts;
+}

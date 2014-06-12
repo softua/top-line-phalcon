@@ -1,0 +1,57 @@
+// ******************************************************************************
+// * colors
+// *****************************************************************************/
+// http://stackoverflow.com/questions/11614940/convert-rgba-to-rgb-taking-background-into-consideration
+@function getHex($foreground, $opacity: 1, $background: #fff) {
+
+    $red: red($foreground);
+    $green: green($foreground);
+    $blue: blue($foreground);
+
+    @if $opacity < 1 {
+
+        $alpha: 1 - $opacity;
+
+        $bgRed: red($background);
+        $bgGreen: green($background);
+        $bgBlue: blue($background);
+
+        $red : round(($opacity * $red / 255 + $alpha * $bgRed / 255) * 255);
+        $green : round(($opacity * $green / 255 + $alpha * $bgGreen / 255) * 255);
+        $blue : round(($opacity * $blue / 255 + $alpha * $bgBlue / 255) * 255);
+
+    }
+
+    @return rgb($red, $green, $blue);
+}
+
+@function getRgba($color, $opacity: 1, $background: #fff) {
+    @if $ie > 9 {
+        @return rgba($color, $opacity);
+
+    } @else {
+        @return getHex($color, $opacity, $background);
+    }
+}
+
+// ******************************************************************************
+// * base64
+// *****************************************************************************/
+@function getBase64Width($file) {
+    @return image-width('../images/css/base64/#{$file}.png');
+}
+
+@function getBase64Height($file) {
+    @return image-height('../images/css/base64/#{$file}.png');
+}
+
+// ******************************************************************************
+// * sprites
+// *****************************************************************************/
+@function getSpriteItemWidth($sprite, $item) {
+    @return image-width(sprite-file($sprite, $item));
+}
+
+@function getSpriteItemHeight($sprite, $item) {
+    @return image-height(sprite-file($sprite, $item));
+}

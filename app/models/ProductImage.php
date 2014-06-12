@@ -17,8 +17,8 @@ class ProductImage extends \Phalcon\Mvc\Model
 	}
 
 	public $id;
+	public $extension;
 	public $product_id;
-	public $ext;
 	public $sort;
 
 	public static function deleteFiles($fileName)

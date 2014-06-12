@@ -1,0 +1,52 @@
+.video {
+    @include my-reset-list();
+
+    &__item {
+        min-width: 400px;
+        padding: 0 43% 15px 0;
+
+        & + & {
+            padding-top: 20px;
+            border-top: 1px solid $colorBorder;
+        }
+
+        p {
+            margin: 1em 0 0;
+        }
+
+        &__container {
+            margin: 0;
+        }
+
+        &__wrapper {
+            @include my-box-shadow(rgba(#16191c, .3) 0 5px 21px);
+            @include my-border-radius(7px);
+            position: relative;
+            padding-bottom: 55%;
+            border: 7px solid #fff;
+
+            @include ie-after {
+                content: '';
+                display: block;
+                position: absolute;
+                bottom: -26px;
+                left: 0;
+                width: 100%;
+                height: 19px;
+                background: url('../img/css/shadow.png') center bottom no-repeat;
+            }
+
+            iframe {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        &__title {
+            margin: 25px 0 8px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+}

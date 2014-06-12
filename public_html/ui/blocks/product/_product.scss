@@ -1,0 +1,156 @@
+.product {
+    @extend %white-block;
+    padding: 25px 30px;
+
+    p {
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    &__code {
+        color: #858282;
+        font-size: 14px;
+        line-height: 28px;
+        border-bottom: 1px solid $colorBorder;
+    }
+
+    &__title {
+        margin: 30px 0 12px;
+        font-size: $fontSize;
+        font-weight: 600;
+        line-height: $fontLineHeight;
+    }
+
+    &__info {
+        position: relative;
+        min-height: 400px;
+        padding-left: 310px;
+
+        p {
+            font-size: $fontSize;
+            line-height: 22px;
+        }
+
+        &__instock {
+            padding: 23px 0 23px 30px;
+            line-height: 24px;
+            background: sprite($spriteMisc, tick, 0, 22) no-repeat;
+            border-bottom: 1px dashed $colorBorder;
+            color: $colorGreen;
+            font-weight: 600;
+
+            &--null {
+                background: none;
+                color: $colorBorder;
+            }
+        }
+
+        &__price {
+            color: $colorRed;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 64px;
+
+            b {
+                font-size: 36px;
+                font-weight: 600;
+            }
+        }
+
+        &__producer, &__brand {
+            line-height: 24px;
+
+            b {
+                display: inline-block;
+                width: 144px;
+                font-weight: 600;
+            }
+        }
+    }
+
+    &__gallery {
+        position: absolute;
+        top: 30px;
+        left: 0;
+        width: 290px;
+
+        &__full {
+            height: 300px;
+            margin: 0;
+            text-align: center;
+
+            &__img {
+                max-height: 100%;
+            }
+        }
+
+        &__thumbs {
+            @include my-reset-list();
+            overflow: hidden;
+
+            &__item {
+                @include my-sprite-dimensions($spriteMisc, product_thumb);
+                float: left;
+
+                & + & {
+                    margin-left: 6px;
+                }
+            }
+
+            &__link {
+                display: block;
+                position: relative;
+                height: 69px;
+                line-height: 60px;
+                text-align: center;
+
+                &:hover {
+                    @include ie-after {
+                        content: '';
+                        display: block;
+                        position: absolute;
+                        top: 1px;
+                        left: 2px;
+                        width: 100%;
+                        height: 100%;
+                        background: sprite($spriteMisc, thumb_hover) no-repeat;
+                    }
+                }
+
+                img {
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+
+    &__specs {
+        @include my-reset-list();
+        font-size: 14px;
+        line-height: 24px;
+
+        b {
+            display: inline-block;
+            width: 310px;
+            font-weight: 400;
+        }
+    }
+
+    &__actions {
+        line-height: 50px;
+        border-top: 1px dashed $colorBorder;
+
+        &__video, &__pdf {
+            display: inline-block;
+            margin-right: 60px;
+            padding-left: 32px;
+            background: sprite($spriteIco, video) no-repeat;
+            line-height: 24px;
+        }
+
+        &__pdf {
+            @include sprite($spriteIco, pdf);
+            color: $colorForeground;
+        }
+    }
+}

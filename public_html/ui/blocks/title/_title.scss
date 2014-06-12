@@ -1,0 +1,57 @@
+.title {
+    overflow: hidden;
+    position: relative;
+    margin: 12px 0;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2em;
+
+    &:first-child {
+        margin-top: 0;
+        margin-right: 150px;
+    }
+
+    &__wrapper {
+        display: inline-block;
+        position: relative;
+
+        @include ie-after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 50%;
+            right: -1630px;
+            width: 1600px;
+            border-top: 1px dashed $colorBorder;
+        }
+    }
+
+    //****************************** MOD: dot
+
+    &--dot {
+        padding-left: 20px;
+        background: sprite($spriteMisc, title_dot, 0, 15) no-repeat;
+        font-size: 30px;
+        font-weight: 400;
+        line-height: 1.2em;
+    }
+
+    //****************************** MOD: big
+
+    &--big {
+        color: $colorWineRed;
+        font-size: 30px;
+        font-weight: 400;
+        line-height: normal;
+    }
+}
+
+.title2 {
+    margin: 20px 0;
+    font-size: 18px;
+    font-weight: 400;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}

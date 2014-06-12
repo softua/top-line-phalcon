@@ -1,0 +1,116 @@
+//==============================================================================
+//* header
+//==============================================================================
+.header {
+    @include responsive-mode($containerMinWidth - 20, $containerMaxWidth - 20);
+    @include my-text-shadow(#fff 0 1px);
+    position: relative;
+    margin: 0 auto;
+    padding-top: 160px;
+    z-index: 2;
+
+    &__logo {
+        $file: '#{$imagesPath}/css/logo.png';
+        display: block;
+        background: url($file) no-repeat;
+        position: absolute;
+        top: 12px;
+        left: 10px;
+        width: 205px;
+        height: 91px - 30;
+        padding: 30px 0 0 145px;
+        color: #717171;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.2em;
+        text-align: right;
+        text-decoration: none;
+    }
+
+    &__contacts {
+        position: absolute;
+        top: 35px;
+        right: 12px;
+        text-align: center;
+
+        &__phone {
+            margin-bottom: 5px;
+            font-size: 18px;
+            font-weight: bold;
+
+            &__prefix {
+                font-size: 14px;
+                font-weight: 400;
+            }
+        }
+
+        &__email {
+            font-size: 14px;
+            font-weight: 400;
+
+            a {
+                font-size: 18px;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    &__search {
+        position: absolute;
+        top: 40px;
+        left: 395px;
+
+        &__wrapper {
+            position: relative;
+            margin-top: 5px;
+        }
+
+        input {
+            @include my-border-radius(3px);
+            display: block;
+            width: 340px - 65;
+            height: 24px;
+            padding: 0 55px 0 10px;
+            border-left: 1px solid #e2e2e3;
+            border-right: 1px solid #e2e2e3;
+            border-top: 1px solid #abadae;
+            border-bottom: none;
+            font-size: 14px;
+
+            @if $ie < 9 {
+                line-height: 24px;
+            }
+
+            @include my-placeholder(#b1a9a9) {
+                font-style: italic;
+            }
+        }
+
+        &__submit {
+            @extend %btn-red;
+            @include my-box-shadow(none);
+            @include my-border-radius(3px);
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 45px;
+            height: 24px;
+            border: none;
+
+            @include ie-after {
+                content: '';
+                display: block;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background: sprite($spriteIco, lens, 13, 3) no-repeat;
+            }
+        }
+    }
+}

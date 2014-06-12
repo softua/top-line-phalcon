@@ -1,0 +1,201 @@
+//==============================================================================
+//* sidebar
+//==============================================================================
+.sidebar {
+    float: left;
+    width: $sidebarWidth;
+    padding: 30px 0;
+
+    &__block {
+        @include my-border-radius(12px);
+        @include my-box-shadow(rgba(#16191c, .44) 0 5px 7px);
+        position: relative;
+        margin: 30px 0;
+        background: #fff;
+        border: 1px solid #bebebe;
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        &__title {
+            @include my-border-radius(12px 12px 0 0);
+            position: relative;
+            top: -1px;
+            left: -1px;
+            width: 100%;
+            margin: 0;
+            padding: 0 1px;
+            background: #444343;
+            color: #fff;
+            font-size: $fontSize;
+            font-weight: 400;
+            line-height: 38px;
+            text-indent: 38px;
+            white-space: nowrap;
+        }
+
+        &__btn {
+            @extend %btn-red;
+            @include my-border-radius(19px);
+            display: block;
+            width: 90%;
+            margin: 20px auto;
+        }
+
+        //****************************** MOD: nav
+
+        &--nav {
+            @include my-box-shadow(none);
+            border-style: dashed;
+        }
+
+        //****************************** MOD: info
+
+        &--info &__title {
+            @include ie-after {
+                @include my-sprite-dimensions($spriteMisc, sidebar_info);
+                content: '';
+                display: block;
+                position: absolute;
+                top: -11px;
+                right: 8px;
+                z-index: 2;
+            }
+        }
+    }
+
+    &__nav {
+        @include my-reset-list($p: 0 20px 15px 10px, $m: 10px 0 0);
+
+        &__item {
+            @include my-base64(bullet, 0 11px);
+            position: relative;
+            padding-left: 20px;
+
+            &__link {
+                display: block;
+                padding: 5px 0 6px;
+                border-top: 1px solid #bebebe;
+                color: $colorForeground;
+                font-size: 13px;
+                font-weight: 400;
+                text-decoration: none;
+
+                &:hover {
+                    color: $colorLink;
+                }
+            }
+
+            &.active {
+                background: none;
+
+                @include ie-before {
+                    @include my-border-radius(4px);
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    top: 12px;
+                    left: 1px;
+                    width: 8px;
+                    height: 8px;
+                    background: $colorWineRed;
+                }
+            }
+
+            &.active &__link {
+                color: $colorLink;
+            }
+        }
+    }
+
+    &__nav2 {
+        @include my-reset-list($m: 0 0 10px, $p: 0 0 0 10px);
+        display: none;
+
+        .active & {
+            display: block;
+        }
+
+        &__item {
+            &__link {
+                display: block;
+                padding: 5px 0;
+                color: $colorForeground;
+                font-size: 13px;
+                line-height: 14px;
+                text-decoration: none;
+
+                &:hover {
+                    color: $colorLink;
+                }
+            }
+        }
+    }
+
+    &__price-link {
+        margin: 30px auto;
+        background: sprite($spriteMisc, sidebar_price_bg, 40, 63) no-repeat;
+        font-size: 13px;
+        font-weight: 400;
+        text-align: center;
+
+        .btn-red {
+            display: block;
+            margin: 25px auto 0;
+        }
+    }
+
+    &__top {
+        @include my-reset-list($p: 0 25px);
+
+        &__item {
+            padding-bottom: 20px;
+            text-align: center;
+
+            & + & {
+                border-top: 1px dashed $colorBorder;
+            }
+
+            &__img {
+                display: block;
+                overflow: hidden;
+                position: relative;
+                margin: 0;
+                height: 160px;
+                line-height: 160px;
+
+                @include ie-after {
+                    @include ie-background-opacity(#fff, .7);
+                    content: '';
+                    display: none;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 2;
+                }
+
+                &:hover {
+                    @include ie-after {
+                        display: block;
+                    }
+                }
+
+                img {
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+
+    &__info {
+        @include my-reset-list($p: 10px);
+
+        &__item {
+            padding: 10px 20px;
+            background: sprite($spriteIco, info_bullet, 0, 13) no-repeat;
+        }
+    }
+}

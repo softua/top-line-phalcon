@@ -112,10 +112,11 @@ $('[data-uploaded-list="fotos"]').sortable({
 $('[data-upload-foto="true"]').on('click', function(e) {
 	$(e.target).children('input').click();
 }).fileupload({
-	url: '/admin/uploadfoto?prodId=' + $('[data-upload-foto="true"]').data('product-id') + '&width=200&height=150',
+	url: '/admin/uploadfoto?prodId=' + $('[data-upload-foto="true"]').data('product-id'),
 	sequentialUploads: true,
 	formData: {script: true},
 	add: function (e, data) {
+		$('[data-upload-foto="true"]').append('<img src="/img/indicato.gif" width="30">');
 		var ajax = data.submit();
 
 		ajax.success(function (result, textStatus, jqXHR) {
@@ -125,8 +126,11 @@ $('[data-upload-foto="true"]').on('click', function(e) {
 				var ul = $('[data-uploaded-list="fotos"]');
 				var li = $('<li data-uploaded-id="' + imgData.id + '" data-delete-foto="true"><img src="' + imgData.path + '" alt="/" class="thumbnail"/></li>');
 				ul.append(li);
-
 			}
+		});
+
+		ajax.complete(function() {
+			$('img', '[data-upload-foto="true"]').remove();
 		});
 	},
 	progressall: function(e, data) {
@@ -565,8 +569,7 @@ admin.fotos.deleteFoto = function(event) {
 		url: '/admin/deleteproductfoto/',
 		type: 'post',
 		data: {
-			id: $(event.target).parent().data('uploaded-id'),
-			prodId: $(event.target).parents('ul').data('product-id')
+			id: $(event.target).parent('li').data('uploaded-id')
 		},
 		success: function(data) {
 			if (data === 'true')

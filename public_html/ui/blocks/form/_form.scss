@@ -1,0 +1,62 @@
+.form {
+    @include my-border-radius(8px);
+    @include my-box-shadow(rgba(#000, .2) 0 5px 10px);
+    width: 495px - 20;
+    margin: 55px 0 40px;
+    padding: 12px 0 30px 20px;
+    background: #fff;
+
+    label, &__as-label {
+        display: block;
+        margin: 15px 0;
+        line-height: 30px;
+    }
+
+    input, textarea {
+        @include my-border-radius(6px);
+        @include my-box-shadow(inset rgba(#000, .5) 0 1px 4px);
+        display: inline-block;
+        width: 330px - 30;
+        padding: 0 15px;
+        border: 1px solid #d5d6d6;
+        border-top: 1px solid #bababb;
+        border-bottom: 1px solid #eaeaeb;
+        vertical-align: top;
+    }
+
+    input {
+        line-height: 28px;
+    }
+
+    textarea {
+        height: 80px - 10;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    &__label-name {
+        display: inline-block;
+        font-size: 14px;
+        font-style: italic;
+        width: 120px;
+    }
+
+    &__prefix {
+        width: 75px - 30 !important;
+        text-align: center;
+    }
+
+    &__phone {
+        width: 240px - 30 !important;
+    }
+
+    &__submit {
+        @extend %btn-next;
+        display: block;
+        margin-left: 120px;
+        padding-bottom: 2px;
+        border: none;
+        font-size: 14px;
+        line-height: normal;
+    }
+}

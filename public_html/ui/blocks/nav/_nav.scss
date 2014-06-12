@@ -1,0 +1,102 @@
+.nav {
+    &--outer-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    @extend %clearfix;
+    @include my-reset-list();
+    @include my-linear-gradient(#575656, #313030);
+    @include my-border-radius(3px);
+    @include my-text-shadow(none);
+    border-top: 1px solid #a3a3a3;
+
+    &__item {
+        float: left;
+        position: relative;
+        width: 14%;
+        line-height: 37px;
+        text-align: center;
+
+        &:hover {
+            .nav2 {
+                display: block;
+            }
+        }
+
+        &__link {
+            display: inline-block;
+            border-bottom: 1px dashed transparent;
+            color: #d5d5d5;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 16px;
+            text-decoration: none;
+
+            &:hover {
+                color: #fff;
+                border-color: #fff;
+            }
+
+            .active & {
+                color: #fff;
+                border-color: transparent;
+            }
+        }
+    }
+}
+
+//==============================================================================
+// nav2
+//==============================================================================
+.nav2 {
+    @include my-reset-list($p: 15px 0);
+    @include ie-background-opacity(#3f3e3f, .95);
+    @include my-border-radius(0 0 15px 15px);
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+
+    &__item {
+        position: relative;
+        text-align: center;
+
+        @include  ie-before {
+            content: '---';
+            display: block;
+            overflow: hidden;
+            position: absolute;
+            top: -18px;
+            left: 0;
+            width: 100%;
+            color: #8e8e8e;
+            text-align: center;
+        }
+
+        &:first-child {
+            @include ie-before {
+                display: none;
+            }
+        }
+
+        &__link {
+            display: block;
+            position: relative;
+            padding: 0 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 50px;
+            text-decoration: none;
+            z-index: 2;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

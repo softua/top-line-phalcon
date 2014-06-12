@@ -1,0 +1,81 @@
+.catalog {
+    @include my-reset-list($p: 1px 15px);
+    @include my-border-radius(15px);
+    background: #fff;
+    text-align: center;
+
+    &__item {
+        @include ie-inline-block();
+        width: 156px;
+        margin: 35px 20px;
+
+        p {
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        &__link {
+            display: block;
+            text-align: center;
+        }
+
+        &__link:hover &__img {
+            @include ie-after() {
+                display: block;
+            }
+        }
+
+        &__img {
+            @include my-border-radius(50%);
+            @include my-box-shadow(rgba(#16191c, .54) 0 6px 9px);
+            overflow: hidden;
+            position: relative;
+            width: 142px;
+            height: 142px;
+            margin: 0 auto 20px;
+            border: 7px solid #d7dbe1;
+            line-height: 142px;
+
+            @include ie-after {
+                @include ie-background-opacity(#fff, .7);
+                content: '';
+                display: none;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 2;
+            }
+
+            img {
+                max-height: 100%;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    //****************************** MOD: projects
+
+    &--projects {
+        border-top: 1px dashed $colorBorder;
+
+
+        padding: 0;
+        background: none;
+    }
+
+    &--projects &__item {
+        width: 173px + 28;
+    }
+
+    &--projects &__item__img {
+        width: 173px;
+        height: 173px;
+        line-height: 173px;
+    }
+
+    &--projects &__item__link {
+        font-weight: bold;
+    }
+}

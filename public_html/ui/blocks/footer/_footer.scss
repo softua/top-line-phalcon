@@ -1,0 +1,97 @@
+//==============================================================================
+//* footer
+//==============================================================================
+.footer {
+    &--outer-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: url('../img/css/footer.jpg') center 0;
+    }
+
+    @include responsive-mode($containerMinWidth - 28, $containerMaxWidth - 28);
+    position: relative;
+    height: $footerHeight - 20;
+    margin: 0 auto;
+    padding-top: 20px;
+
+    &__nav {
+        @include my-reset-list();
+        overflow: hidden;
+        text-align: center;
+
+        @if $ie > 7 {
+            display: table;
+            width: 100%;
+        }
+
+        &__item {
+            @if $ie < 8 {
+                @include ie-inline-block();
+                margin: 0 3%;
+            } @else {
+                @include my-base64(footer_nav_divider, 0 center);
+                display: table-cell;
+
+                &:first-child {
+                    background: none;
+                }
+            }
+
+            &__link {
+                display: inline-block;
+                font-size: 15px;
+                font-weight: 400;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+
+                .active & {
+                    color: #000;
+                    font-weight: 600;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+
+    &__phones {
+        @include my-text-shadow(#fff 0 1px);
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        font-size: 22px;
+        font-weight: bold;
+        line-height: 1em;
+        text-align: center;
+
+        &__prefix {
+            display: inline-block;
+            margin-left: 35px;
+            font-size: 17px;
+            font-weight: 400;
+
+            &:first-child {
+                margin-left: 0;
+            }
+        }
+    }
+
+    &__social {
+        position: absolute;
+        bottom: 20px;
+        right: 5%;
+    }
+
+    &__copyright {
+        position: absolute;
+        bottom: 20px;
+        left: 5%;
+        color: #6f7783;
+        font-size: 12px;
+    }
+}

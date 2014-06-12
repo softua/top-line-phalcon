@@ -1,0 +1,27 @@
+.pagination {
+    @include my-reset-list($p: 20px 0 0, $m: 25px 0 0);
+    @include my-box-shadow(inset #fff 0 1px);
+    border-top: 1px solid #ddd;
+    text-align: center;
+
+    &__item {
+        @include ie-inline-block();
+
+        &__link {
+            display: inline-block;
+            padding: 0 8px;
+            color: $colorForeground;
+            line-height: 14px;
+
+            .active & {
+                color: $colorWineRed;
+                text-decoration: none;
+            }
+        }
+
+        &--prev &__link, &--next &__link {
+            color: $colorWineRed;
+            text-decoration: none;
+        }
+    }
+}

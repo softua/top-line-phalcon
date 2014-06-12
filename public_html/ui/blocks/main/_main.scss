@@ -1,0 +1,45 @@
+//==============================================================================
+//* main
+//==============================================================================
+.main {
+    @extend %clearfix;
+    position: relative;
+    padding: 30px 0;
+
+    #main-page & {
+        padding-top: 8px;
+    }
+
+    &__back {
+        position: absolute;
+        top: 30px;
+        right: 0;
+        font-size: 13px;
+        z-index: 2;
+
+        @include ie-before {
+            content: '←';
+            position: absolute;
+            top: 0;
+            left: -20px;
+            width: 20px;
+        }
+
+        + .title {
+            margin-top: 0;
+            margin-right: 150px;
+        }
+
+        .article__actions & {
+            float: right;
+            position: relative;
+            top: 0;
+        }
+    }
+
+    //****************************** MOD: main--aside
+    &--aside {
+        margin-right: 40px;
+        margin-left: $sidebarWidth + 30;
+    }
+}

@@ -260,8 +260,8 @@ class AdminController extends BaseAdminController
 		$this->view->parent = $parent;
 
 		// POST запрос
-		if ($this->request->isPost()) {
-
+		if ($this->request->isPost())
+		{
 			$category = new Models\Category();
 
 			$name = $this->request->getPost('name', ['striptags', 'trim']);
@@ -278,7 +278,13 @@ class AdminController extends BaseAdminController
 			{
 				$category->name = $name;
 				$category->parent_id = $parent;
-				$category->seo_name = \App\Translit::get_seo_keyword($name, true);
+				if ($parent == '0')
+				{
+					$category->seo_name = Translit::get_seo_keyword($name, true);
+
+				} else {
+					$category->seo_name = Models\Category::getCategory($parent)->seo_name . '__' . Translit::get_seo_keyword($name, true);
+				}
 				$category->sort = (int)$sort;
 
 				if ($category->save())
@@ -286,7 +292,7 @@ class AdminController extends BaseAdminController
 					return $this->response->redirect('admin/categories');
 
 				} else {
-					$this->view->errors = ['БД' => $category->getMessages];
+					$this->view->errors = ['БД' => $category->getMessages()];
 				}
 
 			} else {
@@ -301,7 +307,9 @@ class AdminController extends BaseAdminController
 	{
 		$id = $this->dispatcher->getParams()[0];
 		if ($id == null)
+		{
 			return $this->response->redirect('admin/categories');
+		}
 
 		$this->tag->prependTitle('Редактирование');
 
@@ -724,7 +732,7 @@ class AdminController extends BaseAdminController
 			foreach ($tempFotos as $bdFoto)
 			{
 				$fotos[$i]['id'] = $bdFoto->id;
-				$fotos[$i]['path'] = '/products/' . $bdFoto->product_id . '/images/' . $bdFoto->id . '__200x150.' . $bdFoto->ext;
+				$fotos[$i]['path'] = '/products/' . $bdFoto->product_id . '/images/' . $bdFoto->id . '__admin_thumb.' . $bdFoto->extension;
 				$i++;
 			}
 
@@ -1104,6 +1112,15 @@ class AdminController extends BaseAdminController
 
 	public function uploadFotoAction()
 	{
+		/*
+		 * Возможные варианты картинок:
+		 * - 'original' - оригинал картинки;
+		 * - 'original_w' - оригинал с водяным знаком;
+		 * - 'product_description' - картинка для описания товара (290x300);
+		 * - 'product_thumb' - картинка для миниатюры в описании товара (55x47);
+		 * - 'admin_thumb' - картинка для миниатюры в админке (250x150).
+		*/
+
 		if (!$this->request->isAjax())
 		{
 			echo null;
@@ -1111,58 +1128,154 @@ class AdminController extends BaseAdminController
 		}
 
 		$productId = trim(strip_tags($_GET['prodId']));
-		$sizes['width'] = trim(strip_tags($_GET['width']));
-		$sizes['height'] = trim(strip_tags($_GET['height']));
 
 		$file = new Upload($_FILES['fotos'], 'ru');
 
-		if (!$file->file_is_image || !preg_match('/\d+/', $productId) || !preg_match('/\d+/', $sizes['width']) || !preg_match('/\d+/', $sizes['height']))
+		if (!$file->file_is_image || !preg_match('/\d+/', $productId))
 		{
 			$file->clean();
 			echo 'false';
 			return false;
 		}
 
+		$sort = Models\ProductImage::find(['product_id = \'' . $productId . '\''])->count();
 		$bdFile = new Models\ProductImage();
-		$bdFile->ext = $file->file_src_name_ext;
 		$bdFile->product_id = $productId;
-		$bdFile->sort = Models\ProductImage::find([
-			'product_id = :id:',
-			'bind' => ['id' => $productId]
-		])->count();
+		$bdFile->sort = $sort;
+		$bdFile->extension = $file->file_src_name_ext;
 
-		if ($bdFile->save()) // Создаем файлы
+		// Загружаем оригинальный файл
+
+		if ($bdFile->save())
 		{
-			$folder = 'products/' . $bdFile->product_id . '/images';
-			if (!file_exists($folder))
+			$file->file_new_name_body = $bdFile->id . '__original';
+			if (!file_exists('products/' . $productId . '/images'))
 			{
-				mkdir($folder, 0777, true);
+				mkdir('products/' . $productId . '/images', 0777, true);
 			}
-
-			$file->file_new_name_body = $bdFile->id . '__origin';
-			$file->process($folder);
-
-			$file->file_new_name_body = $bdFile->id . '__' . $sizes['width'] . 'x' . $sizes['height'];
-			$file->image_resize = true;
-			$file->image_ratio_crop = true;
-			$file->image_x = $sizes['width'];
-			$file->image_y = $sizes['height'];
-			$file->process($folder);
-
-			if ($file->processed)
+			$file->process('products/' . $productId . '/images');
+			if (!$file->processed)
 			{
-				$result['id'] = $bdFile->id;
-				$result['path'] = '/' . $folder . '/' . $file->file_dst_name;
-
-				echo json_encode($result);
+				echo 'false';
 				$file->clean();
-				return true;
+				return false;
 			}
 		} else {
-			$file->clean();
 			echo 'false';
+			$file->clean();
 			return false;
 		}
+
+		// Загружаем оригинальный файл с водяным знаком
+
+		$file->file_new_name_body = $bdFile->id . '__original_w';
+		$file->image_watermark = 'img/watermark.png';
+		$file->image_watermark_position = 'TL';
+		$file->process('products/' . $productId . '/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Загружаем картинку для описания товара
+
+		$file->file_new_name_body = $bdFile->id . '__product_description';
+		$file->image_watermark = 'img/watermark.png';
+		$file->image_watermark_position = 'TL';
+		$file->image_resize = true;
+		$file->image_ratio_crop = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			if ($file->image_src_x > 290)
+			{
+				$file->image_x = 290;
+				$file->image_ratio_y = true;
+			}
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			if ($file->image_src_y > 300)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 300;
+			}
+		}
+		$file->process('products/' . $productId . '/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Загружаем миниатюру для описания товара
+
+		$file->file_new_name_body = $bdFile->id . '__product_thumb';
+		$file->image_resize = true;
+		$file->image_ratio_crop = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			if ($file->image_src_x > 55)
+			{
+				$file->image_x = 55;
+				$file->image_ratio_y = true;
+			}
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			if ($file->image_src_y > 47)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 47;
+			}
+		}
+		$file->process('products/' . $productId . '/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Загружаем миниатюру для админки
+
+		$file->file_new_name_body = $bdFile->id . '__admin_thumb';
+		$file->image_resize = true;
+		$file->image_ratio_crop = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			if ($file->image_src_x > 250)
+			{
+				$file->image_x = 250;
+				$file->image_ratio_y = true;
+			}
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			if ($file->image_src_y > 150)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 150;
+			}
+		}
+		$file->process('products/' . $productId . '/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Возвращаем тумбу для админки
+
+		$result['id'] = $bdFile->id;
+		$result['path'] = '/products/' . $productId . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension;
+
+		echo json_encode($result);
+		$file->clean();
+		return true;
 	}
 
 	public function sortFotosAction()
@@ -1197,20 +1310,22 @@ class AdminController extends BaseAdminController
 		}
 
 		$id = $this->request->getPost('id', ['trim', 'striptags']);
-		$productId = $this->request->getPost('prodId', ['trim', 'striptags']);
-		$folder = 'products/' . $productId . '/images';
-
-		foreach (scandir($folder) as $fileName)
-		{
-			if (preg_match('/' . $id . '__/', $fileName))
-			{
-				Models\ProductImage::deleteFiles($folder . '/' . $fileName);
-			}
-		}
-
 		$bdFile = Models\ProductImage::findFirst($id);
 
-		if ($bdFile && $bdFile->delete())
+		if ($bdFile)
+		{
+			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original.' . $bdFile->extension);
+			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original_w.' . $bdFile->extension);
+			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_description.' . $bdFile->extension);
+			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_thumb.' . $bdFile->extension);
+			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension);
+
+		} else {
+			echo 'false';
+			return false;
+		}
+
+		if ($bdFile->delete())
 		{
 			echo 'true';
 			return true;
@@ -1259,7 +1374,7 @@ class AdminController extends BaseAdminController
 
 			if ($file->processed)
 			{
-				$bdFile->pathname = $folder . '/' . $file->file_dst_name;
+				$bdFile->pathname = $folder . '/' . str_replace('\\', '/', $file->file_dst_name);
 				$bdFile->save();
 
 				$result['id'] = $bdFile->id;
@@ -1400,26 +1515,20 @@ class AdminController extends BaseAdminController
 			$file->image_ratio_crop = true;
 			if ($file->image_src_x >= $file->image_src_y)
 			{
-				if ($file->image_src_x > 110)
-				{
-					$file->image_ratio_y = true;
-					$file->image_x = 110;
-				}
+				$file->image_x = 110;
+				$file->image_ratio_y = true;
 			}
 			elseif ($file->image_src_x < $file->image_src_y)
 			{
-				if ($file->image_src_y > 110)
-				{
-					$file->image_ratio_x = true;
-					$file->image_y = 110;
-				}
+				$file->image_y = 110;
+				$file->image_ratio_x = true;
 			}
 			$file->file_new_name_body = $bdFile->id;
 			$file->process('categories');
 
 			if ($file->processed)
 			{
-				$bdFile->pathname = $file->file_dst_pathname;
+				$bdFile->pathname = str_replace('\\', '/', $file->file_dst_pathname);
 				$bdFile->save();
 				$file->clean();
 				$result['id'] = $bdFile->id;
@@ -1438,9 +1547,9 @@ class AdminController extends BaseAdminController
 
 	public function deleteCategoryFotoAction()
 	{
-		if (!$this->request->isAjax() && !$this->request->isPost())
+		if (!$this->request->isAjax() || !$this->request->isPost())
 		{
-			echo 'false';
+			echo null;
 			return false;
 		}
 
@@ -1468,4 +1577,6 @@ class AdminController extends BaseAdminController
 			return false;
 		}
 	}
+
+
 }

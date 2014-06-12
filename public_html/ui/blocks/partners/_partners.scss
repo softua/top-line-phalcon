@@ -1,0 +1,116 @@
+.partners {
+    &--outer-wrapper {
+        position: relative;
+        margin-top: 20px;
+        font-size: 14px;
+        text-align: center;
+
+        .bounding-box {
+            overflow: hidden;
+            position: relative;
+            height: 180px;
+            margin: 0 35px;
+        }
+
+        .left-arrow, .right-arrow {
+            @extend %arrow;
+        }
+
+        .left-arrow {
+            @extend %arrow-left;
+        }
+
+        .right-arrow {
+            @extend %arrow-right;
+        }
+
+        &__title {
+            @include ie-background-opacity(#1f1f1f, .1);
+            @include my-text-shadow(#fff 0 1px);
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 25px;
+            color: #555454;
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 49px;
+            text-align: center;
+            white-space: nowrap;
+            z-index: 2;
+
+            &__wrapper {
+                display: inline-block;
+                position: relative;
+
+                @include ie-before-after {
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    top: 50%;
+                    width: 800px;
+                    border-top: 1px dashed $colorBorder;
+                    vertical-align: middle;
+                }
+
+                @include ie-before {
+                    left: -820px;
+                }
+
+                @include ie-after {
+                    right: -820px;
+                }
+            }
+        }
+    }
+
+    & {
+        @include my-reset-list();
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200%;
+    }
+
+    &__item {
+        float: left;
+        min-width: 227px;
+        width: 12.5%;
+        height: 190px;
+
+        p {
+            overflow: hidden;
+            position: relative;
+            height: 54px;
+        }
+
+        @for $i from 5 through 6 {
+            @include my-media-queries(min, (227px * $i) + 80) {
+                width: floor(100% / $i / 2 * 100) / 100;
+            }
+        }
+    }
+
+    &__link {
+        @include my-border-radius(50%);
+        @include my-box-shadow(rgba(#16191d, .4) 0 5px 5px);
+        display: block;
+        overflow: hidden;
+        position: relative;
+        width: 164px - 6;
+        height: 164px - 6;
+        margin: 0 auto;
+        background: #fff;
+        border: 3px solid transparent;
+        line-height: 164px;
+
+        img {
+            vertical-align: middle;
+        }
+
+        &:hover {
+            border-color: $colorRed;
+        }
+    }
+
+}

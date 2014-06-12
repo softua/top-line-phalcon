@@ -1,0 +1,50 @@
+// ******************************************************************************
+// * img
+// *****************************************************************************/
+@mixin my-image-dimensions($file, $correctionWidth: 0, $correctionHeight: 0) {
+    width: image-width($file) + $correctionWidth;
+    height: image-height($file) + $correctionHeight;
+}
+
+// ******************************************************************************
+// * base64
+// *****************************************************************************/
+@mixin my-base64($file, $params: 0 0, $repeat: no-repeat, $color: transparent, $ext: 'png') {
+    @if ($isInlineImages == true) {
+        @if $color == transparent {
+            background-image: inline-image('css/base64/#{$file}.#{$ext}');
+
+            @if $params == false {} @else {
+                background-position: $params;
+            }
+
+            @if $repeat == false {} @else {
+                background-repeat: $repeat;
+            }
+
+        } @else {
+            background: $color inline-image('css/base64/#{$file}.#{$ext}') $params $repeat;
+        }
+
+    } @else {
+        background: $color url('../img/css/base64/#{$file}.#{$ext}') $params $repeat;
+    }
+}
+
+@mixin my-base64-dimensions($file, $params: 0 0, $repeat: no-repeat, $color: transparent) {
+    @include my-image-dimensions('../img/css/base64/#{$file}.png');
+    @include my-base64($file, $params: 0 0, $repeat: no-repeat, $color: transparent);
+}
+
+// ******************************************************************************
+// * sprites
+// *****************************************************************************/
+@mixin my-sprite-dimensions($sprite, $item, $x: 0, $y: 0, $params: no-repeat, $correctionWidth: 0, $correctionHeight: 0) {
+    @include my-image-dimensions(sprite-file($sprite, $item), $correctionWidth, $correctionHeight);
+    background: sprite($sprite, $item, $x, $y) $params;
+}
+
+// background-position
+//$x: nth(sprite-position($sprite, $item), 1);
+//$y: nth(sprite-position($sprite, $item), 2);
+//background-position: $x $y;

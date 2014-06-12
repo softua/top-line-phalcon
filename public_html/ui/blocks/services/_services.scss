@@ -1,0 +1,34 @@
+.services {
+    @include my-reset-list($m: 15px 0 30px);
+    border-top: 1px dashed $colorBorder;
+
+    &__item {
+        @include my-box-shadow(#fff 0 1px);
+        overflow: hidden;
+        position: relative;
+        padding: 23px 52% 23px 0;
+        border-bottom: 1px solid #ddd;
+        font-weight: 600;
+        line-height: 28px;
+
+        .btn-next {
+            display: inline-block;
+            width: auto;
+            padding: 0 30px 0 20px;
+        }
+
+        &__actions {
+            position: absolute;
+            top: 23px;
+            right: 0;
+        }
+
+        &__file-link {
+            display: inline-block;
+            margin: 0 10px;
+            color: $colorForeground;
+            font-size: 14px;
+            font-weight: 300;
+        }
+    }
+}

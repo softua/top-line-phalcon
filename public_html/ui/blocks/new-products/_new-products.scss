@@ -1,0 +1,163 @@
+.new-products {
+    &--outer-wrapper {
+        position: relative;
+        padding: 15px 0 30px;
+        background: #fff;
+
+        @include ie-before-after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 64px;
+            width: 0;
+            height: 0;
+            border-top: 15px solid #e54641;
+        }
+
+        @include ie-before {
+            left: -12px;
+            border-left: 12px solid transparent;
+        }
+
+        @include ie-after {
+            right: -12px;
+            border-right: 12px solid transparent;
+        }
+
+        .bounding-box {
+            overflow: hidden;
+            position: relative;
+            height: 290px;
+            margin: 0 35px;
+        }
+
+        .left-arrow, .right-arrow {
+            @extend %arrow;
+            top: 165px;
+        }
+
+        .left-arrow {
+            @extend %arrow-left;
+        }
+
+        .right-arrow {
+            @extend %arrow-right;
+        }
+
+        &__title {
+            @if $ie < 10 {
+                @include filter-gradient(#e96662, #e54641, 'horizontal');
+            } @else {
+                @include background-image(linear-gradient(left, #e96662, #e54641));
+            }
+            @include my-box-shadow(rgba(#16191d, .5) 0 3px 5px);
+            position: relative;
+            width: 100%;
+            margin: 0 -13px 25px;
+            padding: 0 13px;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 49px;
+            text-align: center;
+            z-index: 2;
+        }
+    }
+
+    & {
+        @include my-reset-list();
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200%;
+    }
+
+    &__item {
+        float: left;
+        min-width: 204px;
+        width: 12.5%;
+
+        @for $i from 5 through 6 {
+            @include my-media-queries(min, (227px * $i) + 80) {
+                width: floor(100% / $i / 2 * 100) / 100;
+            }
+        }
+
+        p {
+            overflow: hidden;
+            position: relative;
+            height: 54px;
+        }
+    }
+
+    &__link {
+        $pt: 6px;
+        display: block;
+        width: 204px;
+        height: 290px - $pt;
+        margin: 0 auto;
+        padding-top: $pt;
+        color: $colorForeground;
+        font-size: 14px;
+        font-weight: 400;
+        text-decoration: none;
+    }
+
+    &__link:hover &__img {
+        border-color: $colorRed;
+
+        @include ie-after {
+            display: block;
+        }
+    }
+
+    &__link:hover &__more {
+        text-decoration: none;
+    }
+
+    &__img {
+        @include my-border-radius(15px);
+        position: relative;
+        margin: 0;
+        height: 173px;
+        border: 3px solid $colorBorder;
+        line-height: 173px;
+        text-align: center;
+        z-index: 1;
+
+        @include ie-before {
+            $file: '../img/css/label_sales.png';
+            @include my-image-dimensions($file);
+            content: '';
+            display: block;
+            position: absolute;
+            top: -9px;
+            right: -8px;
+            background: url($file);
+        }
+
+        @include ie-after {
+            content: '';
+            display: none;
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: url('../img/css/shadow-185x12.png') 0 center no-repeat;
+        }
+
+        img {
+            position: relative;
+            max-height: 100%;
+            vertical-align: middle;
+            z-index: -1;
+        }
+    }
+
+    &__more {
+        color: $colorRed;
+        text-decoration: underline;
+    }
+}

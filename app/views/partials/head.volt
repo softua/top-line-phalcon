@@ -1,15 +1,19 @@
 <head>
-	{{ get_title() }}
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-	<!--[if lt IE 9]>
-    {{ javascript_include('http://html5shiv.googlecode.com/svn/trunk/html5.js', false) }}
-	<![endif]-->
-	{% if env != 'production' %}
-        {{ stylesheet_link('master.css') }}
-        {{ javascript_include(['js/vendor/require-2.9.1.js', 'data-main': '/js/master']) }}
-    {% else %}
-        {{ stylesheet_link('master.min.css') }}
-        {{ javascript_include('js/master.min.js') }}
-	{% endif %}
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width"/>
+	<meta name="keywords" content=""/>
+	<meta name="description" content=""/>
+	{{ getTitle() }}
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300italic,300,400italic,600,600italic,700,700italic&amp;subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+	<!--[if lte IE 7]><link rel="stylesheet" href="/css/ie7.css"/><![endif]-->
+	<!--[if IE 8]><link rel="stylesheet" href="/css/ie8.css"/><![endif]-->
+	<!--[if IE 9]><link rel="stylesheet" href="/css/ie9.css"/><![endif]-->
+
+	<!--[if gt IE 9]><!--><link rel="stylesheet" href="/css/style.css"/><!--<![endif]-->
+
+	<!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script><![endif]-->
+
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+	<!--<link rel="apple-itouch-icon-precomposed" href="/favicon.png">-->
 </head>

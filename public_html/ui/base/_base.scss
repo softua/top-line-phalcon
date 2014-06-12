@@ -1,0 +1,44 @@
+// config
+$disable-magic-sprite-selectors: true;
+$isResponsive: true;
+$isInlineImages: true;
+$isFontFace: false;
+$imagesPath: '../img';
+
+// fallback
+$ie: 999 !default;
+@if $ie < 8 { $isInlineImages: false !global; }
+
+//dimensions
+$containerMinWidth: 1000px;
+$containerMaxWidth: 1600px;
+
+$headerHeight: 160px;
+$footerHeight: 104px;
+
+$sidebarWidth: 250px;
+
+//colors
+$colorBackground: #fff;
+$colorForeground: #212121;
+$colorWineRed: #c01505;
+$colorRed: #ee0301;
+$colorLink: $colorRed;
+$colorBorder: #b5b5b5;
+$colorGrey: #858282;
+$colorGreen: #0e690e;
+
+// fonts
+$fontSize: 16px;
+$fontLineHeight: 18px;
+$fontBody: 'Segoe UI', 'Open Sans', Arial, Helvetica, sans-serif;
+$fontIcon: FontAwesome;
+
+// sprites
+$spriteIco : sprite-map('css/sprites/ico/*.png', $position: 0%, $spacing: 50px, $repeat: no-repeat);
+$spriteMisc : sprite-map('css/sprites/misc/*.png', $position: 0%, $spacing: 100px, $repeat: no-repeat);
+
+@import 'compass',
+        'rgbapng',
+        'functions',
+        'mixins';

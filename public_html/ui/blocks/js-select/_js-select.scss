@@ -1,0 +1,56 @@
+.js-select {
+    @include my-border-radius(3px);
+    @include my-base64(select_drop, right center, no-repeat, #fff);
+    overflow: hidden;
+    position: relative;
+    width: 220px;
+    height: 20px;
+    border-top: 1px solid $colorBorder;
+    font-size: 13px;
+    cursor: pointer;
+
+    &__value {
+        padding: 0 10px;
+        line-height: 20px;
+    }
+
+    // options
+
+    &-options {
+        @include my-reset-list($m: -4px 0 0, $p: 6px 0 0);
+        @include my-border-radius(3px);
+        @include ie-background-opacity(#fff, .9);
+        @include my-box-shadow(#ccc 0 2px 3px);
+        position: absolute;
+        z-index: 9;
+
+        @if $ie < 9 {
+            border: 1px solid #eee;
+            border-top: none;
+        }
+
+        .item {
+            padding: 5px 10px;
+            font-size: 13px;
+            cursor: pointer;
+
+            + .item {
+                border-top: 1px solid #eee;
+            }
+
+            &:hover {
+                background: #eee;
+            }
+        }
+
+        .active {
+            color: $colorWineRed;
+        }
+    }
+
+    //****************************** MOD: .filter &
+
+    .filter & {
+        width: 34%;
+    }
+}

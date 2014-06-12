@@ -1,0 +1,60 @@
+.news-main-list {
+    &--outer-wrapper {
+        position: relative;
+        margin: 40px 0;
+        padding: 20px 0 20px 40px;
+        background: #fff;
+        z-index: 2;
+    }
+
+    & {
+        @include my-reset-list();
+        overflow: hidden;
+
+        @if $ie > 7 {
+            display: table;
+            width: 100%;
+        }
+    }
+
+    &__item {
+        font-size: 12px;
+
+        &:first-child {
+            padding-left: 0;
+        }
+
+        @if $ie > 7 {
+            display: table-cell;
+            padding: 0 40px;
+
+            & + & {
+                border-left: 1px solid $colorBorder;
+            }
+
+        } @else {
+            float: left;
+            width: 26%;
+            padding: 0 4%;
+        }
+
+        p {
+            margin: 1em 0 0;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+
+        a {
+            color: $colorForeground;
+        }
+    }
+
+    &__date {
+        display: block;
+        font-size: 12px;
+    }
+}

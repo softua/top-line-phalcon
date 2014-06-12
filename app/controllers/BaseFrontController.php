@@ -8,12 +8,9 @@
 namespace App\Controllers;
 class BaseFrontController extends \Phalcon\Mvc\Controller
 {
-	public function initialize ()
+	public function initialize()
 	{
-		$this->tag->setDoctype(\Phalcon\Tag::HTML5);
 		$this->tag->setTitle($this->di->get('config')->name);
 		$this->tag->setTitleSeparator(' :: ');
-
-		$this->env = $this->config->env;
 	}
 }

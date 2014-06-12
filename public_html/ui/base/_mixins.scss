@@ -1,0 +1,76 @@
+@import "mixins/mixins_css3";
+@import "mixins/mixins_images";
+@import "mixins/mixins_legacy";
+
+// ******************************************************************************
+// * css hacks
+// *****************************************************************************/
+//@-moz-document url-prefix() { // firefox hack
+//    @content;
+//}
+//doesnotexist:-o-prefocus, .style { // opera hack
+//    color: red;
+//}
+
+@mixin if-opera-mini() {
+    .operamini & {
+        @content;
+    }
+}
+
+@mixin opera-mini-line-height($height) {
+    .operamini &:before {
+        content: '';
+        display: inline-block;
+        height: $height;
+        vertical-align: middle;
+    }
+}
+
+// ******************************************************************************
+// * other
+// *****************************************************************************/
+@mixin my-reset-list($m: 0, $p: 0) {
+    list-style: none;
+    margin: $m;
+    padding: $p;
+}
+
+@mixin my-font-face($dir, $fontFile, $fontName, $style: normal, $weight: normal, $path: '../fonts/') {
+    @font-face {
+        font-family: $fontName;
+
+        @if $ie < 9 {
+            //            src: url('#{$path}#{$dir}/#{$fontFile}.eot');
+            src: // local('☺'),
+            url('#{$path}#{$dir}/#{$fontFile}.eot?#iefix') format('embedded-opentype');
+
+        } @else {
+            src:
+            url('#{$path}#{$dir}/#{$fontFile}.woff') format('woff'),
+            url('#{$path}#{$dir}/#{$fontFile}.ttf') format('truetype'),
+            url('#{$path}#{$dir}/#{$fontFile}.svg') format('svg');
+
+        }
+
+        font-style: $style;
+        font-weight: $weight;
+    }
+}
+
+@mixin responsive-mode($min: $containerMinWidth, $max: $containerMaxWidth) {
+    @if ($isResponsive) {
+        min-width: $min;
+        max-width: $max;
+    } @else {
+        width: $min;
+    }
+}
+
+@mixin print-styles($map) {
+    @each $property, $value in $map {
+        @if type-of($value) != map {
+            #{$property}: $value;
+        }
+    }
+}

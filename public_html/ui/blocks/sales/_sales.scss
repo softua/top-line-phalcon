@@ -1,0 +1,82 @@
+.sales {
+    @extend %white-block;
+    @include my-reset-list($p: 10px 20px);
+
+    &__item {
+        @extend %clearfix;
+        padding-top: 20px;
+
+        & + & {
+            border-top: 1px solid $colorBorder;
+        }
+
+        &__img {
+            float: left;
+            position: relative;
+            width: 465px;
+            margin: 0 25px 20px 0;
+            z-index: 1;
+
+            img {
+                @include my-border-radius(7px);
+                position: relative;
+                z-index: -1;
+            }
+
+            &__caption {
+                @include ie-background-opacity(#000, .6);
+                @include my-border-radius(0 0 7px 7px);
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                color: #fff;
+                font-weight: 600;
+
+                @if $ie < 8 {
+                    padding: 10px 0;
+                    text-align: center;
+                } @else {
+                    @include box-sizing(border-box);
+                    padding: 10px 15px;
+                }
+            }
+        }
+
+        &__text-wrapper {
+            overflow: hidden;
+            min-width: 320px;
+            font-size: 14px;
+        }
+
+        &__more {
+            @extend %btn-red;
+            display: block;
+            width: 114px;
+            height: 26px;
+            margin-bottom: 20px;
+            line-height: 26px;
+        }
+
+        //****************************** MOD: label-sales
+
+        &--label-sales &__img {
+            @include ie-after {
+                $file: '../img/css/label_sales.png';
+                @include my-image-dimensions($file);
+                content: '';
+                display: block;
+                position: absolute;
+                top: -6px;
+                right: -5px;
+                background: url($file);
+            }
+        }
+
+        //****************************** MOD: special
+
+        &--special &__img__caption {
+            @include ie-background-opacity(#ad1703, .6);
+        }
+    }
+}

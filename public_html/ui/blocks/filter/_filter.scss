@@ -1,0 +1,21 @@
+.filter {
+    margin-bottom: 20px;
+    padding-top: 10px;
+    border-top: 1px dashed $colorBorder;
+
+    &__wrapper {
+        @include my-border-radius(2px);
+        overflow: hidden;
+        position: relative;
+        background: url('../img/css/color_noise.png');
+        height: 27px - 3;
+        padding-top: 3px;
+        line-height: 21px;
+    }
+
+    &__title {
+        float: left;
+        width: 210px;
+        text-indent: 25px;
+    }
+}
