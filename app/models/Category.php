@@ -151,4 +151,27 @@ class Category extends \Phalcon\Mvc\Model
 		} else
 			return null;
 	}
+
+	/**
+	 * @param int $id
+	 * @return bool|Category
+	 */
+	public static function getRootCategoryByChildId($id)
+	{
+		if (!$id || !preg_match('/\d+/', $id))
+			return false;
+		$currentCategory = Category::findFirst($id);
+		if (!$currentCategory)
+			return false;
+		while (true)
+		{
+			if ($currentCategory->parent_id)
+			{
+				$currentCategory = Category::findFirst($currentCategory->parent_id);
+			}
+			else {
+				return $currentCategory;
+			}
+		}
+	}
 }

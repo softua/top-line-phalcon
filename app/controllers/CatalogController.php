@@ -22,7 +22,7 @@ class CatalogController extends BaseFrontController
 	{
 		$mainCategories = Models\Category::find([
 			'parent_id = 0',
-			'order' => 'sort'
+			'order' => 'sort, name'
 		]);
 
 		$mainCategoriesForView = [];
@@ -39,7 +39,7 @@ class CatalogController extends BaseFrontController
 
 			} else {
 
-				$mainCategoriesForView[$i]['path'] = '/product/' . $mainCategories[$i]->seo_name . '/';
+				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
 			}
 
 			$catImage = Models\CategoryImage::findFirst([
@@ -47,7 +47,14 @@ class CatalogController extends BaseFrontController
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
 
-			$mainCategoriesForView[$i]['img'] = ($catImage) ? '/' . $catImage->pathname : null;
+			if ($catImage && file_exists($catImage->pathname))
+			{
+				$mainCategoriesForView[$i]['img'] = '/' . $catImage->pathname;
+			} else {
+				$mainCategoriesForView[$i]['img'] = '/img/no_foto_110x110.png';
+			}
+
+
 		}
 		$this->view->categories = $this->view->sidebar_categories = $mainCategoriesForView;
 
@@ -76,7 +83,7 @@ class CatalogController extends BaseFrontController
 		$tempChildren = Models\Category::find([
 			'parent_id = :id:',
 			'bind' => ['id' => $currentCategory->id],
-			'order' => 'sort'
+			'order' => 'sort, name'
 		]);
 
 		$categoriesForView = [];
@@ -96,49 +103,64 @@ class CatalogController extends BaseFrontController
 
 			} else { // иначе ссылка для перечня товаров
 
-				$categoriesForView[$i]['path'] = '/product/' . $childCat->seo_name . '/';
+				$categoriesForView[$i]['path'] = '/products/list/' . $childCat->seo_name . '/';
 			}
 
 			$img = Models\CategoryImage::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $childCat->id]
 			]);
-			$categoriesForView[$i]['img'] = ($img) ? '/' . $img->pathname : null;
+			if ($img && file_exists($img->pathname))
+			{
+				$categoriesForView[$i]['img'] = '/' . $img->pathname;
+			} else {
+				$categoriesForView[$i]['img'] = '/img/no_foto_110x110.png';
+			}
+
 
 			$i++;
 		}
 
-		$tempSidebarCats = Models\Category::find([
-			'parent_id = :id:',
-			'bind' => ['id' => $currentCategory->parent_id],
-			'order' => 'sort'
+		// Категории для сайдбара
+		$sidebarCats = Models\Category::find([
+			'parent_id = 0',
+			'order' => 'sort, name'
 		]);
-
-		$sidebarCatsForView = [];
-		$i = 0;
-		foreach ($tempSidebarCats as $sidebarCat)
+		$currentCategoryParentId = $currentCategory->id;
+		$currentPosition = $currentCategory->parent_id;
+		while ($currentPosition)
 		{
-			$sidebarCatsForView[$i]['name'] = $sidebarCat->name;
+			if ($currentCategory->parent_id)
+			{
+				$parentCat = Models\Category::findFirst($currentPosition);
+				$currentCategoryParentId = $parentCat->id;
+				$currentPosition = $parentCat->parent_id;
+			} else {
+				$currentPosition = 0;
+			}
 
+		}
+		$sidebarCatsForView = [];
+		foreach ($sidebarCats as $sidebarCat)
+		{
+			$tempSidebarCat['name'] = $sidebarCat->name;
 			$sidebarCatChildren = Models\Category::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $sidebarCat->id]
 			]);
-
-			if ($sidebarCatChildren) // Если в этой категории есть дочерние, формируем ссылку для категории
+			if ($sidebarCatChildren)
 			{
-				$sidebarCatsForView[$i]['path'] = '/catalog/show/' . $sidebarCat->seo_name . '/';
-
-			} else { // иначе ссылка для перечня товаров
-
-				$sidebarCatsForView[$i]['path'] = '/product/' . $sidebarCat->seo_name . '/';
+				$tempSidebarCat['path'] = '/catalog/show/' . $sidebarCat->seo_name . '/';
+			} else {
+				$tempSidebarCat['path'] = '/products/list/' . $sidebarCat->seo_name . '/';
 			}
-
-			if ($sidebarCat->id == $currentCategory->id)
+			if ($sidebarCat->id == $currentCategoryParentId)
 			{
-				$sidebarCatsForView[$i]['active'] = true;
+				$tempSidebarCat['active'] = true;
+			} else {
+				$tempSidebarCat['active'] = false;
 			}
-			$i++;
+			$sidebarCatsForView[] = $tempSidebarCat;
 		}
 
 		// Получаем массив категорий для крошек

@@ -27,7 +27,7 @@
 
 	</div><!-- end #container -->
 
-	<button class="btn-ask" type="button"></button>
+	{#<button class="btn-ask" type="button"></button>#}
 
 	<div class="leaders">
 		Наша компания - одна из лидирующих в Европе. Добро пожаловать к нам!
@@ -40,5 +40,6 @@
 
 <!--[if lte IE 7]><script>window.msie = 7;</script><![endif]-->
 <!--[if IE 8]><script>window.msie = 8;</script><![endif]-->
+<script data-main="/js/main" src="/js/require.js"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ var version = {
 
 require.config( {
     urlArgs: 'v=' + (isDev ? Math.random() : 0.1),
-    baseUrl: 'js/lib',
+    baseUrl: '/js/lib',
     paths: {
         jquery: [
 //            '//yandex.st/jquery/' + version.jquery + '/jquery.min',

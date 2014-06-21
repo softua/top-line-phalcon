@@ -27,35 +27,35 @@
 		<ul class="nav">
 			{% if active_link is 'main' %}
 				<li class="nav__item active">
-					<a class="nav__item__link" href="/" title="Главная страница">Главная</a>
+					<a class="nav__item__link" href="/">Главная</a>
 				</li>
 			{% else %}
 				<li class="nav__item">
-					<a class="nav__item__link" href="/" title="Главная страница">Главная</a>
+					<a class="nav__item__link" href="/">Главная</a>
 				</li>
 			{% endif %}
 
-			{% if active_link is 'about' %}
+			{% if active_link is 'company' %}
 				<li class="nav__item active">
-					<a class="nav__item__link" href="/about" title="О компании">О компании</a>
+					<a class="nav__item__link" href="/company/">О компании</a>
 					<ul class="nav2">
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="" title="О нас">О нас</a>
+							<a class="nav2__item__link" href="">О нас</a>
 						</li>
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="" title="Новости">Новости</a>
+							<a class="nav2__item__link" href="">Новости</a>
 						</li>
 					</ul>
 				</li>
 			{% else %}
 				<li class="nav__item">
-					<a class="nav__item__link" href="/about" title="">О компании</a>
+					<a class="nav__item__link" href="/company/">О компании</a>
 					<ul class="nav2">
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="" title="">О нас</a>
+							<a class="nav2__item__link" href="">О нас</a>
 						</li>
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="" title="">Новости</a>
+							<a class="nav2__item__link" href="">Новости</a>
 						</li>
 					</ul>
 				</li>
@@ -63,26 +63,53 @@
 
 			{% if active_link is 'catalog' %}
 				<li class="nav__item active">
-					<a class="nav__item__link" href="/catalog" title="Каталог">Каталог</a>
+					<a class="nav__item__link" href="/catalog/">Каталог</a>
 				</li>
 			{% else %}
 				<li class="nav__item">
-					<a class="nav__item__link" href="/catalog" title="Каталог">Каталог</a>
+					<a class="nav__item__link" href="/catalog/">Каталог</a>
 				</li>
 			{% endif %}
 
-			<li class="nav__item">
-				<a class="nav__item__link" href="" title="">Сервис</a>
-			</li>
-			<li class="nav__item">
-				<a class="nav__item__link" href="" title="">Проекты</a>
-			</li>
-			<li class="nav__item">
-				<a class="nav__item__link" href="" title="">Видео</a>
-			</li>
-			<li class="nav__item">
-				<a class="nav__item__link" href="" title="">Контакты</a>
-			</li>
+			{% if active_link is 'service' %}
+				<li class="nav__item active">
+					<a class="nav__item__link" href="/service">Сервис</a>
+				</li>
+			{% else %}
+				<li class="nav__item">
+					<a class="nav__item__link" href="/service">Сервис</a>
+				</li>
+			{% endif %}
+
+			{% if active_link is 'projects' %}
+				<li class="nav__item active">
+					<a class="nav__item__link" href="/projects/">Проекты</a>
+				</li>
+			{% else %}
+				<li class="nav__item">
+					<a class="nav__item__link" href="/projects/">Проекты</a>
+				</li>
+			{% endif %}
+
+			{% if active_link is 'video' %}
+				<li class="nav__item active">
+					<a class="nav__item__link" href="/video/">Видео</a>
+				</li>
+			{% else %}
+				<li class="nav__item">
+					<a class="nav__item__link" href="/video/">Видео</a>
+				</li>
+			{% endif %}
+
+			{% if active_link is 'contacts' %}
+				<li class="nav__item active">
+					<a class="nav__item__link" href="/contacts">Контакты</a>
+				</li>
+			{% else %}
+				<li class="nav__item">
+					<a class="nav__item__link" href="/contacts">Контакты</a>
+				</li>
+			{% endif %}
 		</ul>
 	</nav>
 </header><!-- end header -->

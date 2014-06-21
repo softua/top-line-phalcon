@@ -35,3 +35,16 @@
 .thumbnail {
 	cursor: move;
 }
+
+.videos {
+	margin: 20px 0;
+	list-style: none;
+}
+
+.videos__item {
+	margin: 10px 0;
+}
+
+.mce-btn-group {
+	display: inline-block !important;
+}

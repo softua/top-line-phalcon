@@ -7,46 +7,38 @@
 				<ul class="slider">
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="img/dummy/slider/1.png" alt=""/>
-							<h3 class="slider__title">ЛУЧШИЕ ПРЕДЛОЖЕНИЯ
-								<br/>
-								ПО ОБОРУДОВАНИЮ</h3>
-							<div class="slider__subtitle">Только качественный сервис</div>
-
-							<p>Мощный шиномонтажный комплект</p>
+							<img class="slider__img" src="/img/dummy/slider/1.jpg" alt=""/>
+							<h3 class="slider__title">
+								Инструменты и материалы для сервиса и ремонта шин
+							</h3>
+							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
 						</a>
 					</li>
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="img/dummy/slider/2.png" alt=""/>
-							<div class="slider__subtitle">Только качественный сервис</div>
-							<h3 class="slider__title">ПО ОБОРУДОВАНИЮ
-								<br/>
-								ЛУЧШИЕ ПРЕДЛОЖЕНИЯ</h3>
-
-							<p>Мощный шиномонтажный комплект</p>
+							<img class="slider__img" src="/img/dummy/slider/2.jpg" alt=""/>
+							<h3 class="slider__title">
+								Лучшие предложения по оборудованию для шиномонтажных мастерских
+							</h3>
+							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
 						</a>
 					</li>
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="img/dummy/slider/1.png" alt=""/>
-							<h3 class="slider__title">ЛУЧШИЕ ПРЕДЛОЖЕНИЯ
-								<br/>
-								ПО ОБОРУДОВАНИЮ</h3>
-							<div class="slider__subtitle">Только качественный сервис</div>
-
-							<p>Мощный шиномонтажный комплект</p>
+							<img class="slider__img" src="/img/dummy/slider/3.jpg" alt=""/>
+							<h3 class="slider__title">
+								Профессиональное оборудование для СТО и автосервиса
+							</h3>
+							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
 						</a>
 					</li>
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="img/dummy/slider/2.png" alt=""/>
-							<div class="slider__subtitle">Только качественный сервис</div>
-							<h3 class="slider__title">ПО ОБОРУДОВАНИЮ
-								<br/>
-								ЛУЧШИЕ ПРЕДЛОЖЕНИЯ</h3>
-
-							<p>Мощный шиномонтажный комплект</p>
+							<img class="slider__img" src="/img/dummy/slider/4.jpg" alt=""/>
+							<h3 class="slider__title">
+								Комплексные решения для Вашего бизнеса
+							</h3>
+							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
 						</a>
 					</li>
 				</ul>

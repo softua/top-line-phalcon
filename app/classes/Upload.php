@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by Ruslan Koloskov
- * Date: 09.05.14
- * Time: 13:31
- */
 // +------------------------------------------------------------------------+
 // | class.upload.php                                                       |
 // +------------------------------------------------------------------------+
-// | Copyright (c) Colin Verot 2003-2010. All rights reserved.              |
-// | Version       0.32                                                     |
-// | Last modified 15/01/2013                                               |
+// | Copyright (c) Colin Verot 2003-2014. All rights reserved.              |
+// | Version       0.33dev                                                  |
+// | Last modified 28/03/2014                                               |
 // | Email         colin@verot.net                                          |
 // | Web           http://www.verot.net                                     |
 // +------------------------------------------------------------------------+
@@ -36,16 +31,14 @@
 /**
  * Class upload
  *
- * @version   0.32
+ * @version   0.33dev
  * @author    Colin Verot <colin@verot.net>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Colin Verot
  * @package   cmf
  * @subpackage external
  */
-
 namespace App;
-
 /**
  * Class upload
  *
@@ -210,9 +203,9 @@ namespace App;
  *  <pre>$handle->image_background_color = '#FF00FF';</pre></li>
  *  <li><b>{@link image_default_color}</b> fallback color background color for non alpha-transparent output formats, such as JPEG or BMP, in hexadecimal (default: #FFFFFF)<br>
  *  <pre>$handle->image_default_color = '#FF00FF';</pre></li>
- *  <li><b>{@link png_compression}</b> sets the compression level for PNG img, between 1 (fast but large files) and 9 (slow but smaller files) (default: null (Zlib default))<br>
+ *  <li><b>{@link png_compression}</b> sets the compression level for PNG images, between 1 (fast but large files) and 9 (slow but smaller files) (default: null (Zlib default))<br>
  *  <pre>$handle->png_compression = 9;</pre></li>
- *  <li><b>{@link jpeg_quality}</b> sets the compression quality for JPEG img (default: 85)<br>
+ *  <li><b>{@link jpeg_quality}</b> sets the compression quality for JPEG images (default: 85)<br>
  *  <pre>$handle->jpeg_quality = 50;</pre></li>
  *  <li><b>{@link jpeg_size}</b> if set to a size in bytes, will approximate {@link jpeg_quality} so the output image fits within the size (default: null)<br>
  *  <pre>$handle->jpeg_size = 3072;</pre></li>
@@ -418,9 +411,9 @@ namespace App;
  * </ul>
  * If the file is a supported image type
  * <ul>
+ *  <li><b>{@link image_dst_type}</b> Destination file type (png, jpg, gif or bmp)</li>
  *  <li><b>{@link image_dst_x}</b> Destination file width</li>
  *  <li><b>{@link image_dst_y}</b> Destination file height</li>
- *  <li><b>{@link image_convert}</b> Destination file format</li>
  * </ul>
  *
  * <b>Requirements</b>
@@ -431,6 +424,13 @@ namespace App;
  *
  * <b>Changelog</b>
  * <ul>
+ *  <li><b>v 0.33dev</b> 28/03/2014<br>
+ *   - added {@link image_dst_type}<br>
+ *   - fixed filesize when using XMLHttpRequest<br>
+ *   - added Hungarian translation<br>
+ *   - fixed Turkish translation<br>
+ *   - updated regex rules for MIME detection<br>
+ *   - added composer.json</li>
  *  <li><b>v 0.32</b> 15/01/2013<br>
  *   - add support for XMLHttpRequest uploads<br>
  *   - added {@link image_pixelate}<br>
@@ -465,12 +465,12 @@ namespace App;
  *   - corrected bug when {@link no_script} is activated and several process() are called<br>
  *   - better error handling for finfo<br>
  *   - display upload_max_filesize information from php.ini in the log<br>
- *   - automatic extension for extension-less img<br>
+ *   - automatic extension for extension-less images<br>
  *   - fixed {@link image_ratio_fill} top and left filling<br>
  *   - fixed alphablending issue when applying a transparent PNG watermark on a transparent PNG<br>
  *   - added {@link image_watermark_no_zoom_in} and {@link image_watermark_no_zoom_out} to allow the watermark to be resized down (or up) to fit in the image. By default, the watermark may be resized down, but not up.</li>
  *  <li><b>v 0.29</b> 03/02/2010<br>
- *   - added protection against malicious img<br>
+ *   - added protection against malicious images<br>
  *   - added zip and torrent MIME type<br>
  *   - replaced split() with explode()<br>
  *   - initialise image_dst_x/y with image_src_x/y<br>
@@ -490,7 +490,7 @@ namespace App;
  *  <li><b>v 0.27</b> 14/05/2009<br>
  *   - look for the language files directory from __FILE__<br>
  *   - deactivate {@link file_auto_rename} if {@link file_overwrite} is set<br>
- *   - improved transparency replacement for true color img<br>
+ *   - improved transparency replacement for true color images<br>
  *   - fixed calls to newer version of UNIX file utility<br>
  *   - fixed error when using PECL Fileinfo extension in SAFE MODE, and when using the finfo class<br>
  *   - added {@link image_precrop} to crop the image before an eventual resizing</li>
@@ -506,22 +506,22 @@ namespace App;
  *   - added {@link forbidden} to set an array of forbidden MIME types<br>
  *   - implemented support for simple wildcards in {@link allowed} and {@link forbidden}, such as image/*<br>
  *   - preset the file extension to the desired conversion format when converting an image<br>
- *   - added read and write support for BMP img<br>
+ *   - added read and write support for BMP images<br>
  *   - added a flag {@link file_is_image} to determine if the file is a supported image type<br>
  *   - the class now provides some information about the image, before calling {@link process}(). Available are {@link image_src_x}, {@link image_src_y} and the newly introduced {@link image_src_bits}, {@link image_src_pixels} and {@link image_src_type}. Note that this will not work if <i>open_basedir</i> restrictions are in place<br>
  *   - improved logging; now provides useful system information<br>
- *   - added some more pre-processing checks for files that are img: {@link image_max_width}, {@link image_max_height}, {@link image_max_pixels}, {@link image_max_ratio}, {@link image_min_width}, {@link image_min_height}, {@link image_min_pixels} and {@link image_min_ratio}<br>
+ *   - added some more pre-processing checks for files that are images: {@link image_max_width}, {@link image_max_height}, {@link image_max_pixels}, {@link image_max_ratio}, {@link image_min_width}, {@link image_min_height}, {@link image_min_pixels} and {@link image_min_ratio}<br>
  *   - added {@link image_ratio_pixels} to resize an image to a number of pixels, keeping aspect ratio<br>
- *   - added {@link image_is_palette} and {@link image_is_transparent} and {@link image_transparent_color} for GIF img<br>
+ *   - added {@link image_is_palette} and {@link image_is_transparent} and {@link image_transparent_color} for GIF images<br>
  *   - added {@link image_default_color} to define a fallback color for non alpha-transparent output formats, such as JPEG or BMP<br>
  *   - changed {@link image_background_color}, which now forces transparent areas to be painted<br>
- *   - improved reflections and color overlays so that it works with alpha transparent img<br>
+ *   - improved reflections and color overlays so that it works with alpha transparent images<br>
  *   - {@link image_reflection_color} is now deprecated in favour of {@link image_default_color}<br />
  *   - transparent PNGs are now processed in true color, and fully preserving the alpha channel when doing merges<br>
  *   - transparent GIFs are now automatically detected. {@link preserve_transparency} is deprecated<br>
- *   - transparent true color img can be saved as GIF while retaining transparency, semi transparent areas being merged with {@link image_default_color}<br>
- *   - transparent true color img can be saved as JPG/BMP with the semi transparent areas being merged with {@link image_default_color}<br>
- *   - fixed conversion of img to true color<br>
+ *   - transparent true color images can be saved as GIF while retaining transparency, semi transparent areas being merged with {@link image_default_color}<br>
+ *   - transparent true color images can be saved as JPG/BMP with the semi transparent areas being merged with {@link image_default_color}<br>
+ *   - fixed conversion of images to true color<br>
  *   - the class can now output the uploaded files content as the return value of process() if the function is called with an empty or null argumenti, or no argument</li>
  *  <li><b>v 0.24</b> 25/05/2007<br>
  *   - added {@link image_background_color}, to set the default background color of an image<br>
@@ -530,7 +530,7 @@ namespace App;
  *   - fixed a small bug when using greyscale filter and associated filters<br>
  *   - added {@link image_ratio_fill} in order to fit an image within some dimensions and color the remaining space. Very similar to {@link image_ratio_crop}<br>
  *   - improved the recursive creation of directories<br>
- *   - the class now converts palette based img to true colors before doing graphic manipulations</li>
+ *   - the class now converts palette based images to true colors before doing graphic manipulations</li>
  *  <li><b>v 0.23</b> 23/12/2006<br>
  *   - fixed a bug when processing more than once the same uploaded file. If there is an open_basedir restriction, the class now creates a temporary file for the first call to process(). This file will be used for subsequent processes, and will be deleted upon calling clean()</li>
  *  <li><b>v 0.22</b> 16/12/2006<br>
@@ -561,7 +561,7 @@ namespace App;
  *   - added {@link dir_auto_create} to automatically and recursively create destination directory if missing.<br>
  *   - added {@link dir_auto_chmod} to automatically chmod the destination directory if not writeable.<br>
  *   - added {@link dir_chmod} to set the default chmod to use.<br>
- *   - added {@link image_crop} to crop img<br>
+ *   - added {@link image_crop} to crop images<br>
  *   - added {@link image_negative} to invert the colors on the image<br>
  *   - added {@link image_greyscale} to turn the image into greyscale<br>
  *   - added {@link image_threshold} to apply a threshold filter on the image<br>
@@ -572,7 +572,7 @@ namespace App;
  *   - class is now compatible i18n (thanks Sylwester).<br>
  *   - the class can mow manipulate local files, not only uploaded files (instanciate the class with a local filename).<br>
  *   - {@link file_safe_name} has been improved a bit.<br>
- *   - added {@link image_brightness}, {@link image_contrast}, {@link image_tint_color}, {@link image_overlay_color} and {@link image_overlay_percent} to do color manipulation on the img.<br>
+ *   - added {@link image_brightness}, {@link image_contrast}, {@link image_tint_color}, {@link image_overlay_color} and {@link image_overlay_percent} to do color manipulation on the images.<br>
  *   - added {@link image_text} and all derivated settings to add a text label on the image.<br>
  *   - added {@link image_watermark} and all derivated settings to add a watermark image on the image.<br>
  *   - added {@link image_flip} and {@link image_rotate} for more image manipulations<br>
@@ -582,7 +582,7 @@ namespace App;
  *   - added {@link mime_magic_check} to set the class to use mime_magic.<br>
  *   - added {@link preserve_transparency} *experimental*. Thanks Gregor.<br>
  *   - fixed size and mime checking, wasn't working :/ Thanks Willem.<br>
- *   - fixed memory leak when resizing img.<br>
+ *   - fixed memory leak when resizing images.<br>
  *   - when resizing, it is not necessary anymore to set {@link image_convert}.<br>
  *   - il is now possible to simply convert an image, with no resizing.<br>
  *   - sets the default {@link file_max_size} to upload_max_filesize from php.ini. Thanks Edward</li>
@@ -780,6 +780,14 @@ class Upload {
 	 * @var integer
 	 */
 	var $image_dst_y;
+
+	/**
+	 * Destination image type (png, gif, jpg or bmp)
+	 *
+	 * @access public
+	 * @var integer
+	 */
+	var $image_dst_type;
 
 	/**
 	 * Supported image formats
@@ -1278,7 +1286,7 @@ class Upload {
 	var $image_min_ratio;
 
 	/**
-	 * Compression level for PNG img
+	 * Compression level for PNG images
 	 *
 	 * Between 1 (fast but large files) and 9 (slow but smaller files)
 	 *
@@ -1318,7 +1326,7 @@ class Upload {
 	/**
 	 * Turns the interlace bit on
 	 *
-	 * This is actually used only for JPEG img, and defaults to false
+	 * This is actually used only for JPEG images, and defaults to false
 	 *
 	 * @access public
 	 * @var boolean
@@ -1372,7 +1380,7 @@ class Upload {
 	var $image_background_color;
 
 	/**
-	 * Default color for non alpha-transparent img
+	 * Default color for non alpha-transparent images
 	 *
 	 * This setting is to be used to define a background color for semi transparent areas
 	 * of an alpha transparent when the output format doesn't support alpha transparency
@@ -2579,7 +2587,7 @@ class Upload {
 	 */
 	function __construct($file, $lang = 'en_GB') {
 
-		$this->version            = '0.32';
+		$this->version            = '0.33dev';
 
 		$this->file_src_name      = '';
 		$this->file_src_name_body = '';
@@ -2603,6 +2611,7 @@ class Upload {
 		$this->image_src_pixels   = null;
 		$this->image_dst_x        = 0;
 		$this->image_dst_y        = 0;
+		$this->image_dst_type     = '';
 
 		$this->uploaded           = true;
 		$this->no_upload_check    = false;
@@ -2762,7 +2771,7 @@ class Upload {
 							$this->file_src_name_ext      = '';
 							$this->file_src_name_body     = $this->file_src_name;
 						}
-						$this->file_src_size = (file_exists($file) ? filesize($file) : 0);
+						$this->file_src_size = (file_exists($this->file_src_pathname) ? filesize($this->file_src_pathname) : 0);
 					}
 					$this->file_src_error = 0;
 
@@ -2793,7 +2802,7 @@ class Upload {
 							$this->file_src_name_ext      = '';
 							$this->file_src_name_body     = $this->file_src_name;
 						}
-						$this->file_src_size = (file_exists($file) ? filesize($file) : 0);
+						$this->file_src_size = (file_exists($this->file_src_pathname) ? filesize($this->file_src_pathname) : 0);
 					}
 					$this->file_src_error = 0;
 				}
@@ -2903,8 +2912,8 @@ class Upload {
 							finfo_close($f);
 							$this->file_src_mime = $mime;
 							$this->log .= '&nbsp;&nbsp;&nbsp;&nbsp;MIME type detected as ' . $this->file_src_mime . ' by Fileinfo PECL extension<br />';
-							if (preg_match("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", $this->file_src_mime)) {
-								$this->file_src_mime = preg_replace("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
+							if (preg_match("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", $this->file_src_mime)) {
+								$this->file_src_mime = preg_replace("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
 								$this->log .= '-&nbsp;MIME validated as ' . $this->file_src_mime . '<br />';
 							} else {
 								$this->file_src_mime = null;
@@ -2917,8 +2926,8 @@ class Upload {
 						if ($f) {
 							$this->file_src_mime = $f->file(realpath($this->file_src_pathname));
 							$this->log .= '- MIME type detected as ' . $this->file_src_mime . ' by Fileinfo PECL extension<br />';
-							if (preg_match("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", $this->file_src_mime)) {
-								$this->file_src_mime = preg_replace("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
+							if (preg_match("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", $this->file_src_mime)) {
+								$this->file_src_mime = preg_replace("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
 								$this->log .= '-&nbsp;MIME validated as ' . $this->file_src_mime . '<br />';
 							} else {
 								$this->file_src_mime = null;
@@ -2943,8 +2952,8 @@ class Upload {
 							if (strlen($mime = @exec("file -bi ".escapeshellarg($this->file_src_pathname))) != 0) {
 								$this->file_src_mime = trim($mime);
 								$this->log .= '&nbsp;&nbsp;&nbsp;&nbsp;MIME type detected as ' . $this->file_src_mime . ' by UNIX file() command<br />';
-								if (preg_match("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", $this->file_src_mime)) {
-									$this->file_src_mime = preg_replace("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
+								if (preg_match("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", $this->file_src_mime)) {
+									$this->file_src_mime = preg_replace("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
 									$this->log .= '-&nbsp;MIME validated as ' . $this->file_src_mime . '<br />';
 								} else {
 									$this->file_src_mime = null;
@@ -2970,8 +2979,8 @@ class Upload {
 					if (function_exists('mime_content_type')) {
 						$this->file_src_mime = mime_content_type($this->file_src_pathname);
 						$this->log .= '&nbsp;&nbsp;&nbsp;&nbsp;MIME type detected as ' . $this->file_src_mime . ' by mime_content_type()<br />';
-						if (preg_match("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", $this->file_src_mime)) {
-							$this->file_src_mime = preg_replace("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
+						if (preg_match("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", $this->file_src_mime)) {
+							$this->file_src_mime = preg_replace("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
 							$this->log .= '-&nbsp;MIME validated as ' . $this->file_src_mime . '<br />';
 						} else {
 							$this->file_src_mime = null;
@@ -2997,8 +3006,8 @@ class Upload {
 							$this->file_src_mime = ($mime==IMAGETYPE_GIF ? 'image/gif' : ($mime==IMAGETYPE_JPEG ? 'image/jpeg' : ($mime==IMAGETYPE_PNG ? 'image/png' : ($mime==IMAGETYPE_BMP ? 'image/bmp' : null))));
 						}
 						$this->log .= '&nbsp;&nbsp;&nbsp;&nbsp;MIME type detected as ' . $this->file_src_mime . ' by PHP getimagesize() function<br />';
-						if (preg_match("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", $this->file_src_mime)) {
-							$this->file_src_mime = preg_replace("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
+						if (preg_match("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", $this->file_src_mime)) {
+							$this->file_src_mime = preg_replace("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
 							$this->log .= '-&nbsp;MIME validated as ' . $this->file_src_mime . '<br />';
 						} else {
 							$this->file_src_mime = null;
@@ -3015,8 +3024,8 @@ class Upload {
 			if (!empty($mime_from_browser) && !$this->file_src_mime || !is_string($this->file_src_mime) || empty($this->file_src_mime)) {
 				$this->file_src_mime =$mime_from_browser;
 				$this->log .= '- MIME type detected as ' . $this->file_src_mime . ' by browser<br />';
-				if (preg_match("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", $this->file_src_mime)) {
-					$this->file_src_mime = preg_replace("/^([\.-\w]+)\/([\.-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
+				if (preg_match("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", $this->file_src_mime)) {
+					$this->file_src_mime = preg_replace("/^([\.\-\w]+)\/([\.\-\w]+)(.*)$/i", '$1/$2', $this->file_src_mime);
 					$this->log .= '-&nbsp;MIME validated as ' . $this->file_src_mime . '<br />';
 				} else {
 					$this->file_src_mime = null;
@@ -3297,7 +3306,7 @@ class Upload {
 		} else {
 			// creates a palette image
 			$dst_im = imagecreate($x, $y);
-			// preserves transparency for palette img, if the original image has transparency
+			// preserves transparency for palette images, if the original image has transparency
 			if (($fill && $this->image_is_transparent && empty($this->image_background_color)) || $trsp) {
 				imagefilledrectangle($dst_im, 0, 0, $x, $y, $this->image_transparent_color);
 				imagecolortransparent($dst_im, $this->image_transparent_color);
@@ -3328,7 +3337,7 @@ class Upload {
 	}
 
 	/**
-	 * Merges two img
+	 * Merges two images
 	 *
 	 * If the output format is PNG, then we do it pixel per pixel to retain the alpha channel
 	 *
@@ -3800,7 +3809,7 @@ class Upload {
 			if ($image_manipulation) {
 
 				// make sure GD doesn't complain too much
-				ini_set("gd.jpeg_ignore_warning", 1);
+				@ini_set("gd.jpeg_ignore_warning", 1);
 
 				// checks if the source file is readable
 				if ($this->processed && !($f = @fopen($this->file_src_pathname, 'r'))) {
@@ -4944,6 +4953,7 @@ class Upload {
 
 					// converts image from true color, and fix transparency if needed
 					$this->log .= '- converting...<br />';
+					$this->image_dst_type = $this->image_convert;
 					switch($this->image_convert) {
 						case 'gif':
 							// if the image is true color, we convert it to a palette

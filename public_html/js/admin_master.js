@@ -76,13 +76,96 @@ $('body').on('click', '[data-action="open"]', function(e) {
 .on('click', '[data-delete-file="true"]', function(e) {
 	e.preventDefault();
 	admin.files.deleteFile(e);
+})
+
+// Добавление видео товару
+.on('click', '[data-add-video="true"]', function(e) {
+	e.preventDefault();
+	$(e.target).replaceWith('<div class="video-inputs"><input type="text" name="name" placeholder="Название видео"/><input type="text" name="href" class="input-large" placeholder="Ссылка на видео"/><button data-video-add-save="true" class="btn btn-primary">Добавить</button></div>');
+})
+
+// Сохранение добавленного видео
+.on('click', '[data-video-add-save="true"]', function(e) {
+	e.preventDefault();
+	var container = $($(e.target).parent());
+	var name = $('input[name="name"]', container).val();
+	var href = $('input[name="href"]', container).val();
+
+	$.ajax({
+		url: '/admin/addvideo',
+		type: 'POST',
+		data: {
+			name: name,
+			href: href,
+			prodId: $('.videos').data('product-id')
+		},
+		success: function (data) {
+			if (data != 'false')
+			{
+				var video = JSON.parse(data);
+				var videos = $('.videos');
+				videos.append('<li data-video-id="' + video.id + '" class="videos__item"><a data-video-delete="true" href="" class="btn btn-mini btn-danger">Удалить</a><a data-video-edit="true" href="" class="btn btn-mini">Редактировать</a><a href="' + video.href + '" title="Смотреть видео" target="_blank">' + video.name + '</a></li>');
+
+				container.replaceWith('<a data-add-video="true" href="/admin/addvideo" class="btn">Добавить видео</a>');
+			}
+		}
+	});
+})
+
+// Удаление видео
+.on('click', '.videos__item [data-video-delete="true"]', function (e) {
+	e.preventDefault();
+	$.ajax({
+		url: '/admin/deletevideo/' + $(e.target).parent().data('video-id'),
+		type: 'post',
+		success: function (data) {
+			if (data == 'true')
+			{
+				$(e.target).parent().remove();
+			}
+		}
+	});
+})
+
+// Редактирование видео
+.on('click', '.videos__item [data-video-edit="true"]', function (e) {
+	e.preventDefault();
+	var name = $(e.target).next().text();
+	var href = $(e.target).next().attr('href');
+	var id = $(e.target).parent().data('video-id');
+	$(e.target).parent().replaceWith('<div class="video-inputs" data-video-id="' + id + '"><input type="text" name="name" placeholder="Название видео" value="' + name + '"/><input type="text" name="href" class="input-large" placeholder="Ссылка на видео" value="' + href + '"/><button data-video-edited-save="true" class="btn btn-primary">Сохранить</button></div>');
+})
+
+// Сохранение отредактированного видео
+.on('click', '[data-video-edited-save="true"]', function (e) {
+	e.preventDefault();
+	var container = $(e.target).parent();
+	var name = $(e.target).siblings('input[name="name"]').val();
+	var href = $(e.target).siblings('input[name="href"]').val();
+	var id = $(e.target).parent().data('video-id');
+		$.ajax({
+			url: '/admin/editvideo/' + id,
+			type: 'POST',
+			data: {
+				name: name,
+				href: href
+			},
+			success: function (data) {
+				if (data == 'true')
+				{
+					var li = $('<li data-video-id="' + id + '" class="videos__item"><a data-video-delete="true" href="" class="btn btn-mini btn-danger">Удалить</a><a data-video-edit="true" href="" class="btn btn-mini">Редактировать</a><a href="' + href + '" title="Смотреть видео" target="_blank">' + name + '</a></li>');
+					container.replaceWith(li);
+				}
+			}
+		});
+
 });
 
 // Сортировка параметров
 $('[data-parameters]').sortable({
 	axis: 'y', // перемещение только по вертикали
 	opacity: 0.5,
-	stop: function(event, ui) { // событие окончания перетаскивания
+	update: function(event, ui) { // событие окончания перетаскивания
 		$.ajax({
 			url: '/admin/sortparams',
 			type: 'POST',
@@ -94,7 +177,7 @@ $('[data-parameters]').sortable({
 // Сортировка фото товара
 $('[data-uploaded-list="fotos"]').sortable({
 	opacity: 0.5,
-	stop: function(event, ui) { // событие окончания перетаскивания
+	update: function(event, ui) { // событие окончания перетаскивания
 		var postData = [];
 		$('li', '[data-uploaded-list="fotos"]').each(function(index, element) {
 			postData.push($(element).data('uploaded-id'));
@@ -104,6 +187,27 @@ $('[data-uploaded-list="fotos"]').sortable({
 			url: '/admin/sortfotos',
 			type: 'POST',
 			data: 'ids=' + JSON.stringify(postData)
+		});
+	}
+});
+
+// Сортировка видео
+$('.videos').sortable({
+	opacity: 0.5,
+	axis: 'y',
+	update: function (event, ui) {
+		var lis = $('li', '.videos');
+		var ids = [];
+		lis.each(function (index, element) {
+			ids[index] = $(element).attr('data-video-id');
+		});
+
+		$.ajax({
+			url: '/admin/sortvideo',
+			type: 'POST',
+			data: {
+				ids: JSON.stringify(ids)
+			}
 		});
 	}
 });

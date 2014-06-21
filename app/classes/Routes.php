@@ -9,6 +9,8 @@ $di['router'] = function()
 {
 	$router = new \Phalcon\Mvc\Router(false);
 
+	$router->removeExtraSlashes(true);
+
 	$router->setDefaults([
 		'namespace' => 'App\Controllers'
 	]);

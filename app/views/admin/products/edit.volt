@@ -156,16 +156,6 @@
 							</td>
 						</tr>
 						<tr>
-							<th><label for="public">public</label></th>
-							<td>
-								{% if data['public'] is 1 %}
-									<input type="checkbox" id="public" name="public" checked/>
-								{% else %}
-									<input type="checkbox" id="public" name="public"/>
-								{% endif %}
-							</td>
-						</tr>
-						<tr>
 							<th style="max-width: 200px;">Картинки товара:</th>
 							<td>
 								<div data-upload-foto="true" data-product-id="{{ data['id'] }}" class="btn btn-primary" style="margin: 0 0 20px 0;">
@@ -179,6 +169,23 @@
 									{% if fotos is defined and fotos is not empty %}
 										{% for foto in fotos %}
 											<li data-uploaded-id="{{ foto['id'] }}" data-delete-foto="true"><img src="{{ foto['path'] }}" alt="/" class="thumbnail"/></li>
+										{% endfor %}
+									{% endif %}
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<th style="max-width: 200px;">Видео</th>
+							<td>
+								<a data-add-video="true" href="/admin/addvideo" class="btn">Добавить видео</a>
+								<ul class="videos" data-product-id="{{ data['id'] }}">
+									{% if data['video'] is defined and data['video'] is not empty %}
+										{% for video in data['video'] %}
+											<li data-video-id="{{ video['id'] }}" class="videos__item">
+												<a data-video-delete="true" href="" class="btn btn-mini btn-danger">Удалить</a>
+												<a data-video-edit="true" href="" class="btn btn-mini">Редактировать</a>
+												<a href="{{ video['href'] }}" title="Смотреть видео" target="_blank">{{ video['name'] }}</a>
+											</li>
 										{% endfor %}
 									{% endif %}
 								</ul>
@@ -204,6 +211,26 @@
 										{% endfor %}
 									{% endif %}
 								</ul>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="public">public</label></th>
+							<td>
+								{% if data['public'] is 1 %}
+									<input type="checkbox" id="public" name="public" checked/>
+								{% else %}
+									<input type="checkbox" id="public" name="public"/>
+								{% endif %}
+							</td>
+						</tr>
+						<tr>
+							<th><label for="public">top</label></th>
+							<td>
+								{% if data['top'] is 1 %}
+									<input type="checkbox" id="public" name="top" checked/>
+								{% else %}
+									<input type="checkbox" id="public" name="top"/>
+								{% endif %}
 							</td>
 						</tr>
 						<tr>

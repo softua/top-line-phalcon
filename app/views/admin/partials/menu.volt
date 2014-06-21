@@ -44,10 +44,10 @@
 
 			<li class="divider-vertical"></li>
 
-			{% if url is '/admin/pages' %}
-				<li class="active"><a href="/admin/pages">Статические страницы</a></li>
+			{% if url is '/admin/pages/' %}
+				<li class="active"><a href="/admin/pages/">Статические страницы</a></li>
 			{% else %}
-				<li><a href="/admin/pages">Статические страницы</a></li>
+				<li><a href="/admin/pages/">Статические страницы</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>

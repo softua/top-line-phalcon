@@ -30,9 +30,10 @@ class Product extends \Phalcon\Mvc\Model
 	public $short_description;
 	public $full_description;
 	public $seo_name;
-	public $public;
 	public $meta_keywords;
 	public $meta_description;
+	public $public;
+	public $top;
 
 	/***
 	 * Проверка является ли Seo-название уникальным

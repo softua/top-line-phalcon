@@ -578,6 +578,7 @@ class AdminController extends BaseAdminController
 			$inputs['meta_keywords'] = $product->meta_keywords;
 			$inputs['meta_description'] = $product->meta_description;
 			$inputs['public'] = $product->public;
+			$inputs['top'] = $product->top;
 
 			if ($inputs['main_curancy'] == 'eur')
 				$inputs['price'] = $product->price_eur;
@@ -601,6 +602,26 @@ class AdminController extends BaseAdminController
 				$inputs['categories'] = $productCats;
 			}
 
+			// Заносим ссылки видео для товара
+			$productVideos = Models\ProductVideo::find([
+				'product_id = ?1',
+				'bind' => [1 => $product->id],
+				'order' => 'sort'
+			]);
+			if (count($productVideos))
+			{
+				foreach ($productVideos as $video)
+				{
+					$tempVideo = [];
+					$tempVideo['id'] = $video->id;
+					$tempVideo['name'] = ($video->name) ? $video->name : $video->href;
+					$tempVideo['href'] = $video->href;
+					$tempVideo['sort'] = $video->sort;
+					$tempVideo['product_id'] = $video->product_id;
+					$inputs['video'][] = $tempVideo;
+				}
+			}
+
 			if ($this->request->isPost()) // Если POST запрос
 			{
 				$inputs['seo_name'] = $this->request->getPost('seo-name', ['trim', 'striptags']);
@@ -618,6 +639,7 @@ class AdminController extends BaseAdminController
 				$inputs['meta_keywords'] = $this->request->getPost('keywords', ['trim', 'striptags']);
 				$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
 				$inputs['public'] = $this->request->getPost('public', ['trim', 'striptags']);
+				$inputs['top'] = $this->request->getPost('top', ['trim', 'striptags']);
 
 				$validation = new Validation();
 
@@ -706,6 +728,10 @@ class AdminController extends BaseAdminController
 						$product->public = $inputs['public'] = 1;
 					else
 						$product->public = $inputs['public'] = 0;
+					if ($inputs['top'] == 'on')
+						$product->top = $inputs['top'] = 1;
+					else
+						$product->top = $inputs['top'] = 0;
 
 					$product->seo_name = $inputs['seo_name'];
 
@@ -724,8 +750,8 @@ class AdminController extends BaseAdminController
 			$fotos = [];
 			$i = 0;
 			$tempFotos = Models\ProductImage::find([
-				'product_id = :productId:',
-				'bind' => ['productId' => $product->id],
+				'product_id = ?1',
+				'bind' => [1 => $product->id],
 				'order' => 'sort'
 			]);
 
@@ -1118,6 +1144,8 @@ class AdminController extends BaseAdminController
 		 * - 'original_w' - оригинал с водяным знаком;
 		 * - 'product_description' - картинка для описания товара (290x300);
 		 * - 'product_thumb' - картинка для миниатюры в описании товара (55x47);
+		 * - 'product_list' - картинка для списка товаров (155x155);
+		 * - 'product_top' - миниатюра для панели "Лидеры продаж" (198x160);
 		 * - 'admin_thumb' - картинка для миниатюры в админке (250x150).
 		*/
 
@@ -1185,22 +1213,15 @@ class AdminController extends BaseAdminController
 		$file->image_watermark = 'img/watermark.png';
 		$file->image_watermark_position = 'TL';
 		$file->image_resize = true;
-		$file->image_ratio_crop = true;
 		if ($file->image_src_x >= $file->image_src_y)
 		{
-			if ($file->image_src_x > 290)
-			{
-				$file->image_x = 290;
-				$file->image_ratio_y = true;
-			}
+			$file->image_x = 290;
+			$file->image_ratio_y = true;
 		}
 		elseif ($file->image_src_x < $file->image_src_y)
 		{
-			if ($file->image_src_y > 300)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 300;
-			}
+			$file->image_ratio_x = true;
+			$file->image_y = 300;
 		}
 		$file->process('products/' . $productId . '/images');
 		if (!$file->processed)
@@ -1214,22 +1235,59 @@ class AdminController extends BaseAdminController
 
 		$file->file_new_name_body = $bdFile->id . '__product_thumb';
 		$file->image_resize = true;
-		$file->image_ratio_crop = true;
 		if ($file->image_src_x >= $file->image_src_y)
 		{
-			if ($file->image_src_x > 55)
-			{
-				$file->image_x = 55;
-				$file->image_ratio_y = true;
-			}
+			$file->image_x = 55;
+			$file->image_ratio_y = true;
 		}
 		elseif ($file->image_src_x < $file->image_src_y)
 		{
-			if ($file->image_src_y > 47)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 47;
-			}
+			$file->image_ratio_x = true;
+			$file->image_y = 47;
+		}
+		$file->process('products/' . $productId . '/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Загружаем картинку для списка товаров
+
+		$file->file_new_name_body = $bdFile->id . '__product_list';
+		$file->image_resize = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			$file->image_x = 155;
+			$file->image_ratio_y = true;
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			$file->image_ratio_x = true;
+			$file->image_y = 155;
+		}
+		$file->process('products/' . $productId . '/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Загружаем картинку для панели "Лидеры продаж"
+
+		$file->file_new_name_body = $bdFile->id . '__product_top';
+		$file->image_resize = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			$file->image_x = 198;
+			$file->image_ratio_y = true;
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			$file->image_ratio_x = true;
+			$file->image_y = 160;
 		}
 		$file->process('products/' . $productId . '/images');
 		if (!$file->processed)
@@ -1243,22 +1301,15 @@ class AdminController extends BaseAdminController
 
 		$file->file_new_name_body = $bdFile->id . '__admin_thumb';
 		$file->image_resize = true;
-		$file->image_ratio_crop = true;
 		if ($file->image_src_x >= $file->image_src_y)
 		{
-			if ($file->image_src_x > 250)
-			{
-				$file->image_x = 250;
-				$file->image_ratio_y = true;
-			}
+			$file->image_x = 250;
+			$file->image_ratio_y = true;
 		}
 		elseif ($file->image_src_x < $file->image_src_y)
 		{
-			if ($file->image_src_y > 150)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 150;
-			}
+			$file->image_ratio_x = true;
+			$file->image_y = 150;
 		}
 		$file->process('products/' . $productId . '/images');
 		if (!$file->processed)
@@ -1319,6 +1370,8 @@ class AdminController extends BaseAdminController
 			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_description.' . $bdFile->extension);
 			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_thumb.' . $bdFile->extension);
 			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension);
+			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_list.' . $bdFile->extension);
+			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_top.' . $bdFile->extension);
 
 		} else {
 			echo 'false';
@@ -1347,7 +1400,7 @@ class AdminController extends BaseAdminController
 
 		$productId = trim(strip_tags($_GET['prodId']));
 
-		$file = new Upload($_FILES['files'], 'ru');
+		$file = new Upload($_FILES['files']);
 
 		if (!preg_match('/\d+/', $productId))
 		{
@@ -1578,5 +1631,262 @@ class AdminController extends BaseAdminController
 		}
 	}
 
+	public function sortVideoAction()
+	{
+		if (!$this->request->isAjax() || !$this->request->isPost())
+			return $this->response->redirect('admin');
 
+		$ids = json_decode($this->request->getPost('ids'));
+
+		foreach ($ids as $index => $id)
+		{
+			$video = Models\ProductVideo::findFirst($id);
+			if ($video)
+			{
+				$video->sort = $index;
+				$video->save();
+			}
+		}
+	}
+
+	public function addVideoAction()
+	{
+		if (!$this->request->isAjax() || !$this->request->isPost())
+			return $this->response->redirect('admin');
+
+		$name = trim(strip_tags($this->request->getPost('name')));
+		$href = trim(strip_tags($this->request->getPost('href')));
+		$prodId = trim(strip_tags($this->request->getPost('prodId')));
+
+		$video = new Models\ProductVideo();
+		if ($name)
+			$video->name = $name;
+		else
+			$video->name = $href;
+		$video->href = $href;
+		$video->product_id = $prodId;
+		$video->sort = Models\ProductVideo::find([
+			'product_id = ?1',
+			'bind' => [1 => $prodId]
+		])->count();
+		if ($video->save())
+		{
+			$tempVideo = [
+				'id' => $video->id,
+				'name' => $video->name,
+				'href' => $video->href
+			];
+			echo json_encode($tempVideo);
+			return true;
+		} else {
+			echo 'false';
+			return false;
+		}
+	}
+
+	public function deleteVideoAction()
+	{
+		if (!$this->request->isAjax() || !$this->request->isPost())
+			return $this->response->redirect('admin');
+
+		$id = trim(strip_tags($this->dispatcher->getParams()[0]));
+		if ($id && preg_match('/\d+/', $id))
+		{
+			$video = Models\ProductVideo::findFirst($id);
+			if ($video)
+			{
+				$video->delete();
+				echo 'true';
+				return true;
+			} else {
+				echo 'false';
+				return false;
+			}
+		} else {
+			echo 'false';
+			return false;
+		}
+	}
+
+	public function editVideoAction()
+	{
+		if (!$this->request->isPost() || !$this->request->isAjax())
+			return $this->response->redirect('admin');
+
+		$id = trim(strip_tags($this->dispatcher->getParams()[0]));
+		$name = trim(strip_tags($this->request->getPost('name')));
+		$href = trim(strip_tags($this->request->getPost('href')));
+		if ($id && preg_match('/\d+/', $id))
+		{
+			$video = Models\ProductVideo::findFirst($id);
+			if (!$video)
+			{
+				echo 'false';
+				return false;
+			}
+			$video->name = $name;
+			$video->href = $href;
+			if ($video->save())
+			{
+				echo 'true';
+				return true;
+			} else {
+				echo 'false';
+				return false;
+			}
+		} else {
+			echo 'false';
+			return false;
+		}
+	}
+
+	public function pagesAction()
+	{
+		$this->tag->prependTitle('Статические страницы');
+
+		$pagesCompanyForView = Models\Page::getAllPagesByType(1);
+		$pagesProjectForView = Models\Page::getAllPagesByType(2);
+
+		if ($pagesCompanyForView)
+			$this->view->company_pages = $pagesCompanyForView;
+		if ($pagesProjectForView)
+			$this->view->project_pages = $pagesProjectForView;
+
+		echo $this->view->render('admin/pages/list');
+	}
+
+	public function addPageAction()
+	{
+		$this->tag->prependTitle('Добавление страницы');
+
+		$pageForView = [];
+
+		if ($this->request->isPost())
+		{
+			$inputs = [];
+			$inputs['name'] = trim(strip_tags($this->request->getPost('name')));
+			$inputs['seo_name'] = Translit::get_seo_keyword($inputs['name'], true);
+			$inputs['type_id'] = trim(strip_tags($this->request->getPost('type-id')));
+			$inputs['short_content'] = trim($this->request->getPost('short-content'));
+			$inputs['full_content'] = trim($this->request->getPost('full-content'));
+			$inputs['meta_keywords'] = trim(strip_tags($this->request->getPost('meta-keywords')));
+			$inputs['meta_description'] = trim(strip_tags($this->request->getPost('meta-description')));
+			$inputs['public'] = trim(strip_tags($this->request->getPost('public')));
+
+			$validation = new Validation();
+			$validation->isNotEmpty([
+				'Название' => $inputs['name'],
+				'Тип' => $inputs['type_id']
+			], false);
+			if (!preg_match('/\d+/', $inputs['type_id']))
+				$validation->setMessageManual('Тип', 'Неверно указан тип');
+			$samePages = Models\Page::findFirst([
+				'seo_name = ?1',
+				'bind' => [1 => $inputs['seo_name']]
+			]);
+			if ($samePages)
+				$validation->setMessageManual('СЕО название', 'Такое название уже существует');
+			if ($validation->validate())
+			{
+				$newPage = new Models\Page();
+				$newPage->name = $inputs['name'];
+				$newPage->seo_name = $inputs['seo_name'];
+				$newPage->type_id = $inputs['type_id'];
+				$newPage->short_content = $inputs['short_content'];
+				$newPage->full_content = $inputs['full_content'];
+				$newPage->meta_keywords = $inputs['meta_keywords'];
+				$newPage->meta_description = $inputs['meta_description'];
+				if ($inputs['public'] == 'on') {
+					$newPage->public = 1;
+				} else {
+					$newPage->public = 0;
+				}
+				if ($newPage->save()) {
+					return $this->response->redirect('admin/pages');
+				} else {
+					$this->view->errors = ['БД' => $newPage->getMessages()];
+					$pageForView['name'] = $inputs['name'];
+					$pageForView['seo_name'] = $inputs['seo_name'];
+					$pageForView['types'] =[];
+					$types = Models\PageType::find();
+					if (count($types))
+					{
+						foreach ($types as $type)
+						{
+							$tempType = [];
+							$tempType['id'] = $type->id;
+							$tempType['name'] = $type->full_name;
+							if ($tempType['id'] == $inputs['type_id']) {
+								$tempType['active'] = true;
+							} else {
+								$tempType['active'] = false;
+							}
+							$pageForView['types'][] = $tempType;
+						}
+					}
+					$pageForView['short_content'] = $inputs['short_content'];
+					$pageForView['full_content'] = $inputs['full_content'];
+					$pageForView['meta_keywords'] = $inputs['meta_keywords'];
+					$pageForView['meta_description'] = $inputs['meta_description'];
+					$pageForView['public'] = $inputs['public'];
+				}
+			} else {
+				$this->view->errors = $validation->getMessages();
+				$pageForView['name'] = $inputs['name'];
+				$pageForView['seo_name'] = $inputs['seo_name'];
+				$pageForView['types'] =[];
+				$types = Models\PageType::find();
+				if (count($types))
+				{
+					foreach ($types as $type)
+					{
+						$tempType = [];
+						$tempType['id'] = $type->id;
+						$tempType['name'] = $type->full_name;
+						if ($tempType['id'] == $inputs['type_id']) {
+							$tempType['active'] = true;
+						} else {
+							$tempType['active'] = false;
+						}
+						$pageForView['types'][] = $tempType;
+					}
+				}
+				$pageForView['short_content'] = $inputs['short_content'];
+				$pageForView['full_content'] = $inputs['full_content'];
+				$pageForView['meta_keywords'] = $inputs['meta_keywords'];
+				$pageForView['meta_description'] = $inputs['meta_description'];
+				$pageForView['public'] = $inputs['public'];
+			}
+		}
+
+		if (!$pageForView['types'])
+		{
+			$types = Models\PageType::find();
+			if (count($types))
+			{
+				foreach ($types as $type)
+				{
+					$tempType = [];
+					$tempType['id'] = $type->id;
+					$tempType['name'] = $type->full_name;
+					$tempType['active'] = false;
+					$pageForView['types'][] = $tempType;
+				}
+			}
+		}
+
+		$this->view->page = $pageForView;
+
+		echo $this->view->render('admin/pages/new');
+	}
+
+	public function deletePageAction()
+	{
+
+	}
+
+	public function editPageAction()
+	{
+
+	}
 }
