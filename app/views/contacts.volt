@@ -36,7 +36,7 @@
 				</div>
 			</div>
 
-			<form class="form" action="action.php">
+			<form id="form" class="form" action="action.php">
 				<h2 class="title2">Заполните форму</h2>
 
 				<label>

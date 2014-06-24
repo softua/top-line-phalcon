@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	<a href="/admin/pages" class="btn btn-primary">Вернуться к списку</a>
+	<a href="{{ url('admin/pages/') }}" class="btn btn-primary">Вернуться к списку</a>
 	<h2>Новая страница</h2>
 	{{ partial('admin/partials/errors') }}
 	<form action="/admin/addpage" method="post">
@@ -120,7 +120,7 @@
 				</tr>
 				<tr>
 					<td>
-						<a href="/admin/pages" class="btn btn-primary">Вернуться к списку</a>
+						<a href="{{ url('admin/pages/') }}" class="btn btn-primary">Вернуться к списку</a>
 					</td>
 					<td>
 						<input type="submit" value="Создать страницу" class="btn btn-success"/>

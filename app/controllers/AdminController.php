@@ -2092,7 +2092,7 @@ class AdminController extends BaseAdminController
 					$page->public = 0;
 				}
 				if ($page->save()) {
-					return $this->response->redirect('admin/pages');
+					return $this->response->redirect('admin/pages/');
 				} else {
 					$this->view->errors = ['БД' => $page->getMessages()];
 					$pageForView['id'] = $page->id;

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	<a href="/admin/pages" class="btn btn-primary">Вернуться к списку</a>
+	<a href="{{ url('admin/pages/') }}" class="btn btn-primary">Вернуться к списку</a>
 	<h2>Редактирование страницы</h2>
 	{{ partial('admin/partials/errors') }}
 	<form action="/admin/editpage/{{ page['seo_name'] }}" method="post">
@@ -139,7 +139,7 @@
 				</tr>
 				<tr>
 					<td>
-						<a href="/admin/pages" class="btn btn-primary">Вернуться к списку</a>
+						<a href="{{ url('admin/pages/') }}" class="btn btn-primary">Вернуться к списку</a>
 						<a href="/admin/deletepage/{{ page['seo_name'] }}" class="btn btn-danger">Удалить СОВСЕМ</a>
 					</td>
 					<td>

@@ -1,6 +1,6 @@
 <nav class="sidebar__block sidebar__block--nav">
 	<h6 class="sidebar__block__title">Каталог</h6>
-	<a class="sidebar__block__btn" href="" title="">Акционные предложения</a>
+	<a class="sidebar__block__btn" href="{{ url('sales/') }}" title="">Акционные предложения</a>
 	{% if sidebar_categories is defined and sidebar_categories is not empty %}
 		<ul class="sidebar__nav">
 			{% for cat in sidebar_categories %}
