@@ -26,6 +26,7 @@ class Page extends \Phalcon\Mvc\Model
 	public $meta_description;
 	public $public;
 	public $time;
+	public $expiration;
 
 	public static function getAllPagesByType($typeId)
 	{

@@ -1796,6 +1796,7 @@ class AdminController extends BaseAdminController
 			$inputs['name'] = trim(strip_tags($this->request->getPost('name')));
 			$inputs['seo_name'] = Translit::get_seo_keyword($inputs['name'], true);
 			$inputs['type_id'] = trim(strip_tags($this->request->getPost('type-id')));
+			$inputs['expiration'] = trim(strip_tags($this->request->getPost('expiration')));
 			$inputs['short_content'] = trim($this->request->getPost('short-content'));
 			$inputs['full_content'] = trim($this->request->getPost('full-content'));
 			$inputs['video_content'] = trim($this->request->getPost('video-content'));
@@ -1830,6 +1831,12 @@ class AdminController extends BaseAdminController
 				$newPage->name = $inputs['name'];
 				$newPage->seo_name = $inputs['seo_name'];
 				$newPage->type_id = $inputs['type_id'];
+				if ($inputs['expiration']) {
+					$date = date('YmdHis', strtotime($inputs['expiration']));
+					if ($date) {
+						$newPage->expiration = $date;
+					}
+				}
 				$newPage->short_content = $inputs['short_content'];
 				$newPage->full_content = $inputs['full_content'];
 				$newPage->video_content = $inputs['video_content'];
@@ -1864,6 +1871,7 @@ class AdminController extends BaseAdminController
 							$pageForView['types'][] = $tempType;
 						}
 					}
+					$pageForView['expiration'] = $inputs['expiration'];
 					$pageForView['short_content'] = $inputs['short_content'];
 					$pageForView['full_content'] = $inputs['full_content'];
 					$pageForView['video_content'] = $inputs['video_content'];
@@ -1892,6 +1900,7 @@ class AdminController extends BaseAdminController
 						$pageForView['types'][] = $tempType;
 					}
 				}
+				$pageForView['expiration'] = $inputs['expiration'];
 				$pageForView['short_content'] = $inputs['short_content'];
 				$pageForView['full_content'] = $inputs['full_content'];
 				$pageForView['video_content'] = $inputs['video_content'];
@@ -1995,6 +2004,9 @@ class AdminController extends BaseAdminController
 				$pageForView['types'][] = $tempType;
 			}
 		}
+		if ($page->expiration) {
+			$pageForView['expiration'] = date('Y-m-d', strtotime($page->expiration));
+		}
 		$pageForView['short_content'] = $page->short_content;
 		$pageForView['full_content'] = $page->full_content;
 		$pageForView['video_content'] = $page->video_content;
@@ -2028,6 +2040,7 @@ class AdminController extends BaseAdminController
 			$inputs['name'] = trim(strip_tags($this->request->getPost('name')));
 			$inputs['seo_name'] = Translit::get_seo_keyword($inputs['name'], true);
 			$inputs['type_id'] = trim(strip_tags($this->request->getPost('type-id')));
+			$inputs['expiration'] = trim(strip_tags($this->request->getPost('expiration')));
 			$inputs['short_content'] = trim($this->request->getPost('short-content'));
 			$inputs['full_content'] = trim($this->request->getPost('full-content'));
 			$inputs['video_content'] = trim($this->request->getPost('video-content'));
@@ -2062,6 +2075,12 @@ class AdminController extends BaseAdminController
 				$page->name = $inputs['name'];
 				$page->seo_name = $inputs['seo_name'];
 				$page->type_id = $inputs['type_id'];
+				if ($inputs['expiration']) {
+					$date = strtotime($inputs['expiration']);
+					if ($date) {
+						$page->expiration = date('YmdHis', $date);
+					}
+				}
 				$page->short_content = $inputs['short_content'];
 				$page->full_content = $inputs['full_content'];
 				$page->video_content = $inputs['video_content'];
@@ -2096,6 +2115,7 @@ class AdminController extends BaseAdminController
 							$pageForView['types'][] = $tempType;
 						}
 					}
+					$pageForView['expiration'] = $inputs['expiration'];
 					$pageForView['short_content'] = $inputs['short_content'];
 					$pageForView['full_content'] = $inputs['full_content'];
 					$pageForView['video_content'] = $inputs['video_content'];
@@ -2125,6 +2145,7 @@ class AdminController extends BaseAdminController
 						$pageForView['types'][] = $tempType;
 					}
 				}
+				$pageForView['expiration'] = $inputs['expiration'];
 				$pageForView['short_content'] = $inputs['short_content'];
 				$pageForView['full_content'] = $inputs['full_content'];
 				$pageForView['video_content'] = $inputs['video_content'];
@@ -2141,13 +2162,6 @@ class AdminController extends BaseAdminController
 
 	public function uploadStaticPageFotoAction()
 	{
-		/*
-		 * Возможные варианты картинок:
-		 * - 'page_description' - картинка для описания проекта (500x358);
-		 * - 'page_list' - картинка для списка проектов (173x131);
-		 * - 'admin_thumb' - картинка для миниатюры в админке (250x150).
-		*/
-
 		if (!$this->request->isAjax())
 		{
 			echo null;
@@ -2175,72 +2189,155 @@ class AdminController extends BaseAdminController
 		$bdFile->extension = $file->file_src_name_ext;
 		$bdFile->save();
 
-		// Загружаем картинку для описания проекта
+		$page = Models\Page::findFirst($bdFile->page_id);
+		if ($page->type_id == 1 || $page->type_id == 2 || $page->type_id == 3 || $page->type_id == 4) {
+		/*
+		 * Возможные варианты картинок:
+		 * - 'page_description' - картинка для описания проекта (500x358);
+		 * - 'page_list' - картинка для списка проектов (173x131);
+		 * - 'admin_thumb' - картинка для миниатюры в админке (250x150).
+		*/
+			// Загружаем картинку для описания проекта
 
-		$file->file_new_name_body = $bdFile->id . '__page_description';
-		$file->image_watermark = 'img/watermark.png';
-		$file->image_watermark_position = 'TL';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 500;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 358;
-		}
-		$file->process('staticPages/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
+			$file->file_new_name_body = $bdFile->id . '__page_description';
+			$file->image_watermark = 'img/watermark.png';
+			$file->image_watermark_position = 'TL';
+			$file->image_resize = true;
+			if ($file->image_src_x >= $file->image_src_y)
+			{
+				$file->image_x = 500;
+				$file->image_ratio_y = true;
+			}
+			elseif ($file->image_src_x < $file->image_src_y)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 358;
+			}
+			$file->process('staticPages/images');
+			if (!$file->processed)
+			{
+				echo 'false';
+				$file->clean();
+				return false;
+			}
 
-		// Загружаем картинку для списка проектов
+			// Загружаем картинку для списка проектов
 
-		$file->file_new_name_body = $bdFile->id . '__page_list';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 173;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 131;
-		}
-		$file->process('staticPages/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
+			$file->file_new_name_body = $bdFile->id . '__page_list';
+			$file->image_resize = true;
+			if ($file->image_src_x >= $file->image_src_y)
+			{
+				$file->image_x = 173;
+				$file->image_ratio_y = true;
+			}
+			elseif ($file->image_src_x < $file->image_src_y)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 131;
+			}
+			$file->process('staticPages/images');
+			if (!$file->processed)
+			{
+				echo 'false';
+				$file->clean();
+				return false;
+			}
 
-		// Загружаем миниатюру для админки
+			// Загружаем миниатюру для админки
 
-		$file->file_new_name_body = $bdFile->id . '__admin_thumb';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 250;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 150;
-		}
-		$file->process('staticPages/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
+			$file->file_new_name_body = $bdFile->id . '__admin_thumb';
+			$file->image_resize = true;
+			if ($file->image_src_x >= $file->image_src_y)
+			{
+				$file->image_x = 250;
+				$file->image_ratio_y = true;
+			}
+			elseif ($file->image_src_x < $file->image_src_y)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 150;
+			}
+			$file->process('staticPages/images');
+			if (!$file->processed)
+			{
+				echo 'false';
+				$file->clean();
+				return false;
+			}
+		} elseif ($page->type_id == 5) {
+		/*
+		 * Возможные варианты картинок:
+		 * - 'page_description' - картинка для описания проекта (589x196);
+		 * - 'page_list' - картинка для списка проектов (465x164);
+		 * - 'admin_thumb' - картинка для миниатюры в админке (250x188).
+		*/
+			// Загружаем картинку для описания проекта
+
+			$file->file_new_name_body = $bdFile->id . '__page_description';
+			$file->image_watermark = 'img/watermark.png';
+			$file->image_watermark_position = 'TL';
+			$file->image_resize = true;
+			if ($file->image_src_x >= $file->image_src_y)
+			{
+				$file->image_x = 589;
+				$file->image_ratio_y = true;
+			}
+			elseif ($file->image_src_x < $file->image_src_y)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 196;
+			}
+			$file->process('staticPages/images');
+			if (!$file->processed)
+			{
+				echo 'false';
+				$file->clean();
+				return false;
+			}
+
+			// Загружаем картинку для списка проектов
+
+			$file->file_new_name_body = $bdFile->id . '__page_list';
+			$file->image_resize = true;
+			if ($file->image_src_x >= $file->image_src_y)
+			{
+				$file->image_x = 465;
+				$file->image_ratio_y = true;
+			}
+			elseif ($file->image_src_x < $file->image_src_y)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 164;
+			}
+			$file->process('staticPages/images');
+			if (!$file->processed)
+			{
+				echo 'false';
+				$file->clean();
+				return false;
+			}
+
+			// Загружаем миниатюру для админки
+
+			$file->file_new_name_body = $bdFile->id . '__admin_thumb';
+			$file->image_resize = true;
+			if ($file->image_src_x >= $file->image_src_y)
+			{
+				$file->image_x = 250;
+				$file->image_ratio_y = true;
+			}
+			elseif ($file->image_src_x < $file->image_src_y)
+			{
+				$file->image_ratio_x = true;
+				$file->image_y = 188;
+			}
+			$file->process('staticPages/images');
+			if (!$file->processed)
+			{
+				echo 'false';
+				$file->clean();
+				return false;
+			}
 		}
 
 		// Возвращаем тумбу для админки

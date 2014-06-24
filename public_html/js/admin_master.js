@@ -16,6 +16,17 @@ tinymce.init({
 	}
 });
 
+$.datepicker.setDefaults({
+	dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+	dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+	firstDay: 1,
+	monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+});
+
+$('[data-calendar="true"]').datepicker({
+	dateFormat: 'yy-mm-dd'
+});
+
 var admin = {};
 
 $('body').on('click', '[data-action="open"]', function(e) {

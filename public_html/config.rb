@@ -9,7 +9,7 @@ require 'rgbapng'
 environment = :development
 
 # Set this to the root of your project when deployed:
-project_path = File.expand_path("..",File.dirname(__FILE__))
+
 http_path = "/"
 css_dir = "css"
 fonts_dir = "fonts"

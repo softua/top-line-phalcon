@@ -49,6 +49,16 @@
 					</td>
 				</tr>
 				<tr>
+					<th title="Дата окончания действия акции">Окончание акции</th>
+					<td>
+						{% if page['expiration'] is defined %}
+							<input data-calendar="true" type="text" name="expiration" value="{{ page['expiration'] }}"/>
+						{% else %}
+							<input data-calendar="true" type="text" name="expiration"/>
+						{% endif %}
+					</td>
+				</tr>
+				<tr>
 					<th>Короткое описание</th>
 					<td>
 						{% if page['short_content'] is defined %}

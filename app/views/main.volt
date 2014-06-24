@@ -7,39 +7,39 @@
 				<ul class="slider">
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="/img/dummy/slider/1.jpg" alt=""/>
-							<h3 class="slider__title">
-								Инструменты и материалы для сервиса и ремонта шин
-							</h3>
-							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
+							<img class="slider__img" src="{{ static_url('img/dummy/slider/1.jpg') }}" alt=""/>
 						</a>
+						<h3 class="slider__title">
+							Инструменты и материалы для сервиса и ремонта шин
+						</h3>
+						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
 					</li>
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="/img/dummy/slider/2.jpg" alt=""/>
-							<h3 class="slider__title">
-								Лучшие предложения по оборудованию для шиномонтажных мастерских
-							</h3>
-							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
+							<img class="slider__img" src="{{ static_url('img/dummy/slider/2.jpg') }}" alt=""/>
 						</a>
+						<h3 class="slider__title">
+							Лучшие предложения по оборудованию для шиномонтажных мастерских
+						</h3>
+						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
 					</li>
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="/img/dummy/slider/3.jpg" alt=""/>
-							<h3 class="slider__title">
-								Профессиональное оборудование для СТО и автосервиса
-							</h3>
-							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
+							<img class="slider__img" src="{{ static_url('img/dummy/slider/3.jpg') }}" alt=""/>
 						</a>
+						<h3 class="slider__title">
+							Профессиональное оборудование для СТО и автосервиса
+						</h3>
+						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
 					</li>
 					<li class="slider__item">
 						<a class="slider__link" href="" title="">
-							<img class="slider__img" src="/img/dummy/slider/4.jpg" alt=""/>
-							<h3 class="slider__title">
-								Комплексные решения для Вашего бизнеса
-							</h3>
-							<img class="slider__link__button" src="/img/dummy/slider/button.png" alt=""/>
+							<img class="slider__img" src="{{ static_url('img/dummy/slider/4.jpg') }}" alt=""/>
 						</a>
+						<h3 class="slider__title">
+							Комплексные решения для Вашего бизнеса
+						</h3>
+						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
 					</li>
 				</ul>
 			</div>

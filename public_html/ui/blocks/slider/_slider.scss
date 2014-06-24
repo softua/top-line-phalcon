@@ -1,5 +1,5 @@
 .slider {
-    $h: 338px;
+    $h: 332px;
     &--outer-wrapper {
         @include my-linear-gradient(#afb0b5, #e1e3e8);
         position: relative;
@@ -12,7 +12,7 @@
             left: 0;
             right: 0;
             height: 50px;
-            background: url('../img/css/slider_shadow.png') center 0 no-repeat;
+            background: url('/img/css/slider_shadow.png') center 0 no-repeat;
         }
 
         .bounding-box {
@@ -103,33 +103,44 @@
             }
             display: block;
         }
+
+		&:after {
+			content: '';
+			width: 100%;
+			clear: both;
+		}
     }
 
     &__link {
         $pt: 80px;
-        $pl: 460px;
+        $pl: 530px;
         display: block;
-        position: relative;
-        width: 990px - $pl;
-        height: $h - $pt;
-        margin: 0 auto;
-        padding: $pt 0 0 $pl;
+		width: 50%;
+        height: $h;
+		padding: 0;
         color: #fff;
         text-decoration: none;
+		float: left;
+
+		&__button {
+			margin: 20px 0 0 0;
+		}
     }
 
     &__img {
-        position: absolute;
-        bottom: 0;
-        left: 0;
+		display: block;
+		margin: 0 auto;
     }
 
     &__title {
         @include my-text-shadow(rgba(#16191d, .5) 0 6px 21px);
-        margin: 0;
+        margin: 40px 0 0 0;
         font-size: 36px;
         font-weight: 600;
         line-height: 48px;
+		color: #ffffff;
+		float: left;
+		width: 50%;
     }
 
     &__subtitle {

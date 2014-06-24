@@ -8,7 +8,7 @@
 	<a href="/admin/addpage" class="btn btn-primary">Добавить статическую страницу</a>
 	<h3>Страницы</h3>
 	{% if pages is defined and pages is not empty %}
-		<table class="table table-bordered">
+		<table class="table table-bordered table-hover">
 			<thead>
 				<tr>
 					<th>#</th>

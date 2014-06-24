@@ -9,7 +9,7 @@
 	<h2>Новая страница</h2>
 	{{ partial('admin/partials/errors') }}
 	<form action="/admin/addpage" method="post">
-		<table class="table table-bordered">
+		<table class="table table-bordered table-hover">
 			<tbody>
 				<tr>
 					<th>Название</th>
@@ -45,6 +45,16 @@
 									{% endif %}
 								{% endfor %}
 							</select>
+						{% endif %}
+					</td>
+				</tr>
+				<tr>
+					<th title="Дата окончания действия акции">Окончание акции</th>
+					<td>
+						{% if page['expiration'] is defined %}
+							<input data-calendar="true" type="text" name="expiration" value="{{ page['expiration'] }}"/>
+						{% else %}
+							<input data-calendar="true" type="text" name="expiration"/>
 						{% endif %}
 					</td>
 				</tr>

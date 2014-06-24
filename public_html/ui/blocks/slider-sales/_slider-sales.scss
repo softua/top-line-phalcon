@@ -37,8 +37,11 @@
             text-align: center;
 
             @include ie-before {
-                @include my-sprite-dimensions($spriteMisc, title_dots_left);
+//                @include my-sprite-dimensions($spriteMisc, title_dots_left);
                 content: '';
+				background: url("/public_html/img/1.gif") no-repeat center;
+				width: 23px;
+				height: 5px;
                 display: inline-block;
                 margin-right: 30px;
                 vertical-align: middle;
