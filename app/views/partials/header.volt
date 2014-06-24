@@ -37,29 +37,26 @@
 
 			{% if active_link is 'company' %}
 				<li class="nav__item active">
-					<a class="nav__item__link" href="/company/">О компании</a>
-					<ul class="nav2">
-						<li class="nav2__item">
-							<a class="nav2__item__link" href="">О нас</a>
-						</li>
-						<li class="nav2__item">
-							<a class="nav2__item__link" href="">Новости</a>
-						</li>
-					</ul>
-				</li>
 			{% else %}
 				<li class="nav__item">
-					<a class="nav__item__link" href="/company/">О компании</a>
+			{% endif %}
+					<span class="nav__item__link">О Компании</span>
 					<ul class="nav2">
+						{% if static_pages is defined and static_pages is not empty %}
+							{% for page in static_pages %}
+								<li class="nav2__item">
+									<a class="nav2__item__link" href="{{ page['href'] }}">{{ page['name'] }}</a>
+								</li>
+							{% endfor %}
+						{% endif %}
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="">О нас</a>
+							<a class="nav2__item__link" href="{{ url('company/aboutus') }}">О нас</a>
 						</li>
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="">Новости</a>
+							<a class="nav2__item__link" href="{{ url('company/news/') }}">Новости</a>
 						</li>
 					</ul>
 				</li>
-			{% endif %}
 
 			{% if active_link is 'catalog' %}
 				<li class="nav__item active">

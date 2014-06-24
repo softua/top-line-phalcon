@@ -6,7 +6,7 @@ var version = {
     },
     isDev = window.location.hostname.search( '.dev' ) > -1;
 
-require.config( {
+require.config({
     urlArgs: 'v=' + (isDev ? Math.random() : 0.1),
     baseUrl: '/js/lib',
     paths: {
@@ -74,4 +74,8 @@ require( ['jquery'], function( $ ) {
     if ( !isDev ) {
         require( ['pluso'] );
     }
+
+	if ($('[data-filter]').length) {
+		require(['../../ui/blocks/data-filter/data-filter']);
+	}
 } );

@@ -69,6 +69,16 @@
 					</td>
 				</tr>
 				<tr>
+					<th>Видео контент</th>
+					<td>
+						{% if page['video_content'] is defined %}
+							<textarea name="video-content" cols="30" rows="10" placeholder="Код вставки видео">{{ page['video_content'] }}</textarea>
+						{% else %}
+							<textarea name="video-content" cols="30" rows="10" placeholder="Код вставки видео"></textarea>
+						{% endif %}
+					</td>
+				</tr>
+				<tr>
 					<th>Meta keywords</th>
 					<td>
 						{% if page['meta_keywords'] is defined %}

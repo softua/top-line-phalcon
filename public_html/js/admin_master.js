@@ -72,6 +72,11 @@ $('body').on('click', '[data-action="open"]', function(e) {
 	admin.categoryFoto.deleteFoto(e);
 })
 
+// Удаление фоток статических страниц
+.on('dblclick', '[data-delete-static-page-foto="true"]', function(e) {
+	admin.pages.deleteFoto(e);
+})
+
 // Удаление файла
 .on('click', '[data-delete-file="true"]', function(e) {
 	e.preventDefault();
@@ -191,6 +196,23 @@ $('[data-uploaded-list="fotos"]').sortable({
 	}
 });
 
+// Сортировка фото статических страниц
+$('[data-uploaded-list="pages-fotos"]').sortable({
+	opacity: 0.5,
+	update: function(event, ui) { // событие окончания перетаскивания
+		var postData = [];
+		$('li', '[data-uploaded-list="pages-fotos"]').each(function(index, element) {
+			postData.push($(element).data('uploaded-id'));
+		});
+
+		$.ajax({
+			url: '/admin/sortstaticpagesfotos',
+			type: 'POST',
+			data: 'ids=' + JSON.stringify(postData)
+		});
+	}
+});
+
 // Сортировка видео
 $('.videos').sortable({
 	opacity: 0.5,
@@ -279,6 +301,54 @@ $('[data-upload-foto-category="true"]').on('click', function(e) {
 				ul.append(li);
 
 			}
+		});
+	},
+	progressall: function(e, data) {
+		var progress = parseInt(data.loaded / data.total * 100);
+
+		if (progress < 100)
+		{
+			$('[data-progress-fotos="true"]')
+				.fadeIn()
+				.children('.bar')
+				.css('width', progress + '%')
+				.text(progress + ' %');
+		} else {
+			$('[data-progress-fotos="true"]')
+				.children('.bar')
+				.css('width', progress + '%')
+				.text('Загрузка завершена');
+
+			setTimeout(function() {
+				$('[data-progress-fotos="true"]').fadeOut();
+			}, 1000)
+		}
+	}
+});
+
+// Загрузка фотографий статических страниц
+$('[data-upload-static-page-foto="true"]').on('click', function(e) {
+	$(e.target).children('input').click();
+}).fileupload({
+	url: '/admin/uploadstaticpagefoto/' + $('[data-upload-static-page-foto="true"]').data('page-id'),
+	sequentialUploads: true,
+	formData: {script: true},
+	add: function (e, data) {
+		$('[data-upload-static-page-foto="true"]').append('<img src="/img/indicato.gif" width="30">');
+		var ajax = data.submit();
+
+		ajax.success(function (result, textStatus, jqXHR) {
+			if (result !== 'false')
+			{
+				var imgData = JSON.parse(result);
+				var ul = $('[data-uploaded-list="pages-fotos"]');
+				var li = $('<li data-uploaded-id="' + imgData.id + '" data-delete-static-page-foto="true"><img src="' + imgData.path + '" alt="/" class="thumbnail"/></li>');
+				ul.append(li);
+			}
+		});
+
+		ajax.complete(function() {
+			$('img', '[data-upload-static-page-foto="true"]').remove();
 		});
 	},
 	progressall: function(e, data) {
@@ -718,3 +788,21 @@ admin.categoryFoto.deleteFoto = function(event) {
 		}
 	});
 };
+
+admin.pages = {};
+
+admin.pages.deleteFoto = function(event) {
+	$.ajax({
+		url: '/admin/deletestaticpagefoto',
+		type: 'post',
+		data: {
+			id: $(event.target).parent('li').data('uploaded-id')
+		},
+		success: function(data) {
+			if (data === 'true')
+			{
+				$(event.target).parent('li').remove();
+			}
+		}
+	});
+}

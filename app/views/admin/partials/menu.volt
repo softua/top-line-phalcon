@@ -5,17 +5,17 @@
 			<li class="divider-vertical"></li>
 
 			{% if url is '/admin' %}
-				<li class="active"><a href="/admin">На главную</a></li>
+				<li class="active"><a href="{{ url('admin') }}">На главную</a></li>
 			{% else %}
-				<li><a href="/admin">На главную</a></li>
+				<li><a href="{{ url('admin') }}">На главную</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>
 
 			{% if url is '/admin/products' or url is '/admin/addproduct' %}
-				<li class="active"><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
+				<li class="active"><a href="{{ url('admin/products') }}" title="Редактирование товаров">Товары</a></li>
 			{% else %}
-				<li><a href="/admin/products" title="Редактирование товаров">Товары</a></li>
+				<li><a href="{{ url('admin/products') }}" title="Редактирование товаров">Товары</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>
@@ -24,14 +24,6 @@
 				<li class="active"><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
 			{% else %}
 				<li><a href="/admin/categories" title="Редактирование категорий">Категории</a></li>
-			{% endif %}
-
-			<li class="divider-vertical"></li>
-
-			{% if url is '/admin/news' %}
-				<li class="active"><a href="/admin/news">Новости</a></li>
-			{% else %}
-				<li><a href="/admin/news">Новости</a></li>
 			{% endif %}
 
 			<li class="divider-vertical"></li>

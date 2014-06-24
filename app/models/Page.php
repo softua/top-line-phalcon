@@ -19,11 +19,13 @@ class Page extends \Phalcon\Mvc\Model
 	public $name;
 	public $short_content;
 	public $full_content;
+	public $video_content;
 	public $seo_name;
 	public $type_id;
 	public $meta_keywords;
 	public $meta_description;
 	public $public;
+	public $time;
 
 	public static function getAllPagesByType($typeId)
 	{

@@ -37,29 +37,26 @@
 
 			<?php if ($active_link == 'company') { ?>
 				<li class="nav__item active">
-					<a class="nav__item__link" href="/company/">О компании</a>
-					<ul class="nav2">
-						<li class="nav2__item">
-							<a class="nav2__item__link" href="">О нас</a>
-						</li>
-						<li class="nav2__item">
-							<a class="nav2__item__link" href="">Новости</a>
-						</li>
-					</ul>
-				</li>
 			<?php } else { ?>
 				<li class="nav__item">
-					<a class="nav__item__link" href="/company/">О компании</a>
+			<?php } ?>
+					<span class="nav__item__link">О Компании</span>
 					<ul class="nav2">
+						<?php if (isset($static_pages) && $static_pages == !$empty) { ?>
+							<?php foreach ($static_pages as $page) { ?>
+								<li class="nav2__item">
+									<a class="nav2__item__link" href="<?php echo $page['href']; ?>"><?php echo $page['name']; ?></a>
+								</li>
+							<?php } ?>
+						<?php } ?>
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="">О нас</a>
+							<a class="nav2__item__link" href="<?php echo $this->url->get('company/aboutus'); ?>">О нас</a>
 						</li>
 						<li class="nav2__item">
-							<a class="nav2__item__link" href="">Новости</a>
+							<a class="nav2__item__link" href="<?php echo $this->url->get('company/news/'); ?>">Новости</a>
 						</li>
 					</ul>
 				</li>
-			<?php } ?>
 
 			<?php if ($active_link == 'catalog') { ?>
 				<li class="nav__item active">

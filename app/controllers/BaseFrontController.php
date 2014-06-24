@@ -13,7 +13,9 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 	{
 		$this->tag->setTitle($this->di->get('config')->name);
 		$this->tag->setTitleSeparator(' :: ');
+
 		$this->view->top_products = $this->getTopProducts();
+		$this->view->static_pages = $this->getSubmenuWithCompanyPages();
 	}
 
 	public function getTopProducts()
@@ -46,5 +48,25 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 			return $topProductsForView;
 		}
 		return false;
+	}
+
+	public function getSubmenuWithCompanyPages()
+	{
+		$staticCompanyPages = Models\Page::find([
+			'type_id = 1 AND public = 1',
+			'order' => 'name'
+		]);
+		if (count($staticCompanyPages)) {
+			$pages = [];
+			foreach ($staticCompanyPages as $page) {
+				$tempPage = [];
+				$tempPage['name'] = $page->name;
+				$tempPage['href'] = '/company/show/' . $page->seo_name;
+				$pages[] = $tempPage;
+			}
+			return $pages;
+		} else {
+			return null;
+		}
 	}
 }

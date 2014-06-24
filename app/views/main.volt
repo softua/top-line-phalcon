@@ -45,38 +45,22 @@
 			</div>
 		</div><!-- end slider -->
 
-		<div class="news-main-list--outer-wrapper">
-			<h2 class="title title--big">Новости</h2>
-			<ul class="news-main-list">
-				<li class="news-main-list__item">
-					<h3 class="news-main-list__title">
-						<a href="" title="">Новый комплект оборудования!</a></h3>
-					<time class="news-main-list__date" datetime="2014-02-18">18.02.14</time>
-
-					<p>Lorem Ipsum Dolor сидеть Амет, consectet
-						adipiscing Элит. Suspendisse TEMPOR
-						pharetra миль</p>
-				</li>
-				<li class="news-main-list__item">
-					<h3 class="news-main-list__title">
-						<a href="" title="">Новый комплект оборудования!</a></h3>
-					<time class="news-main-list__date" datetime="2014-02-18">18.02.14</time>
-
-					<p>Lorem Ipsum Dolor сидеть Амет, consectet
-						adipiscing Элит. Suspendisse TEMPOR
-						pharetra миль</p>
-				</li>
-				<li class="news-main-list__item">
-					<h3 class="news-main-list__title">
-						<a href="" title="">Новый комплект оборудования!</a></h3>
-					<time class="news-main-list__date" datetime="2014-02-18">18.02.14</time>
-
-					<p>Lorem Ipsum Dolor сидеть Амет, consectet
-						adipiscing Элит. Suspendisse TEMPOR
-						pharetra миль</p>
-				</li>
-			</ul>
-		</div><!-- end news-main-list -->
+		{% if news is defined and news is not empty %}
+			<div class="news-main-list--outer-wrapper">
+				<h2 class="title title--big">Новости</h2>
+				<ul class="news-main-list">
+					{% for item in news %}
+						<li class="news-main-list__item">
+							<h3 class="news-main-list__title">
+								<a href="{{ item['href'] }}" title="{{ item['name'] }}">{{ item['name'] }}</a>
+							</h3>
+							<time class="news-main-list__date" datetime="{{ item['date-2'] }}">{{ item['date'] }}</time>
+							{{ item['short_content'] }}
+						</li>
+					{% endfor %}
+				</ul>
+			</div><!-- end news-main-list -->
+		{% endif %}
 
 		<div class="slider-sales--outer-wrapper js-slider">
 			<h2 class="slider-sales--outer-wrapper__title">Акционные предложения</h2>

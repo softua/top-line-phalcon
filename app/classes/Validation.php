@@ -104,7 +104,7 @@ class Validation
 		{
 			foreach($params as $name => $value)
 			{
-				if(strlen($value) < $minValue)
+				if(mb_strlen($value, 'UTF-8') < $minValue)
 				{
 					$flag = false;
 					$this->messages[$name][] = $name . ' не может быть менше ' . $minValue . ' символов';
@@ -114,7 +114,7 @@ class Validation
 		{
 			foreach($params as $name => $value)
 			{
-				if(strlen($value) < $minValue)
+				if(mb_strlen($value, 'UTF-8') < $minValue)
 				{
 					$this->messages[$name][] = $name . ' не может быть менше ' . $minValue . ' символов';
 				}
@@ -142,7 +142,7 @@ class Validation
 		{
 			foreach($params as $name => $value)
 			{
-				if(strlen($value) > $maxValue)
+				if(mb_strlen($value, 'UTF-8') > $maxValue)
 				{
 					$flag = false;
 					$this->messages[$name][] = $name . ' не может быть больше ' . $maxValue . ' символов';
@@ -152,7 +152,7 @@ class Validation
 		{
 			foreach($params as $name => $value)
 			{
-				if(strlen($value) > $maxValue)
+				if(mb_strlen($value, 'UTF-8') > $maxValue)
 				{
 					$this->messages[$name][] = $name . ' не может быть больше ' . $maxValue . ' символов';
 				}

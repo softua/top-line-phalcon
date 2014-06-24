@@ -6,7 +6,7 @@
 			<a class="breadcrumbs__item__link" href="/" title="Главная" itemprop="breadcrumb">Главная</a> -
 		</li>
 		<li class="breadcrumbs__item">
-			<span class="breadcrumbs__item__current" itemprop="breadcrumb">О Компании</span>
+			<span class="breadcrumbs__item__current" itemprop="breadcrumb">О нас</span>
 		</li>
 	</ul>
 {% endblock %}

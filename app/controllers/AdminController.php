@@ -1365,14 +1365,27 @@ class AdminController extends BaseAdminController
 
 		if ($bdFile)
 		{
-			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original.' . $bdFile->extension);
-			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original_w.' . $bdFile->extension);
-			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_description.' . $bdFile->extension);
-			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_thumb.' . $bdFile->extension);
-			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension);
-			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_list.' . $bdFile->extension);
-			Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_top.' . $bdFile->extension);
-
+			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original.' . $bdFile->extension)) {
+				Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original.' . $bdFile->extension);
+			}
+			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original_w.' . $bdFile->extension)) {
+				Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original_w.' . $bdFile->extension);
+			}
+			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_description.' . $bdFile->extension)) {
+				Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_description.' . $bdFile->extension);
+			}
+			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_thumb.' . $bdFile->extension)) {
+				Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_thumb.' . $bdFile->extension);
+			}
+			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension)) {
+				Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension);
+			}
+			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_list.' . $bdFile->extension)) {
+				Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_list.' . $bdFile->extension);
+			}
+			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_top.' . $bdFile->extension)) {
+				Models\ProductImage::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_top.' . $bdFile->extension);
+			}
 		} else {
 			echo 'false';
 			return false;
@@ -1743,14 +1756,30 @@ class AdminController extends BaseAdminController
 	public function pagesAction()
 	{
 		$this->tag->prependTitle('Статические страницы');
+		$pages = Models\Page::find([
+			'order' => 'type_id, time DESC'
+		]);
+		if (count($pages)) {
+			$pagesForView = [];
+			foreach ($pages as $page) {
+				$tempPage = [];
+				$tempPage['name'] = $page->name;
+				$tempPage['type'] = Models\PageType::findFirst($page->type_id)->full_name;
+				$tempPage['datetime'] = date('d.m.Y', strtotime($page->time));
+				if ($tempPage['type'] == 'Видео') {
+					$tempPage['link'] = $this->url->get('video/') . '#' . $page->seo_name;
+				} else {
+					$tempPage['link'] = '---';
+				}
+				$tempPage['seo_name'] = $page->seo_name;
+				$tempPage['public'] = $page->public;
+				$pagesForView[] = $tempPage;
+			}
+		} else {
+			$pagesForView = null;
+		}
 
-		$pagesCompanyForView = Models\Page::getAllPagesByType(1);
-		$pagesProjectForView = Models\Page::getAllPagesByType(2);
-
-		if ($pagesCompanyForView)
-			$this->view->company_pages = $pagesCompanyForView;
-		if ($pagesProjectForView)
-			$this->view->project_pages = $pagesProjectForView;
+		$this->view->pages = $pagesForView;
 
 		echo $this->view->render('admin/pages/list');
 	}
@@ -1769,6 +1798,7 @@ class AdminController extends BaseAdminController
 			$inputs['type_id'] = trim(strip_tags($this->request->getPost('type-id')));
 			$inputs['short_content'] = trim($this->request->getPost('short-content'));
 			$inputs['full_content'] = trim($this->request->getPost('full-content'));
+			$inputs['video_content'] = trim($this->request->getPost('video-content'));
 			$inputs['meta_keywords'] = trim(strip_tags($this->request->getPost('meta-keywords')));
 			$inputs['meta_description'] = trim(strip_tags($this->request->getPost('meta-description')));
 			$inputs['public'] = trim(strip_tags($this->request->getPost('public')));
@@ -1778,6 +1808,14 @@ class AdminController extends BaseAdminController
 				'Название' => $inputs['name'],
 				'Тип' => $inputs['type_id']
 			], false);
+			$validation->isInRangeString([
+				'Название страницы' => $inputs['name'],
+				'СЕО название' => $inputs['seo_name']
+			], 2, 150, false);
+			$validation->isLessThanMaxValueString([
+				'Meta keywords' => $inputs['meta_keywords'],
+				'Meta description' => $inputs['meta_description']
+			], 200, false);
 			if (!preg_match('/\d+/', $inputs['type_id']))
 				$validation->setMessageManual('Тип', 'Неверно указан тип');
 			$samePages = Models\Page::findFirst([
@@ -1794,6 +1832,7 @@ class AdminController extends BaseAdminController
 				$newPage->type_id = $inputs['type_id'];
 				$newPage->short_content = $inputs['short_content'];
 				$newPage->full_content = $inputs['full_content'];
+				$newPage->video_content = $inputs['video_content'];
 				$newPage->meta_keywords = $inputs['meta_keywords'];
 				$newPage->meta_description = $inputs['meta_description'];
 				if ($inputs['public'] == 'on') {
@@ -1801,8 +1840,9 @@ class AdminController extends BaseAdminController
 				} else {
 					$newPage->public = 0;
 				}
+				$newPage->time = date('YmdHis', time());
 				if ($newPage->save()) {
-					return $this->response->redirect('admin/pages');
+					return $this->response->redirect('admin/editpage/' . $newPage->seo_name);
 				} else {
 					$this->view->errors = ['БД' => $newPage->getMessages()];
 					$pageForView['name'] = $inputs['name'];
@@ -1826,6 +1866,7 @@ class AdminController extends BaseAdminController
 					}
 					$pageForView['short_content'] = $inputs['short_content'];
 					$pageForView['full_content'] = $inputs['full_content'];
+					$pageForView['video_content'] = $inputs['video_content'];
 					$pageForView['meta_keywords'] = $inputs['meta_keywords'];
 					$pageForView['meta_description'] = $inputs['meta_description'];
 					$pageForView['public'] = $inputs['public'];
@@ -1853,6 +1894,7 @@ class AdminController extends BaseAdminController
 				}
 				$pageForView['short_content'] = $inputs['short_content'];
 				$pageForView['full_content'] = $inputs['full_content'];
+				$pageForView['video_content'] = $inputs['video_content'];
 				$pageForView['meta_keywords'] = $inputs['meta_keywords'];
 				$pageForView['meta_description'] = $inputs['meta_description'];
 				$pageForView['public'] = $inputs['public'];
@@ -1882,11 +1924,393 @@ class AdminController extends BaseAdminController
 
 	public function deletePageAction()
 	{
-
+		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
+		if (!mb_strlen($seoName)) {
+			return $this->dispatcher->forward([
+				'controller' => 'admin',
+				'action' => 'pages'
+			]);
+		}
+		$page = Models\Page::findFirst([
+			'seo_name = ?1',
+			'bind' => [1 => $seoName]
+		]);
+		if ($page) {
+			$pageImages = Models\PageImage::find([
+				'page_id = ?1',
+				'bind' => [1 => $page->id]
+			]);
+			if (count($pageImages)) {
+				foreach ($pageImages as $image) {
+					$imgPath = 'staticPages/images' . $image->id . '__page_list.' . $image->extension;
+					if (file_exists($imgPath)) {
+						Models\PageImage::deleteFiles($imgPath);
+					}
+					$imgPath = 'staticPages/images/' . $image->id . '__admin_thumb.' . $image->extension;
+					if (file_exists($imgPath)) {
+						Models\PageImage::deleteFiles($imgPath);
+					}
+					$imgPath = 'staticPages/images/' . $image->id . '__page_description.' . $image->extension;
+					if (file_exists($imgPath)) {
+						Models\PageImage::deleteFiles($imgPath);
+					}
+				}
+			}
+			$page->delete();
+			return $this->response->redirect('admin/pages');
+		}
 	}
 
 	public function editPageAction()
 	{
+		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
+		$page = Models\Page::findFirst([
+			'seo_name = ?1',
+			'bind' => [1 => $seoName]
+		]);
+		if (!$page) {
+			return $this->dispatcher->forward([
+				'controller' => 'admin',
+				'action' => 'pages'
+			]);
+		}
+		$this->tag->prependTitle('Редактирование страницы');
+		$pageForView = [];
+		$pageForView['id'] = $page->id;
+		$pageForView['name'] = $page->name;
+		$pageForView['seo_name'] = $page->seo_name;
+		$types = Models\PageType::find();
+		if (count($types))
+		{
+			foreach ($types as $type)
+			{
+				$tempType = [];
+				$tempType['id'] = $type->id;
+				$tempType['name'] = $type->full_name;
+				if ($tempType['id'] == $page->type_id) {
+					$tempType['active'] = true;
+				} else {
+					$tempType['active'] = false;
+				}
+				$pageForView['types'][] = $tempType;
+			}
+		}
+		$pageForView['short_content'] = $page->short_content;
+		$pageForView['full_content'] = $page->full_content;
+		$pageForView['video_content'] = $page->video_content;
+		$pageForView['meta_keywords'] = $page->meta_keywords;
+		$pageForView['meta_description'] = $page->meta_description;
+		$pageForView['public'] = ($page->public == 1) ? 'on' : 'off';
+		$pageImages = Models\PageImage::find([
+			'page_id = ?1',
+			'bind' => [1 => $page->id],
+			'order' => 'sort'
+		]);
+		if (count($pageImages)) {
+			foreach ($pageImages as $image) {
+				$tempImage = [];
+				$tempImage['id'] = $image->id;
+				$path = 'staticPages/images/' . $image->id . '__admin_thumb.' . $image->extension;
+				if (file_exists($path)) {
+					$tempImage['path'] = '/' . $path;
+				} else {
+					$tempImage['path'] = '/img/no-foto.png';
+				}
+				$pageForView['fotos'][] = $tempImage;
+			}
+		} else {
+			$pageForView['fotos'] = null;
+		}
 
+		if ($this->request->isPost())
+		{
+			$inputs = [];
+			$inputs['name'] = trim(strip_tags($this->request->getPost('name')));
+			$inputs['seo_name'] = Translit::get_seo_keyword($inputs['name'], true);
+			$inputs['type_id'] = trim(strip_tags($this->request->getPost('type-id')));
+			$inputs['short_content'] = trim($this->request->getPost('short-content'));
+			$inputs['full_content'] = trim($this->request->getPost('full-content'));
+			$inputs['video_content'] = trim($this->request->getPost('video-content'));
+			$inputs['meta_keywords'] = trim(strip_tags($this->request->getPost('meta-keywords')));
+			$inputs['meta_description'] = trim(strip_tags($this->request->getPost('meta-description')));
+			$inputs['public'] = trim(strip_tags($this->request->getPost('public')));
+
+			$validation = new Validation();
+			$validation->isNotEmpty([
+				'Название' => $inputs['name'],
+				'Тип' => $inputs['type_id']
+			], false);
+			$validation->isInRangeString([
+				'Название страницы' => $inputs['name'],
+				'СЕО название' => $inputs['seo_name']
+			], 2, 150, false);
+			$validation->isLessThanMaxValueString([
+				'Meta keywords' => $inputs['meta_keywords'],
+				'Meta description' => $inputs['meta_description']
+			], 200, false);
+			if (!preg_match('/\d+/', $inputs['type_id'])) {
+				$validation->setMessageManual('Тип', 'Неверно указан тип');
+			}
+			$samePages = Models\Page::findFirst([
+				'seo_name = ?1 AND id <> ?2',
+				'bind' => [1 => $inputs['seo_name'], 2 => $page->id]
+			]);
+			if ($samePages)
+				$validation->setMessageManual('СЕО название', 'Такое название уже существует');
+			if ($validation->validate())
+			{
+				$page->name = $inputs['name'];
+				$page->seo_name = $inputs['seo_name'];
+				$page->type_id = $inputs['type_id'];
+				$page->short_content = $inputs['short_content'];
+				$page->full_content = $inputs['full_content'];
+				$page->video_content = $inputs['video_content'];
+				$page->meta_keywords = $inputs['meta_keywords'];
+				$page->meta_description = $inputs['meta_description'];
+				if ($inputs['public'] == 'on') {
+					$page->public = 1;
+				} else {
+					$page->public = 0;
+				}
+				if ($page->save()) {
+					return $this->response->redirect('admin/pages');
+				} else {
+					$this->view->errors = ['БД' => $page->getMessages()];
+					$pageForView['id'] = $page->id;
+					$pageForView['name'] = $inputs['name'];
+					$pageForView['seo_name'] = $inputs['seo_name'];
+					$pageForView['types'] =[];
+					$types = Models\PageType::find();
+					if (count($types))
+					{
+						foreach ($types as $type)
+						{
+							$tempType = [];
+							$tempType['id'] = $type->id;
+							$tempType['name'] = $type->full_name;
+							if ($tempType['id'] == $inputs['type_id']) {
+								$tempType['active'] = true;
+							} else {
+								$tempType['active'] = false;
+							}
+							$pageForView['types'][] = $tempType;
+						}
+					}
+					$pageForView['short_content'] = $inputs['short_content'];
+					$pageForView['full_content'] = $inputs['full_content'];
+					$pageForView['video_content'] = $inputs['video_content'];
+					$pageForView['meta_keywords'] = $inputs['meta_keywords'];
+					$pageForView['meta_description'] = $inputs['meta_description'];
+					$pageForView['public'] = $inputs['public'];
+				}
+			} else {
+				$this->view->errors = $validation->getMessages();
+				$pageForView['id'] = $page->id;
+				$pageForView['name'] = $inputs['name'];
+				$pageForView['seo_name'] = $inputs['seo_name'];
+				$pageForView['types'] =[];
+				$types = Models\PageType::find();
+				if (count($types))
+				{
+					foreach ($types as $type)
+					{
+						$tempType = [];
+						$tempType['id'] = $type->id;
+						$tempType['name'] = $type->full_name;
+						if ($tempType['id'] == $inputs['type_id']) {
+							$tempType['active'] = true;
+						} else {
+							$tempType['active'] = false;
+						}
+						$pageForView['types'][] = $tempType;
+					}
+				}
+				$pageForView['short_content'] = $inputs['short_content'];
+				$pageForView['full_content'] = $inputs['full_content'];
+				$pageForView['video_content'] = $inputs['video_content'];
+				$pageForView['meta_keywords'] = $inputs['meta_keywords'];
+				$pageForView['meta_description'] = $inputs['meta_description'];
+				$pageForView['public'] = $inputs['public'];
+			}
+		}
+
+		$this->view->page = $pageForView;
+
+		echo $this->view->render('admin/pages/edit');
+	}
+
+	public function uploadStaticPageFotoAction()
+	{
+		/*
+		 * Возможные варианты картинок:
+		 * - 'page_description' - картинка для описания проекта (500x358);
+		 * - 'page_list' - картинка для списка проектов (173x131);
+		 * - 'admin_thumb' - картинка для миниатюры в админке (250x150).
+		*/
+
+		if (!$this->request->isAjax())
+		{
+			echo null;
+			return false;
+		}
+
+		$pageId = trim(strip_tags($this->dispatcher->getParams()[0]));
+
+		$file = new Upload($_FILES['fotos'], 'ru');
+
+		if (!$file->file_is_image || !preg_match('/\d+/', $pageId))
+		{
+			$file->clean();
+			echo 'false';
+			return false;
+		}
+
+		$sort = Models\PageImage::find([
+			'page_id = ?1',
+			'bind' => [1 => $pageId]
+		])->count();
+		$bdFile = new Models\PageImage();
+		$bdFile->page_id = $pageId;
+		$bdFile->sort = $sort;
+		$bdFile->extension = $file->file_src_name_ext;
+		$bdFile->save();
+
+		// Загружаем картинку для описания проекта
+
+		$file->file_new_name_body = $bdFile->id . '__page_description';
+		$file->image_watermark = 'img/watermark.png';
+		$file->image_watermark_position = 'TL';
+		$file->image_resize = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			$file->image_x = 500;
+			$file->image_ratio_y = true;
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			$file->image_ratio_x = true;
+			$file->image_y = 358;
+		}
+		$file->process('staticPages/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Загружаем картинку для списка проектов
+
+		$file->file_new_name_body = $bdFile->id . '__page_list';
+		$file->image_resize = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			$file->image_x = 173;
+			$file->image_ratio_y = true;
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			$file->image_ratio_x = true;
+			$file->image_y = 131;
+		}
+		$file->process('staticPages/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Загружаем миниатюру для админки
+
+		$file->file_new_name_body = $bdFile->id . '__admin_thumb';
+		$file->image_resize = true;
+		if ($file->image_src_x >= $file->image_src_y)
+		{
+			$file->image_x = 250;
+			$file->image_ratio_y = true;
+		}
+		elseif ($file->image_src_x < $file->image_src_y)
+		{
+			$file->image_ratio_x = true;
+			$file->image_y = 150;
+		}
+		$file->process('staticPages/images');
+		if (!$file->processed)
+		{
+			echo 'false';
+			$file->clean();
+			return false;
+		}
+
+		// Возвращаем тумбу для админки
+
+		$result['id'] = $bdFile->id;
+		$result['path'] = '/staticPages/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension;
+
+		echo json_encode($result);
+		$file->clean();
+		return true;
+	}
+
+	public function deleteStaticPageFotoAction()
+	{
+		if (!$this->request->isAjax() || !$this->request->isPost())
+		{
+			echo 'false';
+			return false;
+		}
+
+		$id = $this->request->getPost('id', ['trim', 'striptags']);
+		$bdFile = Models\PageImage::findFirst($id);
+
+		if ($bdFile)
+		{
+			$fileName = 'staticPages/images/' . $bdFile->id . '__page_description.' . $bdFile->extension;
+			if (file_exists($fileName)) {
+				Models\PageImage::deleteFiles($fileName);
+			}
+			$fileName = 'staticPages/images/' . $bdFile->id . '__page_list.' . $bdFile->extension;
+			if (file_exists($fileName)) {
+				Models\PageImage::deleteFiles($fileName);
+			}
+			$fileName = 'staticPages/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension;
+			if (file_exists($fileName)) {
+				Models\PageImage::deleteFiles($fileName);
+			}
+		} else {
+			echo 'false';
+			return false;
+		}
+
+		if ($bdFile->delete())
+		{
+			echo 'true';
+			return true;
+
+		} else {
+			echo 'false';
+			return false;
+		}
+	}
+
+	public function sortStaticPagesFotos()
+	{
+		if ($this->request->isAjax() && $this->request->isPost())
+		{
+			$fotoIds = json_decode($this->request->getPost('ids'));
+			for ($i = 0; $i < count($fotoIds); $i++)
+			{
+				$foto = Models\PageImage::findFirst($fotoIds[$i]);
+				if ($foto)
+				{
+					$foto->sort = $i;
+					$foto->save();
+				}
+			}
+		} else
+		{
+			return $this->response->redirect('admin');
+		}
 	}
 }

@@ -10,6 +10,14 @@ try {
 	// Создание DI
 	$di = new \Phalcon\DI\FactoryDefault();
 
+	// URI
+	$di->setShared('url', function() {
+		$url = new \Phalcon\Mvc\Url();
+		$url->setBaseUri('http://' . $_SERVER['HTTP_HOST'] .'/');
+		$url->setStaticBaseUri('http://' . $_SERVER['HTTP_HOST'] . '/public_html/');
+		return $url;
+	});
+
     // Регистрация автозагрузчика
 	$loader = new \Phalcon\Loader();
 	$loader->registerNamespaces([

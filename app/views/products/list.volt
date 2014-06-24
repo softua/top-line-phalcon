@@ -41,7 +41,7 @@
 				<div class="filter__title">Сортировать по цене:</div>
 				<div class="js-select">
 					<div class="js-select__value">От больших к меньшим</div>
-					<select name="price">
+					<select data-filter="price" name="price">
 						<option value="1" selected>От больших к меньшим</option>
 						<option value="2">От меньших к большим </option>
 					</select>
@@ -71,6 +71,5 @@
 		{% else %}
 			В данной категории пока нет товаров
 		{% endif %}
-
 	</main>
 {% endblock %}
