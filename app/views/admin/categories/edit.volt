@@ -8,6 +8,8 @@
 	<div class="span12">
 		{% if fullParentCategory is defined and fullParentCategory is not null %}
 			<h3>{{ fullParentCategory }}</h3>
+		{% else %}
+			<h3>Корневая категория</h3>
 		{% endif %}
 		{{ partial('admin/partials/errors') }}
 		<form class="form-horizontal" action="/admin/editcategory/{{ category.id }}/" method="post">

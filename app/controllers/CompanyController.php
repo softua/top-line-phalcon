@@ -7,6 +7,7 @@
 
 namespace App\Controllers;
 use App\Models;
+use \App\Models\ProductSale;
 
 class CompanyController extends BaseFrontController
 {

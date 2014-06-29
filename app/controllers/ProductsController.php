@@ -64,7 +64,7 @@ class ProductsController extends BaseFrontController
 
 		if (!$currentCategory)
 		{
-			return $this->response->redirect('catalog');
+			return $this->response->redirect('catalog/');
 		}
 
 		// Формируем хлебные крошки
@@ -142,6 +142,8 @@ class ProductsController extends BaseFrontController
 		}
 
 		// Список товаров
+		$sort = $this->request->getQuery('sort', ['trim', 'striptags']);
+		$page = $this->request->getQuery('page', ['trim', 'int']);
 		$prodCats = Models\ProductCategory::find([
 			'category_id = :categoryId:',
 			'bind' => ['categoryId' => $currentCategory->id]
@@ -163,13 +165,18 @@ class ProductsController extends BaseFrontController
 				else
 					$queryString .= ' OR id = ' . $queryStringArray[$j];
 			}
-
-			$productList = Models\Product::find([
-				$queryString,
-				'order' => 'price_uah DESC'
-			]);
-
-			$productsForView = [];
+			if (!$sort || $sort === 'DESC') {
+				$productList = Models\Product::find([
+					$queryString,
+					'order' => 'price_uah DESC'
+				]);
+			} else {
+				$productList = Models\Product::find([
+					$queryString,
+					'order' => 'price_uah ASC'
+				]);
+			}
+			$productsArray = [];
 			foreach ($productList as $product)
 			{
 				if (!$product->public)
@@ -177,27 +184,45 @@ class ProductsController extends BaseFrontController
 				$tempProd['name'] = $product->name;
 				$tempProd['articul'] = $product->articul;
 				$tempProd['short_desc'] = $product->short_description;
-				$tempProd['path'] = '/products/show/' . $product->seo_name;
-
+				$tempProd['path'] = $this->url->get('products/show/') . $product->seo_name;
 				$prodImages = Models\ProductImage::find([
 					'product_id = :id:',
 					'bind' => ['id' => $product->id],
 					'order' => 'sort'
 				]);
-
 				if (count($prodImages) > 0)
 				{
 					$pathname = 'products/' . $prodImages[0]->product_id . '/images/' . $prodImages[0]->id . '__product_list.' . $prodImages[0]->extension;
 					if (file_exists($pathname))
 					{
-						$tempProd['img'] = '/' . $pathname;
+						$tempProd['img'] = $this->url->getStatic($pathname);
 					} else {
-						$tempProd['img'] = '/img/no_foto.png';
+						$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
 					}
 				} else {
-					$tempProd['img'] = '/img/no_foto.png';
+					$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
 				}
-				$productsForView[] = $tempProd;
+				$productsArray[] = $tempProd;
+			}
+		} else {
+			$productsArray = null;
+		}
+		if ($productsArray) {
+			$paginator = new \Phalcon\Paginator\Adapter\NativeArray([
+				'data' => $productsArray,
+				'limit' => 10,
+				'page' => ($page) ? $page : 1
+			]);
+			$productsForView = $paginator->getPaginate();
+			$productsForView->links = [];
+			if ($productsForView->total_pages > 1) {
+				for ($i = 0; $i < $productsForView->total_pages; $i++) {
+					if (!$sort || $sort === 'DESC') {
+						$productsForView->links[$i+1] = $this->url->get('products/list/') . $catSeoName . '/?page=' . ($i+1);
+					} else {
+						$productsForView->links[$i+1] = $this->url->get('products/list/') . $catSeoName . '/?sort=ASC&page=' . ($i+1);
+					}
+				}
 			}
 		} else {
 			$productsForView = null;
@@ -207,6 +232,7 @@ class ProductsController extends BaseFrontController
 		$this->view->name = $categoriesArray[count($categoriesArray) - 1]['name'];
 		$this->view->sidebar_categories = $sidebarCatsForView;
 		$this->view->products = $productsForView;
+		$this->view->sort = ($sort) ? $sort : 'DESC';
 
 		echo $this->view->render('products/list');
 	}

@@ -6,40 +6,62 @@
 			<div class="bounding-box">
 				<ul class="slider">
 					<li class="slider__item">
-						<a class="slider__link" href="" title="">
+						<a class="slider__link" href="{{ url('catalog/show/produktsiya_rema_tip_-_top/') }}">
 							<img class="slider__img" src="{{ static_url('img/dummy/slider/1.jpg') }}" alt=""/>
 						</a>
 						<h3 class="slider__title">
-							Инструменты и материалы для сервиса и ремонта шин
+							Инструменты и материалы
+							<br/>
+							для сервиса и ремонта
+							<br/>
+							шин
 						</h3>
-						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						<a href="{{ url('catalog/show/produktsiya_rema_tip_-_top/') }}">
+							<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						</a>
 					</li>
 					<li class="slider__item">
-						<a class="slider__link" href="" title="">
+						<a class="slider__link" href="{{ url('catalog/show/shinomontajnoe_oborudovanie/') }}">
 							<img class="slider__img" src="{{ static_url('img/dummy/slider/2.jpg') }}" alt=""/>
 						</a>
 						<h3 class="slider__title">
-							Лучшие предложения по оборудованию для шиномонтажных мастерских
+							Лучшие предложения
+							<br/>
+							по оборудованию
+							<br/>
+							для шиномонтажа
 						</h3>
-						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						<a href="{{ url('catalog/show/shinomontajnoe_oborudovanie/') }}">
+							<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						</a>
 					</li>
 					<li class="slider__item">
-						<a class="slider__link" href="" title="">
+						<a class="slider__link" href="{{ url('catalog/') }}">
 							<img class="slider__img" src="{{ static_url('img/dummy/slider/3.jpg') }}" alt=""/>
 						</a>
 						<h3 class="slider__title">
-							Профессиональное оборудование для СТО и автосервиса
+							Профессиональное
+							<br/>
+							оборудование для СТО
+							<br/>
+							и автосервиса
 						</h3>
-						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						<a href="{{ url('catalog/') }}">
+							<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						</a>
 					</li>
 					<li class="slider__item">
-						<a class="slider__link" href="" title="">
+						<a class="slider__link" href="{{ url('projects/') }}">
 							<img class="slider__img" src="{{ static_url('img/dummy/slider/4.jpg') }}" alt=""/>
 						</a>
 						<h3 class="slider__title">
-							Комплексные решения для Вашего бизнеса
+							Комплексные решения
+							<br/>
+							для Вашего бизнеса
 						</h3>
-						<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						<a href="{{ url('projects/') }}">
+							<img class="slider__link__button" src="{{ static_url('img/dummy/slider/button.png') }}" alt=""/>
+						</a>
 					</li>
 				</ul>
 			</div>

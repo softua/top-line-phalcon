@@ -15,6 +15,13 @@ class ProductVideo extends \Phalcon\Mvc\Model
 		return 'products_videos';
 	}
 
+	public function initialize()
+	{
+		$this->belongsTo('product_id', '\App\Models\Product', 'id', [
+			'alias' => 'product'
+		]);
+	}
+
 	public $id;
 	public $name;
 	public $href;

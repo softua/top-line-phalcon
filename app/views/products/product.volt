@@ -64,31 +64,33 @@
 							</figure>
 						</div>
 					{% endif %}
-					{% if product['alt_price'] is defined %}
-						<div class="product__info__instock product__info__instock--null">{{ product['alt_price'] }}</div>
-						<div class="product__info__price">Стоимость уточняйте</div>
-					{% else %}
-						{% if product['main_curancy'] is 'eur' %}
-							<div class="product__info__instock">Есть в наличии</div>
-							<div class="product__info__price"><b>{{ product['price'] }}</b> евро </div>
+					<div class="product__info__wrapper">
+						{% if product['alt_price'] is defined %}
+							<div class="product__info__instock product__info__instock--null">{{ product['alt_price'] }}</div>
+							<div class="product__info__price">Стоимость уточняйте</div>
+						{% else %}
+							{% if product['main_curancy'] is 'eur' %}
+								<div class="product__info__instock">Есть в наличии</div>
+								<div class="product__info__price"><b>{{ product['price'] }}</b> евро </div>
+							{% endif %}
+							{% if product['main_curancy'] is 'usd' %}
+								<div class="product__info__instock">Есть в наличии</div>
+								<div class="product__info__price"><b>{{ product['price'] }}</b> $ </div>
+							{% endif %}
+							{% if product['main_curancy'] is 'uah' %}
+								<div class="product__info__instock">Есть в наличии</div>
+								<div class="product__info__price"><b>{{ product['price'] }}</b> грн </div>
+							{% endif %}
 						{% endif %}
-						{% if product['main_curancy'] is 'usd' %}
-							<div class="product__info__instock">Есть в наличии</div>
-							<div class="product__info__price"><b>{{ product['price'] }}</b> $ </div>
+						<div class="product__info__producer"><b>Производитель:</b>  {{ product['country'] }}</div>
+						{% if product['brand'] is defined and product['brand'] is not empty %}
+							<div class="product__info__brand"><b>Бренд:</b>  {{ product['brand'] }}</div>
 						{% endif %}
-						{% if product['main_curancy'] is 'uah' %}
-							<div class="product__info__instock">Есть в наличии</div>
-							<div class="product__info__price"><b>{{ product['price'] }}</b> грн </div>
+						{% if product['short_desc'] is defined and product['short_desc'] is not empty %}
+							<h2 class="product__title">Краткое описание:</h2>
+							{{ product['short_desc'] }}
 						{% endif %}
-					{% endif %}
-					<div class="product__info__producer"><b>Производитель:</b>  {{ product['country'] }}</div>
-					{% if product['brand'] is defined and product['brand'] is not empty %}
-						<div class="product__info__brand"><b>Бренд:</b>  {{ product['brand'] }}</div>
-					{% endif %}
-					{% if product['short_desc'] is defined and product['short_desc'] is not empty %}
-						<h2 class="product__title">Краткое описание:</h2>
-						{{ product['short_desc'] }}
-					{% endif %}
+					</div>
 				</div>
 				{% if product['parameters'] is defined and product['parameters'] is not empty %}
 					<h2 class="product__title">Технические характеристики:</h2>

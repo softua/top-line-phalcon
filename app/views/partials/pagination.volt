@@ -1,3 +1,8 @@
+{#
+	Не используется!
+	Вся пагинация проводится по-разному.
+#}
+
 <ul class="pagination">
 	<li class="pagination__item pagination__item--prev"><a class="pagination__item__link" href="" title="">←</a></li>
 	<li class="pagination__item"><a class="pagination__item__link" href="" title="">1</a></li>

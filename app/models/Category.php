@@ -14,6 +14,13 @@ class Category extends \Phalcon\Mvc\Model
 		return 'categories';
 	}
 
+	public function initialize()
+	{
+		$this->hasManyToMany('id', '\App\Models\ProductCategory', 'category_id', 'product_id', '\App\Models\Product', 'id', [
+			'alias' => 'products'
+		]);
+	}
+
 	public static  function getMainCategories()
 	{
 		$mainCats = Category::query()
@@ -68,7 +75,7 @@ class Category extends \Phalcon\Mvc\Model
 	{
 		if($id) {
 			$category = Category::findFirst($id);
-			if(count($category) > 0)
+			if($category)
 				return $category;
 			else return null;
 		} else

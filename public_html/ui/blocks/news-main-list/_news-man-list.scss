@@ -25,7 +25,9 @@
         }
 
         @if $ie > 7 {
+			box-sizing: border-box;
             display: table-cell;
+			width: 33%;
             padding: 0 40px;
 
             & + & {

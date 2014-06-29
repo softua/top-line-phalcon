@@ -120,11 +120,7 @@ class SalesController extends BaseFrontController
 		}
 		$pageForView['name'] = $page->name;
 		$pageForView['full_content'] = $page->full_content;
-		$pageImages = Models\PageImage::find([
-			'page_id = ?1',
-			'bind' => [1 => $page->id],
-			'order' => 'sort'
-		]);
+		$pageImages = $page->getImages(['order' => 'sort']);
 		if (count($pageImages)) {
 			$imgPath = 'staticPages/images/' . $pageImages[0]->id . '__page_description.' . $pageImages[0]->extension;
 			if (file_exists($imgPath)) {
@@ -134,6 +130,31 @@ class SalesController extends BaseFrontController
 			}
 		} else {
 			$pageForView['img'] = $this->url->getStatic('img/no_foto.png');
+		}
+		$pageProducts = $page->getProducts(['order' => '[\App\Models\Product].price_uah DESC']);
+		if (count($pageProducts)) {
+			$pageForView['products'] = [];
+			foreach ($pageProducts as $prod) {
+				$tempProd = [];
+				$tempProd['name'] = $prod->name;
+				$tempProd['articul'] = $prod->articul;
+				$tempProd['short_description'] = $prod->short_description;
+				$tempProd['link'] = $this->url->get('products/show/') . $prod->seo_name;
+				$imgs = $prod->getImages(['order' => 'sort']);
+				if (count($imgs)) {
+					$imgPath = 'products/' . $prod->id . '/images/' . $imgs[0]->id . '__product_list.' . $imgs[0]->extension;
+					if (file_exists($imgPath)) {
+						$tempProd['img'] = $this->url->getStatic($imgPath);
+					} else {
+						$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
+					}
+				} else {
+					$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
+				}
+				$pageForView['products'][] = $tempProd;
+			}
+		} else {
+			$pageForView['products'] = null;
 		}
 
 		$this->view->data = $pageForView;

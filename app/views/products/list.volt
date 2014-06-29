@@ -42,17 +42,27 @@
 				<div class="js-select">
 					<div class="js-select__value">От больших к меньшим</div>
 					<select data-filter="price" name="price">
-						<option value="1" selected>От больших к меньшим</option>
-						<option value="2">От меньших к большим </option>
+						{% if sort is defined and sort is not empty %}
+							{% if sort is 'ASC' %}
+								<option value="DESC">От больших к меньшим</option>
+								<option value="ASC" selected>От меньших к большим </option>
+							{% else %}
+								<option value="DESC" selected>От больших к меньшим</option>
+								<option value="ASC">От меньших к большим </option>
+							{% endif %}
+						{% else %}
+							<option value="DESC" selected>От больших к меньшим</option>
+							<option value="ASC">От меньших к большим </option>
+						{% endif %}
 					</select>
 				</div>
 			</div>
 		</div>
 
-		{% if products is defined and products is not empty %}
+		{% if products.items is defined and products.items is not empty %}
 			<div class="products-list--outer-wrapper">
 				<ul class="products-list">
-					{% for product in products %}
+					{% for product in products.items %}
 						<li class="products-list__item">
 							<h2 class="products-list__title">
 								<a href="{{ product['path'] }}" title="{{ product['name'] }}">{{ product['name'] }}</a>
@@ -66,7 +76,33 @@
 					{% endfor %}
 				</ul><!-- end products-list -->
 
-				{#{{ partial('partials/pagination') }}#}
+				{% if products.total_pages > 1 %}
+					<ul class="pagination">
+						{% if products.current is not products.first %}
+							<li class="pagination__item pagination__item--prev">
+								<a class="pagination__item__link" href="{{ products.links[0] }}" title="Первая">←</a>
+							</li>
+						{% endif %}
+
+						{% for key, link in products.links %}
+							{% if key + 1 is products.current %}
+								<li class="pagination__item active">
+									<a class="pagination__item__link" href="{{ link }}" title="{{ key + 1 }}">{{ key + 1 }}</a>
+								</li>
+							{% else %}
+								<li class="pagination__item">
+									<a class="pagination__item__link" href="{{ link }}" title="{{ key + 1 }}">{{ key + 1 }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+
+						{% if products.current is not products.last %}
+							<li class="pagination__item pagination__item--next">
+								<a class="pagination__item__link" href="{{ products.links[products.last - 1] }}" title="Последняя">→</a>
+							</li>
+						{% endif %}
+					</ul>
+				{% endif %}
 			</div>
 		{% else %}
 			В данной категории пока нет товаров

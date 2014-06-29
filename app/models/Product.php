@@ -7,12 +7,37 @@
 
 namespace App\Models;
 
-
 class Product extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
 		return 'products';
+	}
+
+	public function initialize()
+	{
+		$this->hasManyToMany('id', '\App\Models\ProductSale', 'product_id', 'page_id', '\App\Models\Page', 'id', [
+			'alias' => 'sales'
+		]);
+		$this->hasManyToMany('id', '\App\Models\ProductCategory', 'product_id', 'category_id', '\App\Models\Category', 'id', [
+			'alias' => 'categories'
+		]);
+		$this->hasMany('id', '\App\Models\ProductFile', 'product_id', [
+			'alias' => 'files'
+		]);
+		$this->hasMany('id', '\App\Models\ProductImage', 'product_id', [
+			'alias' => 'images'
+		]);
+		$this->hasMany('id', '\App\Models\ProductParam', 'product_id', [
+			'alias' => 'params'
+		]);
+		$this->hasMany('id', '\App\Models\ProductVideo', 'product_id', [
+			'alias' => 'videos'
+		]);
+		$this->hasMany('id', '\App\Models\ProductSale', 'product_id', [
+			'alias' => 'productSales'
+		]);
+
 	}
 
 	public $id;

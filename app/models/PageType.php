@@ -15,6 +15,13 @@ class PageType extends \Phalcon\Mvc\Model
 		return 'pages_types';
 	}
 
+	public function initialize()
+	{
+		$this->hasMany('id', '\App\Models\Page', 'type_id', [
+			'alias' => 'pages'
+		]);
+	}
+
 	public $id;
 	public $name;
 	public $full_name;

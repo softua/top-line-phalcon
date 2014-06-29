@@ -313,9 +313,9 @@ class AdminController extends BaseAdminController
 
 		$this->tag->prependTitle('Редактирование');
 
-		$category = Models\Category::find($id)[0];
+		$category = Models\Category::findFirst($id);
 		$this->view->category = $category;
-		$fullParentCategory = Models\Category::getFullCategoryName($category->parent_id);
+		$fullParentCategory = Models\Category::getCategoryWithFullName($category->parent_id)['full_name'];
 		$this->view->fullParentCategory = $fullParentCategory;
 
 		// POST
@@ -332,7 +332,14 @@ class AdminController extends BaseAdminController
 			if ($validation->validate())
 			{
 				$category->name = $name;
-				$category->seo_name = \App\Translit::get_seo_keyword($name, true);
+				if (!$category->parent_id)
+				{
+					$category->seo_name = Translit::get_seo_keyword($name, true);
+
+				} else {
+					$category->seo_name = Models\Category::findFirst($category->parent_id)->seo_name . '__' . Translit::get_seo_keyword($name, true);
+
+				}
 				$category->sort = (int)$sort;
 
 				if ($category->save())
@@ -587,30 +594,20 @@ class AdminController extends BaseAdminController
 			elseif ($inputs['main_curancy'] == 'uah')
 				$inputs['price'] = $product->price_uah;
 
-			$productCategoryObjects = Models\ProductCategory::find([
-				'product_id = ?1',
-				'bind' => [1 => $id]
-			]);
-
-			if ($productCategoryObjects && count($productCategoryObjects) > 0)
+			if (count($product->categories))
 			{
 				$productCats = [];
-				foreach ($productCategoryObjects as $productCategoryObject)
+				foreach ($product->categories as $cat)
 				{
-					$productCats[] = Models\Category::getCategoryWithFullName($productCategoryObject->category_id);
+					$productCats[] = Models\Category::getCategoryWithFullName($cat->id);
 				}
 				$inputs['categories'] = $productCats;
 			}
 
 			// Заносим ссылки видео для товара
-			$productVideos = Models\ProductVideo::find([
-				'product_id = ?1',
-				'bind' => [1 => $product->id],
-				'order' => 'sort'
-			]);
-			if (count($productVideos))
+			if (count($product->videos))
 			{
-				foreach ($productVideos as $video)
+				foreach ($product->getVideos(['order' => 'sort']) as $video)
 				{
 					$tempVideo = [];
 					$tempVideo['id'] = $video->id;
@@ -749,17 +746,28 @@ class AdminController extends BaseAdminController
 
 			$fotos = [];
 			$i = 0;
-			$tempFotos = Models\ProductImage::find([
-				'product_id = ?1',
-				'bind' => [1 => $product->id],
-				'order' => 'sort'
-			]);
 
-			foreach ($tempFotos as $bdFoto)
+			foreach ($product->getImages(['order' => 'sort']) as $bdFoto)
 			{
 				$fotos[$i]['id'] = $bdFoto->id;
 				$fotos[$i]['path'] = '/products/' . $bdFoto->product_id . '/images/' . $bdFoto->id . '__admin_thumb.' . $bdFoto->extension;
 				$i++;
+			}
+
+			//Список акций
+			$allSales = Models\Page::query()
+				->where('type_id = 5')
+				->columns(['id', 'name'])
+				->orderBy('expiration, name')
+				->execute()
+				->toArray();
+			$salesForView = [];
+			foreach ($product->getSales() as $sale) {
+				$tempSale = [];
+				$tempSale['id'] = $sale->id;
+				$tempSale['href'] = $this->url->get('sales/show/') . $sale->seo_name;
+				$tempSale['name'] = $sale->name;
+				$salesForView[] = $tempSale;
 			}
 
 			$this->view->data = $inputs;
@@ -770,10 +778,9 @@ class AdminController extends BaseAdminController
 			$this->view->brands = Models\PossibleBrands::getAllTypesAsString();
 			$this->view->parameters = Models\ProductParam::getParamsByProductId($id);
 			$this->view->fotos = $fotos;
-			$this->view->files = Models\ProductFile::find([
-				'product_id = :product:',
-				'bind' => ['product' => $product->id]
-			]);
+			$this->view->files = $product->files;
+			$this->view->allSales = json_encode($allSales);
+			$this->view->sales = $salesForView;
 
 			echo $this->view->render('admin/products/edit');
 
@@ -2408,6 +2415,76 @@ class AdminController extends BaseAdminController
 		} else
 		{
 			return $this->response->redirect('admin');
+		}
+	}
+
+	public function addSaleToProductAction()
+	{
+		if (!$this->request->isAjax() || !$this->request->isPost())
+			return $this->response->redirect('admin');
+
+		$prodId = $this->request->getPost('prodId', ['trim', 'int']);
+		$saleId = $this->request->getPost('saleId', ['trim', 'int']);
+		if (!$prodId || !$saleId || !preg_match('/\d+/', $prodId) || !preg_match('/\d+/', $saleId)) {
+			echo "false";
+			return false;
+		}
+		$product = Models\Product::findFirst($prodId);
+		if (!$product) {
+			echo "false";
+			return false;
+		}
+		$prodSale = $product->getSales([
+			'[\App\Models\Page].id = ' . $saleId
+		]);
+		if (count($prodSale)) {
+			echo "false";
+			return false;
+		}
+		$searchedSale = Models\Page::findFirst($saleId);
+		if (!$searchedSale) {
+			echo "false";
+			return false;
+		}
+		$product->sales = $searchedSale;
+		if ($product->save()) {
+			$result = [];
+			$result['name'] = $searchedSale->name;
+			$result['href'] = $this->url->get('sales/show/') . $searchedSale->seo_name;
+			echo json_encode($result);
+		} else {
+			echo "false";
+		}
+	}
+
+	public function deleteSaleFromProductAction()
+	{
+		if (!$this->request->isAjax() || !$this->request->isPost())
+			return $this->response->redirect('admin');
+
+		$prodId = $this->request->getPost('prodId', ['trim', 'int']);
+		$saleId = $this->request->getPost('saleId', ['trim', 'int']);
+		if (!$prodId || !$saleId || !preg_match('/\d+/', $prodId) || !preg_match('/\d+/', $saleId)) {
+			echo "false";
+			return false;
+		}
+		$product = Models\Product::findFirst($prodId);
+		if (!$product) {
+			echo "false";
+			return false;
+		}
+		$productSales = $product->getProductSales('page_id = ' . $saleId);
+		if (count($productSales)) {
+			if ($productSales[0]->delete()) {
+				echo "true";
+				return true;
+			} else {
+				echo "false";
+				return false;
+			}
+		} else {
+			echo "false";
+			return false;
 		}
 	}
 }

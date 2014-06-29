@@ -1463,13 +1463,17 @@ input:focus, textarea:focus, button {
   line-height: 18px;
 }
 .product__info {
+  overflow: hidden;
   position: relative;
   min-height: 400px;
-  padding-left: 310px;
 }
 .product__info p {
   font-size: 16px;
   line-height: 22px;
+}
+.product__info__wrapper {
+  overflow: hidden;
+  position: relative;
 }
 .product__info__instock {
   padding: 23px 0 23px 30px;
@@ -1502,10 +1506,11 @@ input:focus, textarea:focus, button {
   font-weight: 600;
 }
 .product__gallery {
-  position: absolute;
-  top: 30px;
-  left: 0;
+  float: left;
+  overflow: hidden;
+  position: relative;
   width: 290px;
+  margin: 30px 20px 0 0;
 }
 .product__gallery__full {
   height: 300px;
@@ -1526,9 +1531,7 @@ input:focus, textarea:focus, button {
   height: 69px;
   background: url('../img/css/sprites/misc-s811fc4d6a8.png') 0 -1190px no-repeat;
   float: left;
-}
-.product__gallery__thumbs__item + .product__gallery__thumbs__item {
-  margin-left: 6px;
+  margin: 0 1px;
 }
 .product__gallery__thumbs__link {
   display: block;
@@ -1832,7 +1835,7 @@ input:focus, textarea:focus, button {
   font-size: 36px;
   font-weight: 600;
   line-height: 48px;
-  color: #ffffff;
+  color: #3D3C3C;
   float: left;
   width: 50%;
 }
@@ -1857,32 +1860,13 @@ input:focus, textarea:focus, button {
   margin: 0 35px;
 }
 .slider-sales--outer-wrapper__title {
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF727273', endColorstr='#FF8B8989');
   margin: 0;
   color: #fff;
   font-size: 24px;
   font-weight: 600;
   line-height: 48px;
   text-align: center;
-}
-.slider-sales--outer-wrapper__title .before {
-  content: '';
-  background: url("/public_html/img/1.gif") no-repeat center;
-  width: 23px;
-  height: 5px;
-  display: inline-block;
-  margin-right: 30px;
-  vertical-align: middle;
-}
-.slider-sales--outer-wrapper__title .after {
-  width: 23px;
-  height: 5px;
-  background: url('../img/css/sprites/misc-s811fc4d6a8.png') 0 -3674px no-repeat;
-  content: '';
-  display: inline-block;
-  margin-left: 30px;
-  vertical-align: middle;
+  background: #7c7b7b url(/public_html/img/1.gif) no-repeat center;
 }
 .slider-sales {
   list-style: none;

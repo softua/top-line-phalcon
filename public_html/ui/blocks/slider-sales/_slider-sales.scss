@@ -28,32 +28,14 @@
         }
 
         &__title {
-            @include my-linear-gradient(#727273, #8b8989);
+//            @include my-linear-gradient(#727273, #8b8989);
             margin: 0;
             color: #fff;
             font-size: 24px;
             font-weight: 600;
             line-height: 48px;
             text-align: center;
-
-            @include ie-before {
-//                @include my-sprite-dimensions($spriteMisc, title_dots_left);
-                content: '';
-				background: url("/public_html/img/1.gif") no-repeat center;
-				width: 23px;
-				height: 5px;
-                display: inline-block;
-                margin-right: 30px;
-                vertical-align: middle;
-            }
-
-            @include ie-after {
-                @include my-sprite-dimensions($spriteMisc, title_dots_right);
-                content: '';
-                display: inline-block;
-                margin-left: 30px;
-                vertical-align: middle;
-            }
+			background: #7C7B7B url(/public_html/img/1.gif) no-repeat center;
         }
     }
 

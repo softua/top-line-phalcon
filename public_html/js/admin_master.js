@@ -175,6 +175,74 @@ $('body').on('click', '[data-action="open"]', function(e) {
 			}
 		});
 
+})
+
+// Добавления селекта для акции
+.on('click', '[data-add-sale]', function(e) {
+	e.preventDefault();
+	var target = $(e.target);
+	var currentSelect = $('select.add-sale');
+	if (currentSelect.length > 0) {
+		currentSelect.remove();
+	}
+	var select = $('<select class="add-sale" data-product-id="' + target.attr('href') + '">');
+	var sales = target.data('add-sale');
+	select.append('<option selected disabled>Выбирайте акцию</option>');
+	for (var i = 0; i < sales.length; i++) {
+		select.append($('<option value="' + sales[i].id + '">' + sales[i].name + '</option>'));
+	}
+	target.after(select);
+})
+
+// Отправка запроса на сервер для добавления акции
+.on('change', '.add-sale', function(e) {
+	var target = $(e.target);
+	var saleId = target.val();
+	var prodId = target.data('product-id');
+	$.ajax({
+		url: '/admin/addsaletoproduct',
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			saleId: saleId,
+			prodId: prodId
+		},
+		success: function(data) {
+			if (data) {
+				var ul = $('.add-sale').siblings('ul');
+				var li = $('<li>');
+				var deleteLink = $('<a href="' + saleId + '" class="btn btn-danger" data-delete-sale="true">Удалить товар из акции</a>');
+				var saleLink = $('<a href="' + data.href + '" target="_blank">' + data.name + '</a>');
+				li.append(deleteLink, saleLink);
+				ul.append(li);
+			}
+		},
+		complete: function() {
+			$('.add-sale').remove();
+		}
+	});
+})
+
+// Удаление акции
+.on('click', '[data-delete-sale="true"]', function(e) {
+	e.preventDefault();
+	var target = $(e.target);
+	var prodId = target.parents('ul').data('product-id');
+	var saleId = target.attr('href');
+	$.ajax({
+		url: '/admin/deletesalefromproduct',
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			prodId: prodId,
+			saleId: saleId
+		},
+		success: function(data) {
+			if (data) {
+				target.parent().remove();
+			}
+		}
+	});
 });
 
 // Сортировка параметров

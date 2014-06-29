@@ -22,14 +22,19 @@
     }
 
     &__info {
+		overflow: hidden;
         position: relative;
         min-height: 400px;
-        padding-left: 310px;
 
         p {
             font-size: $fontSize;
             line-height: 22px;
         }
+
+		&__wrapper {
+			overflow: hidden;
+			position: relative;
+		}
 
         &__instock {
             padding: 23px 0 23px 30px;
@@ -69,10 +74,11 @@
     }
 
     &__gallery {
-        position: absolute;
-        top: 30px;
-        left: 0;
+		float: left;
+		overflow: hidden;
+		position: relative;
         width: 290px;
+		margin: 30px 20px 0 0;
 
         &__full {
             height: 300px;
@@ -91,10 +97,7 @@
             &__item {
                 @include my-sprite-dimensions($spriteMisc, product_thumb);
                 float: left;
-
-                & + & {
-                    margin-left: 6px;
-                }
+				margin: 0 1px;
             }
 
             &__link {

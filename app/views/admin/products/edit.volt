@@ -214,6 +214,22 @@
 							</td>
 						</tr>
 						<tr>
+							<th>Акции</th>
+							<td>
+								<a href="{{ data['id'] }}" class="btn btn-primary" data-add-sale='{{ allSales }}'>Добавить акцию</a>
+								<ul class="sales" data-product-id="{{ data['id'] }}">
+									{% if sales is defined and sales is not empty %}
+										{% for sale in sales %}
+											<li>
+												<a href="{{ sale['id'] }}" class="btn btn-danger" data-delete-sale="true">Удалить товар из акции</a>
+												<a href="{{ sale['href'] }}" target="_blank">{{ sale['name'] }}</a>
+											</li>
+										{% endfor %}
+									{% endif %}
+								</ul>
+							</td>
+						</tr>
+						<tr>
 							<th><label for="public">public</label></th>
 							<td>
 								{% if data['public'] is 1 %}
@@ -224,12 +240,12 @@
 							</td>
 						</tr>
 						<tr>
-							<th><label for="public">top</label></th>
+							<th><label for="top">top</label></th>
 							<td>
 								{% if data['top'] is 1 %}
-									<input type="checkbox" id="public" name="top" checked/>
+									<input type="checkbox" id="top" name="top" checked/>
 								{% else %}
-									<input type="checkbox" id="public" name="top"/>
+									<input type="checkbox" id="top" name="top"/>
 								{% endif %}
 							</td>
 						</tr>

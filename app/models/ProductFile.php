@@ -15,6 +15,13 @@ class ProductFile extends \Phalcon\Mvc\Model
 		return 'products_files';
 	}
 
+	public function initialize()
+	{
+		$this->belongsTo('product_id', '\App\Models\Product', 'id', [
+			'alias' => 'product'
+		]);
+	}
+
 	public $id;
 	public $name;
 	public $pathname;

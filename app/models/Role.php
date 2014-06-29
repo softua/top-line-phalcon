@@ -8,4 +8,15 @@ class Role extends \Phalcon\Mvc\Model
 	{
 		return 'roles';
 	}
+
+	public function initialize()
+	{
+		$this->hasMany('id', '\App\Models\User', 'role_id', [
+			'alias' => 'users'
+		]);
+	}
+
+	public $id;
+	public $name;
+	public $description;
 }

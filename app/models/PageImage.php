@@ -16,6 +16,13 @@ class PageImage extends \Phalcon\Mvc\Model
 
 	}
 
+	public function initialize()
+	{
+		$this->belongsTo('page_id', '\App\Models\Page', 'id', [
+			'alias' => 'page'
+		]);
+	}
+
 	public $id;
 	public $extension;
 	public $page_id;
