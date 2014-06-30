@@ -90,8 +90,6 @@ try {
 	// Роуты
 	require BASE_URL . 'classes/Routes.php';
 
-
-
     // Обработка запроса
     $application = new \Phalcon\Mvc\Application($di);
 
