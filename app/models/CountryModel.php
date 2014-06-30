@@ -16,7 +16,7 @@ class CountryModel extends \Phalcon\Mvc\Model
 
 	public static function getAllTypes()
 	{
-		$countries = Country::find();
+		$countries = self::find();
 
 		if(count($countries) > 0) return $countries;
 		else return null;
@@ -42,14 +42,14 @@ class CountryModel extends \Phalcon\Mvc\Model
 	{
 		if ($country)
 		{
-			$countries = Country::query()
+			$countries = self::query()
 				->where('name = :country:')
 				->bind(['country' => $country])
 				->execute();
 
 			if (count($countries) < 1)
 			{
-				$newCountry = new Country();
+				$newCountry = new self();
 				$newCountry->name = $country;
 				$newCountry->save();
 			}

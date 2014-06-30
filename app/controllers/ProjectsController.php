@@ -20,7 +20,7 @@ class ProjectsController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -29,7 +29,7 @@ class ProjectsController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -42,7 +42,7 @@ class ProjectsController extends BaseFrontController
 				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
 			}
 
-			$catImage = Models\CategoryImage::findFirst([
+			$catImage = Models\CategoryImageModel::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -56,7 +56,7 @@ class ProjectsController extends BaseFrontController
 		}
 
 		// Список проектов
-		$projects = Models\Page::find([
+		$projects = Models\PageModel::find([
 			'type_id = 2 AND public = 1'
 		]);
 		$projectsForView = [];
@@ -66,7 +66,7 @@ class ProjectsController extends BaseFrontController
 				$tempProject['name'] = $project->name;
 				$tempProject['href'] = '/projects/show/' . $project->seo_name;
 				$tempProject['short_content'] = $project->short_content;
-				$images = Models\PageImage::find([
+				$images = Models\PageImageModel::find([
 					'page_id = ?1',
 					'bind' => [1 => $project->id],
 					'order' => 'sort'
@@ -97,7 +97,7 @@ class ProjectsController extends BaseFrontController
 		if (!$seoName) {
 			return $this->response->redirect('projects/notfound');
 		} else {
-			$page = Models\Page::findFirst([
+			$page = Models\PageModel::findFirst([
 				'seo_name = ?1 AND public = 1',
 				'bind' => [1 => $seoName]
 			]);
@@ -107,7 +107,7 @@ class ProjectsController extends BaseFrontController
 		}
 		$projectForView = [];
 		$projectForView['name'] = $page->name;
-		$images = Models\PageImage::find([
+		$images = Models\PageImageModel::find([
 			'page_id = ?1',
 			'bind' => [1 => $page->id],
 			'order' => 'sort'
@@ -124,7 +124,7 @@ class ProjectsController extends BaseFrontController
 		}
 		$projectForView['full_content'] = $page->full_content;
 
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -132,7 +132,7 @@ class ProjectsController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -156,7 +156,7 @@ class ProjectsController extends BaseFrontController
 	{
 		$this->response->setStatusCode(404, 'Not Found');
 
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -164,7 +164,7 @@ class ProjectsController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -177,7 +177,7 @@ class ProjectsController extends BaseFrontController
 				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
 			}
 
-			$catImage = Models\CategoryImage::findFirst([
+			$catImage = Models\CategoryImageModel::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);

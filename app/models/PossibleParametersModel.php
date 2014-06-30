@@ -22,7 +22,7 @@ class PossibleParametersModel extends \Phalcon\Mvc\Model
 	 */
 	public static function getAllParameters($needJson = false)
 	{
-		$paramsObjs = PossibleParameters::query()
+		$paramsObjs = self::query()
 			->order('name')
 			->execute();
 
@@ -49,14 +49,14 @@ class PossibleParametersModel extends \Phalcon\Mvc\Model
 	{
 		if ($paramName)
 		{
-			$params = PossibleParameters::findFirst([
+			$params = self::findFirst([
 				'name = :name:',
 				'bind' => ['name' => $paramName]
 			]);
 
 			if (!$params)
 			{
-				$parameter = new PossibleParameters();
+				$parameter = new self();
 				$parameter->name = $paramName;
 				$parameter->save();
 			}

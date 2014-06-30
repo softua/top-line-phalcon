@@ -16,7 +16,7 @@ class PossibleProductTypesModel extends \Phalcon\Mvc\Model
 
 	public static function getAllTypes()
 	{
-		$types = PossibleProductTypes::find();
+		$types = self::find();
 
 		if(count($types) > 0) return $types;
 		else return null;
@@ -41,14 +41,14 @@ class PossibleProductTypesModel extends \Phalcon\Mvc\Model
 	{
 		if ($type)
 		{
-			$types = PossibleProductTypes::query()
+			$types = self::query()
 				->where('name = :name:')
 				->bind(['name' => $type])
 				->execute();
 
 			if (count($types) < 1)
 			{
-				$newType = new PossibleProductTypes();
+				$newType = new self();
 				$newType->name = $type;
 				$newType->save();
 			}

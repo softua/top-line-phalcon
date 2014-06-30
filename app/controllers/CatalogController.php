@@ -20,7 +20,7 @@ class CatalogController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -29,7 +29,7 @@ class CatalogController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -42,7 +42,7 @@ class CatalogController extends BaseFrontController
 				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
 			}
 
-			$catImage = Models\CategoryImage::findFirst([
+			$catImage = Models\CategoryImageModel::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -70,7 +70,7 @@ class CatalogController extends BaseFrontController
 			return $this->response->redirect('catalog');
 		}
 
-		$currentCategory = Models\Category::findFirst([
+		$currentCategory = Models\CategoryModel::findFirst([
 			'seo_name = :seoName:',
 			'bind' => ['seoName' => $categorySeoName]
 		]);
@@ -80,7 +80,7 @@ class CatalogController extends BaseFrontController
 			return $this->response->redirect('catalog');
 		}
 
-		$tempChildren = Models\Category::find([
+		$tempChildren = Models\CategoryModel::find([
 			'parent_id = :id:',
 			'bind' => ['id' => $currentCategory->id],
 			'order' => 'sort, name'
@@ -92,7 +92,7 @@ class CatalogController extends BaseFrontController
 		{
 			$categoriesForView[$i]['name'] = $childCat->name;
 
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $childCat->id]
 			]);
@@ -106,7 +106,7 @@ class CatalogController extends BaseFrontController
 				$categoriesForView[$i]['path'] = '/products/list/' . $childCat->seo_name . '/';
 			}
 
-			$img = Models\CategoryImage::findFirst([
+			$img = Models\CategoryImageModel::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $childCat->id]
 			]);
@@ -122,7 +122,7 @@ class CatalogController extends BaseFrontController
 		}
 
 		// Категории для сайдбара
-		$sidebarCats = Models\Category::find([
+		$sidebarCats = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -132,7 +132,7 @@ class CatalogController extends BaseFrontController
 		{
 			if ($currentCategory->parent_id)
 			{
-				$parentCat = Models\Category::findFirst($currentPosition);
+				$parentCat = Models\CategoryModel::findFirst($currentPosition);
 				$currentCategoryParentId = $parentCat->id;
 				$currentPosition = $parentCat->parent_id;
 			} else {
@@ -144,7 +144,7 @@ class CatalogController extends BaseFrontController
 		foreach ($sidebarCats as $sidebarCat)
 		{
 			$tempSidebarCat['name'] = $sidebarCat->name;
-			$sidebarCatChildren = Models\Category::findFirst([
+			$sidebarCatChildren = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $sidebarCat->id]
 			]);
@@ -169,7 +169,7 @@ class CatalogController extends BaseFrontController
 		$currPosition = $currentCategory->id;
 		while ($currPosition)
 		{
-			$tempCat = Models\Category::findFirst([
+			$tempCat = Models\CategoryModel::findFirst([
 				'id = :id:',
 				'bind' => ['id' => $currPosition]
 			]);

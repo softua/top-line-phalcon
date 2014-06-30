@@ -70,7 +70,7 @@ class ProductModel extends \Phalcon\Mvc\Model
 		if (!$name)
 			return false;;
 
-		$products = Product::find([
+		$products = self::find([
 			'seo_name = :name:',
 			'bind' => ['name' => $name]
 		]);
@@ -117,7 +117,7 @@ class ProductModel extends \Phalcon\Mvc\Model
 	{
 		if ($id)
 		{
-			$product = Product::findFirst($id);
+			$product = self::findFirst($id);
 
 			if (count($product) > 0)
 				return $product;
@@ -134,7 +134,7 @@ class ProductModel extends \Phalcon\Mvc\Model
 	{
 		if ($categoryId)
 		{
-			$productIds = ProductCategory::find([
+			$productIds = ProductCategoryModel::find([
 				'category_id = ?1',
 				'bind' => [1 => $categoryId]
 			]);
@@ -144,7 +144,7 @@ class ProductModel extends \Phalcon\Mvc\Model
 				$products = [];
 				foreach ($productIds as $productId)
 				{
-					$tempProduct = Product::findFirst($productId->product_id);
+					$tempProduct = self::findFirst($productId->product_id);
 
 					if ($tempProduct)
 						$products[] = $tempProduct;
@@ -156,7 +156,7 @@ class ProductModel extends \Phalcon\Mvc\Model
 				return null;
 		} else
 		{
-			$tempProducts = Product::find();
+			$tempProducts = self::find();
 
 			if (count($tempProducts))
 			{

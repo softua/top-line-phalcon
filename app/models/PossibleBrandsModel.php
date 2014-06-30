@@ -16,7 +16,7 @@ class PossibleBrandsModel extends \Phalcon\Mvc\Model
 
 	public static function getAllTypes()
 	{
-		$brands = PossibleBrands::find();
+		$brands = self::find();
 
 		if(count($brands) > 0) return $brands;
 		else return null;
@@ -43,14 +43,14 @@ class PossibleBrandsModel extends \Phalcon\Mvc\Model
 		if ($brand)
 		{
 
-			$brands = PossibleBrands::find([
+			$brands = self::find([
 				'name = :name:',
 				'bind' => ['name' => $brand]
 			]);
 
 			if (count($brands) < 1)
 			{
-				$newBrand = new PossibleBrands();
+				$newBrand = new self();
 				$newBrand->name = $brand;
 				$newBrand->save();
 			}

@@ -23,7 +23,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 
 	public static  function getMainCategories()
 	{
-		$mainCats = Category::query()
+		$mainCats = self::query()
 			->where('parent_id = 0')
 			->orderBy('sort, name')
 			->execute();
@@ -36,7 +36,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 
 	public static function getAllCategories()
 	{
-		$cats = Category::query()
+		$cats = self::query()
 			->order('sort, name')
 			->execute();
 
@@ -51,7 +51,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 		if($parentId == 0)
 			return null;
 
-		$result = Category::query()
+		$result = self::query()
 			->where('parent_id = :parentId:')
 			->bind(['parentId' => $parentId])
 			->order('sort, name')
@@ -74,7 +74,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 	public static function getCategory($id)
 	{
 		if($id) {
-			$category = Category::findFirst($id);
+			$category = self::findFirst($id);
 			if($category)
 				return $category;
 			else return null;
@@ -89,7 +89,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 		$index = 0;
 
 		function recursiveGetParent($id, &$array) {
-			$cat = Category::find($id);
+			$cat = self::find($id);
 			array_unshift($array, $cat->name);
 			if($cat->parent_id != 0)
 				recursiveGetParent($cat->parent_id, $array);
@@ -120,7 +120,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 		{
 			$flag = true;
 			$resultArray = [];
-			$result[] = Category::getCategory($id);
+			$result[] = self::getCategory($id);
 
 			while($flag)
 			{
@@ -130,7 +130,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 					break;
 				} else
 				{
-					$result[] = Category::getCategory($result[count($result)-1]->parent_id);
+					$result[] = self::getCategory($result[count($result)-1]->parent_id);
 				}
 			}
 
@@ -167,14 +167,14 @@ class CategoryModel extends \Phalcon\Mvc\Model
 	{
 		if (!$id || !preg_match('/\d+/', $id))
 			return false;
-		$currentCategory = Category::findFirst($id);
+		$currentCategory = self::findFirst($id);
 		if (!$currentCategory)
 			return false;
 		while (true)
 		{
 			if ($currentCategory->parent_id)
 			{
-				$currentCategory = Category::findFirst($currentCategory->parent_id);
+				$currentCategory = self::findFirst($currentCategory->parent_id);
 			}
 			else {
 				return $currentCategory;

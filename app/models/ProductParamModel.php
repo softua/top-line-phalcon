@@ -32,7 +32,7 @@ class ProductParamModel extends \Phalcon\Mvc\Model
 	{
 		if ($prodId && preg_match('/\d+/', $prodId))
 		{
-			$temp = ProductParam::find([
+			$temp = self::find([
 				'product_id = :id:',
 				'bind' => ['id' => $prodId],
 				'order' => 'sort'

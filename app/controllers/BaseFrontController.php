@@ -20,7 +20,7 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 
 	public function getTopProducts()
 	{
-		$topProducts = Models\Product::find([
+		$topProducts = Models\ProductModel::find([
 			'top = 1',
 			'limit' => 5
 		]);
@@ -32,7 +32,7 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 				$tempTopProd = [];
 				$tempTopProd['name'] = $topProd->name;
 				$tempTopProd['href'] = '/products/show/' . $topProd->seo_name;
-				$prodTopImage = Models\ProductImage::find([
+				$prodTopImage = Models\ProductImageModel::find([
 					'product_id = ?1',
 					'bind' => [1 => $topProd->id],
 					'order' => 'sort'
@@ -52,7 +52,7 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 
 	public function getSubmenuWithCompanyPages()
 	{
-		$staticCompanyPages = Models\Page::find([
+		$staticCompanyPages = Models\PageModel::find([
 			'type_id = 1 AND public = 1',
 			'order' => 'name'
 		]);

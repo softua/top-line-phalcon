@@ -15,7 +15,7 @@ class SalesController extends BaseFrontController
 		parent::initialize();
 		$this->tag->appendTitle('Акционные предложения');
 
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -23,7 +23,7 @@ class SalesController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -52,7 +52,7 @@ class SalesController extends BaseFrontController
 	public function indexAction()
 	{
 		$currentPage = $this->request->getQuery('page', 'int');
-		$sales = Models\Page::find([
+		$sales = Models\PageModel::find([
 			'type_id = 5 AND public = 1',
 			'order' => 'time, name'
 		]);
@@ -63,7 +63,7 @@ class SalesController extends BaseFrontController
 				$tempSale['name'] = $sale->name;
 				$tempSale['short_description'] = $sale->short_content;
 				$tempSale['href'] = $this->url->get('sales/show/') . $sale->seo_name;
-				$salesImages = Models\PageImage::find([
+				$salesImages = Models\PageImageModel::find([
 					'page_id = ?1',
 					'bind' => [1 => $sale->id],
 					'order' => 'sort'
@@ -109,7 +109,7 @@ class SalesController extends BaseFrontController
 		if (!$seoName) {
 			return $this->response->redirect('sales/notfound');
 		}
-		$page = Models\Page::findFirst([
+		$page = Models\PageModel::findFirst([
 			'seo_name = ?1',
 			'bind' => [1 => $seoName]
 		]);
@@ -131,7 +131,7 @@ class SalesController extends BaseFrontController
 		} else {
 			$pageForView['img'] = $this->url->getStatic('img/no_foto.png');
 		}
-		$pageProducts = $page->getProducts(['order' => '[\App\Models\Product].price_uah DESC']);
+		$pageProducts = $page->getProducts(['order' => '[\App\Models\ProductModel].price_uah DESC']);
 		if (count($pageProducts)) {
 			$pageForView['products'] = [];
 			foreach ($pageProducts as $prod) {

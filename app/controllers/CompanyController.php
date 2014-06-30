@@ -7,7 +7,6 @@
 
 namespace App\Controllers;
 use App\Models;
-use \App\Models\ProductSale;
 
 class CompanyController extends BaseFrontController
 {
@@ -20,7 +19,7 @@ class CompanyController extends BaseFrontController
 	{
 		$this->tag->prependTitle('Ошибка');
 		$this->response->setStatusCode(404, 'Not found')->send();
-		$sidebarCategories = Models\Category::find([
+		$sidebarCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort'
 		]);
@@ -31,7 +30,7 @@ class CompanyController extends BaseFrontController
 			foreach ($sidebarCategories as $category)
 			{
 				$tempCategory = [];
-				$categoryChildren = Models\Category::findFirst([
+				$categoryChildren = Models\CategoryModel::findFirst([
 					'parent_id = :id:',
 					'bind' => ['id' => $category->id]
 				]);
@@ -56,7 +55,7 @@ class CompanyController extends BaseFrontController
 	{
 		$this->tag->appendTitle('О компании');
 
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -65,7 +64,7 @@ class CompanyController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -78,7 +77,7 @@ class CompanyController extends BaseFrontController
 				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
 			}
 
-			$catImage = Models\CategoryImage::findFirst([
+			$catImage = Models\CategoryImageModel::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -101,7 +100,7 @@ class CompanyController extends BaseFrontController
 	{
 		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
 		if ($seoName) {
-			$page = Models\Page::findFirst([
+			$page = Models\PageModel::findFirst([
 				'seo_name = ?1',
 				'bind' => [1 => $seoName]
 			]);
@@ -112,7 +111,7 @@ class CompanyController extends BaseFrontController
 			return $this->response->redirect('company/notfound');
 		}
 
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -120,7 +119,7 @@ class CompanyController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -149,7 +148,7 @@ class CompanyController extends BaseFrontController
 	{
 		$this->tag->appendTitle('Новости');
 
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -157,7 +156,7 @@ class CompanyController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -177,7 +176,7 @@ class CompanyController extends BaseFrontController
 		// Описание новости
 		if ($this->dispatcher->getParams()[0]) {
 			$seoName = $this->dispatcher->getParams()[0];
-			$oneNews = Models\Page::findFirst([
+			$oneNews = Models\PageModel::findFirst([
 				'type_id = 4 AND seo_name = ?1',
 				'bind' => [1 => $seoName]
 			]);
@@ -185,7 +184,7 @@ class CompanyController extends BaseFrontController
 				$oneNewsForView = [];
 				$oneNewsForView['name'] = $oneNews->name;
 				$oneNewsForView['time'] = date('d.m.Y', strtotime($oneNews->time));
-				$newsImages = Models\PageImage::find([
+				$newsImages = Models\PageImageModel::find([
 					'page_id = ?1',
 					'bind' => [1 => $oneNews->id],
 					'order' => 'sort'
@@ -212,12 +211,12 @@ class CompanyController extends BaseFrontController
 			$sort = $this->request->getQuery('sort', 'int');
 			$currentPage = $this->request->getQuery('page', 'int');
 			if (!$sort || $sort === 1) {
-				$news = Models\Page::find([
+				$news = Models\PageModel::find([
 					'type_id = 4',
 					'order' => 'time DESC'
 				]);
 			} else {
-				$news = Models\Page::find([
+				$news = Models\PageModel::find([
 					'type_id = 4',
 					'order' => 'time ASC'
 				]);
@@ -230,7 +229,7 @@ class CompanyController extends BaseFrontController
 					$tempNews['seo_name'] = $item->seo_name;
 					$tempNews['link'] = $this->url->get('company/news/') . $item->seo_name;
 					$tempNews['short_content'] = $item->short_content;
-					$itemImages = Models\PageImage::find([
+					$itemImages = Models\PageImageModel::find([
 						'page_id = ?1',
 						'bind' => [1 => $item->id],
 						'order' => 'sort'

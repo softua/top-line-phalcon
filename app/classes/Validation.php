@@ -58,11 +58,11 @@ class Validation
 	{
 		$flag = true;
 
-		$dbUser = Models\User::find([
+		$dbUser = Models\UserModel::find([
 			'conditions' => ['login' => $login]
 		]);
 
-		$dbUser = Models\User::query()
+		$dbUser = Models\UserModel::query()
 			->where('login = :login:')
 			->bind(['login' => $login])
 			->execute();

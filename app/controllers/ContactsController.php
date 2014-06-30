@@ -20,7 +20,7 @@ class ContactsController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -29,7 +29,7 @@ class ContactsController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -42,7 +42,7 @@ class ContactsController extends BaseFrontController
 				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
 			}
 
-			$catImage = Models\CategoryImage::findFirst([
+			$catImage = Models\CategoryImageModel::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);

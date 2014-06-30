@@ -22,7 +22,7 @@ class VideoController extends BaseFrontController
 	{
 		$this->response->setStatusCode(404, 'Not Found');
 
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -30,7 +30,7 @@ class VideoController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -51,7 +51,7 @@ class VideoController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$mainCategories = Models\Category::find([
+		$mainCategories = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort, name'
 		]);
@@ -59,7 +59,7 @@ class VideoController extends BaseFrontController
 		for ($i = 0; $i < count($mainCategories); $i++)
 		{
 			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\Category::findFirst([
+			$areThereChildrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -72,7 +72,7 @@ class VideoController extends BaseFrontController
 				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
 			}
 
-			$catImage = Models\CategoryImage::findFirst([
+			$catImage = Models\CategoryImageModel::findFirst([
 				'category_id = :id:',
 				'bind' => ['id' => $mainCategories[$i]->id]
 			]);
@@ -86,7 +86,7 @@ class VideoController extends BaseFrontController
 		}
 
 		// Список видео
-		$videos = Models\Page::find([
+		$videos = Models\PageModel::find([
 			'type_id = 3 AND public = 1',
 			'order' => 'time DESC'
 		]);

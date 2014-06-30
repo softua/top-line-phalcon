@@ -16,7 +16,7 @@ class MainController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$news = Models\Page::find([
+		$news = Models\PageModel::find([
 			'type_id = 4 AND public = 1',
 			'order' => 'time DESC',
 			'limit' => 3

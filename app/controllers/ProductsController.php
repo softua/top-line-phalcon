@@ -21,7 +21,7 @@ class ProductsController extends BaseFrontController
 	public function notFoundAction()
 {
 	$this->response->setStatusCode(404, 'Not found')->send();
-	$sidebarCategories = Models\Category::find([
+	$sidebarCategories = Models\CategoryModel::find([
 		'parent_id = 0',
 		'order' => 'sort'
 	]);
@@ -32,7 +32,7 @@ class ProductsController extends BaseFrontController
 		foreach ($sidebarCategories as $category)
 		{
 			$tempCategory = [];
-			$categoryChildren = Models\Category::findFirst([
+			$categoryChildren = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $category->id]
 			]);
@@ -57,7 +57,7 @@ class ProductsController extends BaseFrontController
 	{
 		$catSeoName = $this->dispatcher->getParams()[0];
 
-		$currentCategory = Models\Category::findFirst([
+		$currentCategory = Models\CategoryModel::findFirst([
 			'seo_name = :seoName:',
 			'bind' => ['seoName' => $catSeoName]
 		]);
@@ -72,7 +72,7 @@ class ProductsController extends BaseFrontController
 		$currPosition = $currentCategory->id;
 		while ($currPosition)
 		{
-			$tempCat = Models\Category::findFirst($currPosition);
+			$tempCat = Models\CategoryModel::findFirst($currPosition);
 
 			if (!$tempCat)
 			{
@@ -81,7 +81,7 @@ class ProductsController extends BaseFrontController
 
 			$cat['name'] = $tempCat->name;
 
-			$childrenCats = Models\Category::findFirst([
+			$childrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $tempCat->id]
 			]);
@@ -100,7 +100,7 @@ class ProductsController extends BaseFrontController
 		}
 
 		// Категории для сайдбара
-		$sidebarCats = Models\Category::find([
+		$sidebarCats = Models\CategoryModel::find([
 			'parent_id = 0',
 			'order' => 'sort,name'
 		]);
@@ -110,7 +110,7 @@ class ProductsController extends BaseFrontController
 		{
 			if ($currentCategory->parent_id)
 			{
-				$parentCat = Models\Category::findFirst($currentPosition);
+				$parentCat = Models\CategoryModel::findFirst($currentPosition);
 				$currentCategoryParentId = $parentCat->id;
 				$currentPosition = $parentCat->parent_id;
 			} else {
@@ -122,7 +122,7 @@ class ProductsController extends BaseFrontController
 		foreach ($sidebarCats as $sidebarCat)
 		{
 			$tempSidebarCat['name'] = $sidebarCat->name;
-			$sidebarCatChildren = Models\Category::findFirst([
+			$sidebarCatChildren = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $sidebarCat->id]
 			]);
@@ -144,7 +144,7 @@ class ProductsController extends BaseFrontController
 		// Список товаров
 		$sort = $this->request->getQuery('sort', ['trim', 'striptags']);
 		$page = $this->request->getQuery('page', ['trim', 'int']);
-		$prodCats = Models\ProductCategory::find([
+		$prodCats = Models\ProductCategoryModel::find([
 			'category_id = :categoryId:',
 			'bind' => ['categoryId' => $currentCategory->id]
 		]);
@@ -166,12 +166,12 @@ class ProductsController extends BaseFrontController
 					$queryString .= ' OR id = ' . $queryStringArray[$j];
 			}
 			if (!$sort || $sort === 'DESC') {
-				$productList = Models\Product::find([
+				$productList = Models\ProductModel::find([
 					$queryString,
 					'order' => 'price_uah DESC'
 				]);
 			} else {
-				$productList = Models\Product::find([
+				$productList = Models\ProductModel::find([
 					$queryString,
 					'order' => 'price_uah ASC'
 				]);
@@ -185,7 +185,7 @@ class ProductsController extends BaseFrontController
 				$tempProd['articul'] = $product->articul;
 				$tempProd['short_desc'] = $product->short_description;
 				$tempProd['path'] = $this->url->get('products/show/') . $product->seo_name;
-				$prodImages = Models\ProductImage::find([
+				$prodImages = Models\ProductImageModel::find([
 					'product_id = :id:',
 					'bind' => ['id' => $product->id],
 					'order' => 'sort'
@@ -247,7 +247,7 @@ class ProductsController extends BaseFrontController
 				'action' => 'notfound'
 			]);
 		}
-		$currentProduct = Models\Product::findFirst([
+		$currentProduct = Models\ProductModel::findFirst([
 			'seo_name = :productSeoName: AND public = 1',
 			'bind' => ['productSeoName' => $productSeoName]
 		]);
@@ -261,11 +261,11 @@ class ProductsController extends BaseFrontController
 
 		//Главная категория
 
-		$prodCatMain = Models\ProductCategory::findFirst([
+		$prodCatMain = Models\ProductCategoryModel::findFirst([
 			'product_id = :productId:',
 			'bind' => ['productId' => $currentProduct->id]
 		]);
-		$currentCategory = Models\Category::findFirst($prodCatMain->category_id);
+		$currentCategory = Models\CategoryModel::findFirst($prodCatMain->category_id);
 
 		// Формируем хлебные крошки
 
@@ -273,7 +273,7 @@ class ProductsController extends BaseFrontController
 		$currPosition = $currentCategory->id;
 		while ($currPosition)
 		{
-			$tempCat = Models\Category::findFirst($currPosition);
+			$tempCat = Models\CategoryModel::findFirst($currPosition);
 
 			if (!$tempCat)
 			{
@@ -282,7 +282,7 @@ class ProductsController extends BaseFrontController
 
 			$cat['name'] = $tempCat->name;
 
-			$childrenCats = Models\Category::findFirst([
+			$childrenCats = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $tempCat->id]
 			]);
@@ -314,7 +314,7 @@ class ProductsController extends BaseFrontController
 		} else {
 			$currentProductForView['price'] = number_format($currentProduct->$priceName, 2, '.', ' ');
 		}
-		$currentProductForView['country'] = Models\Country::findFirst([$currentProduct->country_id])->name;
+		$currentProductForView['country'] = Models\CountryModel::findFirst([$currentProduct->country_id])->name;
 		if ($currentProduct->brand)
 		{
 			$currentProductForView['brand'] = $currentProduct->brand;
@@ -323,7 +323,7 @@ class ProductsController extends BaseFrontController
 		{
 			$currentProductForView['short_desc'] = $currentProduct->short_description;
 		}
-		$prodParams = Models\ProductParam::getParamsByProductId($currentProduct->id);
+		$prodParams = Models\ProductParamModel::getParamsByProductId($currentProduct->id);
 		if ($prodParams)
 		{
 			foreach ($prodParams as $param)
@@ -335,7 +335,7 @@ class ProductsController extends BaseFrontController
 		{
 			$currentProductForView['full_desc'] = $currentProduct->full_description;
 		}
-		$prodImages = Models\ProductImage::find([
+		$prodImages = Models\ProductImageModel::find([
 			'product_id = :prodId:',
 			'bind' => ['prodId' => $currentProduct->id],
 			'order' => 'sort'
@@ -360,7 +360,7 @@ class ProductsController extends BaseFrontController
 			}
 		}
 		// Видео
-		$prodVideos = Models\ProductVideo::find([
+		$prodVideos = Models\ProductVideoModel::find([
 			'product_id = ?1',
 			'bind' => [1 => $currentProduct->id],
 			'order' => 'sort'
@@ -379,7 +379,7 @@ class ProductsController extends BaseFrontController
 			}
 		}
 		// Файлы
-		$prodFiles = Models\ProductFile::find([
+		$prodFiles = Models\ProductFileModel::find([
 			'product_id = ?1',
 			'bind' => [1 => $currentProduct->id]
 		]);
@@ -397,20 +397,20 @@ class ProductsController extends BaseFrontController
 		// Формируем категории для сайдбара
 
 		$sidebarCatsForView = [];
-		$prodCats = Models\ProductCategory::find([
+		$prodCats = Models\ProductCategoryModel::find([
 			'product_id = :prodId:',
 			'bind' => ['prodId' => $currentProduct->id]
 		]);
 		$activeCats = [];
 		foreach ($prodCats as $prodCat)
 		{
-			$activeCats[] = Models\Category::getRootCategoryByChildId($prodCat->category_id);
+			$activeCats[] = Models\CategoryModel::getRootCategoryByChildId($prodCat->category_id);
 		}
-		$mainCats = Models\Category::getMainCategories();
+		$mainCats = Models\CategoryModel::getMainCategories();
 		foreach ($mainCats as $mainCat)
 		{
 			$tempSidebarCat['name'] = $mainCat->name;
-			$mainCatChildren = Models\Category::findFirst([
+			$mainCatChildren = Models\CategoryModel::findFirst([
 				'parent_id = :id:',
 				'bind' => ['id' => $mainCat->id]
 			]);
@@ -451,7 +451,7 @@ class ProductsController extends BaseFrontController
 		}
 		$category = trim(strip_tags($this->request->getPost('category')));
 		$sort = trim(strip_tags($this->request->getPost('sort')));
-		$currentCategory = Models\Category::findFirst([
+		$currentCategory = Models\CategoryModel::findFirst([
 			'seo_name = ?1',
 			'bind' => [1 => $category]
 		]);
@@ -460,7 +460,7 @@ class ProductsController extends BaseFrontController
 			return false;
 		}
 		// Список товаров
-		$prodCats = Models\ProductCategory::find([
+		$prodCats = Models\ProductCategoryModel::find([
 			'category_id = :categoryId:',
 			'bind' => ['categoryId' => $currentCategory->id]
 		]);
@@ -482,7 +482,7 @@ class ProductsController extends BaseFrontController
 					$queryString .= ' OR id = ' . $queryStringArray[$j];
 			}
 
-			$productList = Models\Product::find([
+			$productList = Models\ProductModel::find([
 				$queryString,
 				'order' => 'price_uah ' . $sort
 			]);
@@ -497,7 +497,7 @@ class ProductsController extends BaseFrontController
 				$tempProd['short_desc'] = $product->short_description;
 				$tempProd['path'] = '/products/show/' . $product->seo_name;
 
-				$prodImages = Models\ProductImage::find([
+				$prodImages = Models\ProductImageModel::find([
 					'product_id = :id:',
 					'bind' => ['id' => $product->id],
 					'order' => 'sort'

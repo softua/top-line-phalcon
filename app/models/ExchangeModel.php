@@ -29,8 +29,8 @@ class ExchangeModel extends \Phalcon\Mvc\Model
 
 		if ($price && $price > 0)
 		{
-			$eur = Exchange::findFirst(1)->value;
-			$usd = Exchange::findFirst(2)->value;
+			$eur = self::findFirst(1)->value;
+			$usd = self::findFirst(2)->value;
 
 			if ($mainCurancy == 'eur')
 			{
