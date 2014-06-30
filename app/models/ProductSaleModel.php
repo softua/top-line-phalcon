@@ -17,10 +17,10 @@ class ProductSaleModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->belongsTo('product_id', '\App\Models\Product', 'id', [
+		$this->belongsTo('product_id', '\App\Models\ProductModel', 'id', [
 			'alias' => 'product'
 		]);
-		$this->belongsTo('page_id', '\App\Models\Page', 'id', [
+		$this->belongsTo('page_id', '\App\Models\PageModel', 'id', [
 			'alias' => 'sale'
 		]);
 	}

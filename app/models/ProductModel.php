@@ -16,25 +16,25 @@ class ProductModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->hasManyToMany('id', '\App\Models\ProductSale', 'product_id', 'page_id', '\App\Models\Page', 'id', [
+		$this->hasManyToMany('id', '\App\Models\ProductSaleModel', 'product_id', 'page_id', '\App\Models\PageModel', 'id', [
 			'alias' => 'sales'
 		]);
-		$this->hasManyToMany('id', '\App\Models\ProductCategory', 'product_id', 'category_id', '\App\Models\Category', 'id', [
+		$this->hasManyToMany('id', '\App\Models\ProductCategoryModel', 'product_id', 'category_id', '\App\Models\CategoryModel', 'id', [
 			'alias' => 'categories'
 		]);
-		$this->hasMany('id', '\App\Models\ProductFile', 'product_id', [
+		$this->hasMany('id', '\App\Models\ProductFileModel', 'product_id', [
 			'alias' => 'files'
 		]);
-		$this->hasMany('id', '\App\Models\ProductImage', 'product_id', [
+		$this->hasMany('id', '\App\Models\ProductImageModel', 'product_id', [
 			'alias' => 'images'
 		]);
-		$this->hasMany('id', '\App\Models\ProductParam', 'product_id', [
+		$this->hasMany('id', '\App\Models\ProductParamModel', 'product_id', [
 			'alias' => 'params'
 		]);
-		$this->hasMany('id', '\App\Models\ProductVideo', 'product_id', [
+		$this->hasMany('id', '\App\Models\ProductVideoModel', 'product_id', [
 			'alias' => 'videos'
 		]);
-		$this->hasMany('id', '\App\Models\ProductSale', 'product_id', [
+		$this->hasMany('id', '\App\Models\ProductSaleModel', 'product_id', [
 			'alias' => 'productSales'
 		]);
 

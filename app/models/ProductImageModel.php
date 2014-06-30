@@ -18,7 +18,7 @@ class ProductImageModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->belongsTo('product_id', '\App\Models\Product', 'id', [
+		$this->belongsTo('product_id', '\App\Models\ProductModel', 'id', [
 			'alias' => 'product'
 		]);
 	}

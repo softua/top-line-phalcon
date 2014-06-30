@@ -18,7 +18,7 @@ class PageImageModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->belongsTo('page_id', '\App\Models\Page', 'id', [
+		$this->belongsTo('page_id', '\App\Models\PageModel', 'id', [
 			'alias' => 'page'
 		]);
 	}

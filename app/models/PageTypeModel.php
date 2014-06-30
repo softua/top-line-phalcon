@@ -17,7 +17,7 @@ class PageTypeModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->hasMany('id', '\App\Models\Page', 'type_id', [
+		$this->hasMany('id', '\App\Models\PageModel', 'type_id', [
 			'alias' => 'pages'
 		]);
 	}

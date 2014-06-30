@@ -17,8 +17,8 @@ class ProductCategoryModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->belongsTo('product_id', '\App\Models\Product', 'id');
-		$this->belongsTo('category_id', '\App\Models\Category', 'id');
+		$this->belongsTo('product_id', '\App\Models\ProductModel', 'id');
+		$this->belongsTo('category_id', '\App\Models\CategoryModel', 'id');
 	}
 
 	public $id;

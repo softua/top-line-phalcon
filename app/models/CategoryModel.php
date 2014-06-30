@@ -16,7 +16,7 @@ class CategoryModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->hasManyToMany('id', '\App\Models\ProductCategory', 'category_id', 'product_id', '\App\Models\Product', 'id', [
+		$this->hasManyToMany('id', '\App\Models\ProductCategoryModel', 'category_id', 'product_id', '\App\Models\ProductModel', 'id', [
 			'alias' => 'products'
 		]);
 	}

@@ -10,7 +10,7 @@ class UserModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->belongsTo('role_id', '\App\Models\Role', 'id', [
+		$this->belongsTo('role_id', '\App\Models\RoleModel', 'id', [
 			'alias' => 'role'
 		]);
 	}

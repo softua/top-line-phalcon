@@ -11,7 +11,7 @@ class RoleModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->hasMany('id', '\App\Models\User', 'role_id', [
+		$this->hasMany('id', '\App\Models\UserModel', 'role_id', [
 			'alias' => 'users'
 		]);
 	}

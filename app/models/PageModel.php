@@ -16,13 +16,13 @@ class PageModel extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->hasManyToMany('id', '\App\Models\ProductSale', 'page_id', 'product_id', '\App\Models\Product', 'id', [
+		$this->hasManyToMany('id', '\App\Models\ProductSaleModel', 'page_id', 'product_id', '\App\Models\ProductModel', 'id', [
 			'alias' => 'products'
 		]);
-		$this->belongsTo('type_id', '\App\Models\PageType', 'id', [
+		$this->belongsTo('type_id', '\App\Models\PageTypeModel', 'id', [
 			'alias' => 'type'
 		]);
-		$this->hasMany('id', '\App\Models\PageImage', 'page_id', [
+		$this->hasMany('id', '\App\Models\PageImageModel', 'page_id', [
 			'alias' => 'images'
 		]);
 	}
