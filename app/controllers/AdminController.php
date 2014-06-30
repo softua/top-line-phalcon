@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\MainCategories;
 use App\Models;
 use App\Translit;
 use App\Validation;
@@ -228,6 +229,10 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Категории');
 
+		$cats = new MainCategories($this->di);
+		$cats->setMainCategories();
+
+		var_dump($cats->getMainCategories());
 		$this->view->mainCategories = Models\CategoryModel::getMainCategories();
 
 		echo $this->view->render('admin/categories/categories');
