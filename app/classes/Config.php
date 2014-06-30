@@ -24,8 +24,7 @@ class Config
 		$this->secret = 'dsf4iorj23i%fdsdgdsadferfd89wej';
 		$this->cookie['lifetime'] = 86400; // сутки
 
-		if ($this->env == 'production')
-		{
+		if ($this->env == 'production') {
 			$this->db = [
 				'host' => 'localhost',
 				'username' => 'softuane_admin',
@@ -33,8 +32,7 @@ class Config
 				'dbname' => 'softuane_top_line'
 			];
 
-		} elseif ($this->env == 'development')
-		{
+		} elseif ($this->env == 'development') {
 			$this->db = [
 				'host' => '127.0.0.1',
 				'username' => 'softua',
