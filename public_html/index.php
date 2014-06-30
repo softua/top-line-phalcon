@@ -90,6 +90,66 @@ try {
 	// Роуты
 	require BASE_URL . 'classes/Routes.php';
 
+	//----- Модели -----
+	$di->setShared('CategoryModel', function () {
+		return new \App\Models\CategoryModel();
+	});
+	$di->setShared('CategoryImageModel', function() {
+		return new \App\Models\CategoryImageModel();
+	});
+	$di->setShared('CountryModel', function() {
+		return new \App\Models\CountryModel();
+	});
+	$di->setShared('ExchangeModel', function() {
+		return new \App\Models\ExchangeModel();
+	});
+	$di->setShared('PageModel', function() {
+		return new \App\Models\PageModel();
+	});
+	$di->setShared('PageImageModel', function() {
+		return new \App\Models\PageImageModel();
+	});
+	$di->setShared('PageTypeModel', function() {
+		return new \App\Models\PageTypeModel();
+	});
+	$di->setShared('PossibleBrandsModel', function() {
+		return new \App\Models\PossibleBrandsModel();
+	});
+	$di->setShared('PossibleParametersModel', function() {
+		return new \App\Models\PossibleParametersModel();
+	});
+	$di->setShared('PossibleProductTypesModel', function() {
+		return new \App\Models\PossibleProductTypesModel();
+	});
+	$di->setShared('ProductModel', function() {
+		return new \App\Models\ProductModel();
+	});
+	$di->setShared('ProductCategoryModel', function() {
+		return new \App\Models\ProductCategoryModel();
+	});
+	$di->setShared('ProductFileModel', function() {
+		return new \App\Models\ProductFileModel();
+	});
+	$di->setShared('ProductImageModel', function() {
+		return new \App\Models\ProductImageModel();
+	});
+	$di->setShared('ProductParamModel', function() {
+		return new \App\Models\ProductParamModel();
+	});
+	$di->setShared('ProductSaleModel', function() {
+		return new \App\Models\ProductSaleModel();
+	});
+	$di->setShared('ProductVideoModel', function() {
+		return new \App\Models\ProductVideoModel();
+	});
+	$di->setShared('RoleModel', function() {
+		return new \App\Models\RoleModel();
+	});
+	$di->setShared('UserModel', function() {
+		return new \App\Models\UserModel();
+	});
+	//------------------
+
     // Обработка запроса
     $application = new \Phalcon\Mvc\Application($di);
 

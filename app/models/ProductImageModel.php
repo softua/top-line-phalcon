@@ -1,23 +1,32 @@
 <?php
 /**
  * Created by Ruslan Koloskov
- * Date: 10.06.14
- * Time: 10:00
+ * Date: 09.06.14
+ * Time: 10:15
  */
 
 namespace App\Models;
 
 
-class CategoryImage extends \Phalcon\Mvc\Model
+class ProductImageModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
-		return 'categories_images';
+		return 'products_images';
+
+	}
+
+	public function initialize()
+	{
+		$this->belongsTo('product_id', '\App\Models\Product', 'id', [
+			'alias' => 'product'
+		]);
 	}
 
 	public $id;
-	public $pathname;
-	public $category_id;
+	public $extension;
+	public $product_id;
+	public $sort;
 
 	public static function deleteFiles($fileName)
 	{

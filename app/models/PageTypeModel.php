@@ -8,7 +8,7 @@
 namespace App\Models;
 
 
-class PageType extends \Phalcon\Mvc\Model
+class PageTypeModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{

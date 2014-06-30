@@ -8,7 +8,7 @@
 namespace App\Models;
 
 
-class ProductCategory extends \Phalcon\Mvc\Model
+class ProductCategoryModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{

@@ -8,7 +8,7 @@
 namespace App\Models;
 
 
-class ProductParam extends \Phalcon\Mvc\Model
+class ProductParamModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{

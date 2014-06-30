@@ -8,7 +8,7 @@
 namespace App\Models;
 
 
-class Exchange extends \Phalcon\Mvc\Model
+class ExchangeModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{

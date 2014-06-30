@@ -7,7 +7,7 @@
 
 namespace App\Models;
 
-class Country extends \Phalcon\Mvc\Model
+class CountryModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{

@@ -2,18 +2,17 @@
 /**
  * Created by Ruslan Koloskov
  * Date: 09.06.14
- * Time: 10:15
+ * Time: 17:12
  */
 
 namespace App\Models;
 
 
-class ProductImage extends \Phalcon\Mvc\Model
+class ProductFileModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
-		return 'products_images';
-
+		return 'products_files';
 	}
 
 	public function initialize()
@@ -24,9 +23,9 @@ class ProductImage extends \Phalcon\Mvc\Model
 	}
 
 	public $id;
-	public $extension;
+	public $name;
+	public $pathname;
 	public $product_id;
-	public $sort;
 
 	public static function deleteFiles($fileName)
 	{

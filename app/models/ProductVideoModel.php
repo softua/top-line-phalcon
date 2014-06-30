@@ -1,18 +1,18 @@
 <?php
 /**
  * Created by Ruslan Koloskov
- * Date: 25.06.14
- * Time: 20:18
+ * Date: 16.06.14
+ * Time: 23:26
  */
 
 namespace App\Models;
 
 
-class ProductSale extends \Phalcon\Mvc\Model
+class ProductVideoModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
-		return 'products_sales';
+		return 'products_videos';
 	}
 
 	public function initialize()
@@ -20,11 +20,13 @@ class ProductSale extends \Phalcon\Mvc\Model
 		$this->belongsTo('product_id', '\App\Models\Product', 'id', [
 			'alias' => 'product'
 		]);
-		$this->belongsTo('page_id', '\App\Models\Page', 'id', [
-			'alias' => 'sale'
-		]);
 	}
+
 	public $id;
+	public $name;
+	public $href;
+	public $sort;
 	public $product_id;
-	public $page_id;
+
+
 }

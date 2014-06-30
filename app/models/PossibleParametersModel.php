@@ -8,7 +8,7 @@
 namespace App\Models;
 
 
-class PossibleParameters extends \Phalcon\Mvc\Model
+class PossibleParametersModel extends \Phalcon\Mvc\Model
 {
 	public function getSource()
 	{
