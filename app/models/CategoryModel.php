@@ -19,6 +19,9 @@ class CategoryModel extends \Phalcon\Mvc\Model
 		$this->hasManyToMany('id', '\App\Models\ProductCategoryModel', 'category_id', 'product_id', '\App\Models\ProductModel', 'id', [
 			'alias' => 'products'
 		]);
+		$this->hasMany('id', '\App\Models\CategoryImageModel', 'category_id', [
+			'alias' => 'images'
+		]);
 	}
 
 	public static  function getMainCategories()

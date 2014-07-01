@@ -39,11 +39,11 @@
 			<ul class="catalog">
 				{% for category in categories %}
 					<li class="catalog__item">
-						<a class="catalog__item__link" href="{{ category['path'] }}" title="{{ category['name'] }}">
+						<a class="catalog__item__link" href="{{ category.link }}" title="{{ category.name }}">
 							<figure class="catalog__item__img">
-								<img src="{{ category['img'] }}" alt="{{ category['name'] }}"/>
+								<img src="{{ category.mainImage }}" alt="{{ category.name }}"/>
 							</figure>
-							{{ category['name'] }}
+							{{ category.name }}
 						</a>
 					</li>
 				{% endfor %}

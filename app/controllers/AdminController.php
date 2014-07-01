@@ -229,11 +229,11 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Категории');
 
-		$cats = new MainCategories($this->di);
-		$cats->setMainCategories();
+		$cats = new MainCategories();
+		$cats->setDi($this->di);
+		$cats->setMainCategoriesFromDb();
 
-		var_dump($cats->getMainCategories());
-		$this->view->mainCategories = Models\CategoryModel::getMainCategories();
+		$this->view->mainCategories = $cats->getMainCategories();
 
 		echo $this->view->render('admin/categories/categories');
 	}
