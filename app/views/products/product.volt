@@ -12,11 +12,11 @@
 			{% for breadcrumb in breadcrumbs %}
 				{% if loop.last %}
 					<li class="breadcrumbs__item">
-						<span class="breadcrumbs__item__current" itemprop="breadcrumb">{{ breadcrumb['name'] }}</span>
+						<span class="breadcrumbs__item__current" itemprop="breadcrumb">{{ breadcrumb.name }}</span>
 					</li>
 				{% else %}
 					<li class="breadcrumbs__item">
-						<a class="breadcrumbs__item__link" href="{{ breadcrumb['path'] }}" title="{{ breadcrumb['name'] }}" itemprop="breadcrumb">{{ breadcrumb['name'] }}</a> -
+						<a class="breadcrumbs__item__link" href="{{ breadcrumb.link }}" title="{{ breadcrumb.name }}" itemprop="breadcrumb">{{ breadcrumb.name }}</a> -
 					</li>
 				{% endif %}
 			{% endfor %}

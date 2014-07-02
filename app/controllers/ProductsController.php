@@ -6,7 +6,9 @@
  */
 
 namespace App\Controllers;
+use App\Category;
 use App\Models;
+use App\Product;
 
 class ProductsController extends BaseFrontController
 {
@@ -19,126 +21,23 @@ class ProductsController extends BaseFrontController
 	}
 
 	public function notFoundAction()
-{
-	$this->response->setStatusCode(404, 'Not found')->send();
-	$sidebarCategories = Models\CategoryModel::find([
-		'parent_id = 0',
-		'order' => 'sort'
-	]);
-
-	if (count($sidebarCategories) > 0)
 	{
-		$sidebarCategoriesForView = [];
-		foreach ($sidebarCategories as $category)
-		{
-			$tempCategory = [];
-			$categoryChildren = Models\CategoryModel::findFirst([
-				'parent_id = :id:',
-				'bind' => ['id' => $category->id]
-			]);
-			if ($categoryChildren)
-			{
-				$tempCategory['path'] = '/catalog/show/' . $category->seo_name . '/';
-			} else {
-				$tempCategory['path'] = '/products/list/' . $category->seo_name . '/';
-			}
-			$tempCategory['active'] = false;
-			$tempCategory['name'] = $category->name;
-			$sidebarCategoriesForView[] = $tempCategory;
-		}
-		$this->view->sidebar_categories = $sidebarCategoriesForView;
-	} else {
-		$this->view->sidebar_categories = null;
+		$this->response->setStatusCode(404, 'Not found')->send();
+
+		$this->view->sidebar_categories = Category::getMainCategories($this->di);
+
+		echo $this->view->render('products/notfound');
 	}
-	echo $this->view->render('products/notfound');
-}
 
 	public function listAction()
 	{
 		$catSeoName = $this->dispatcher->getParams()[0];
-
-		$currentCategory = Models\CategoryModel::findFirst([
-			'seo_name = :seoName:',
-			'bind' => ['seoName' => $catSeoName]
-		]);
-
-		if (!$currentCategory)
-		{
+		if (!$catSeoName) {
 			return $this->response->redirect('catalog/');
 		}
-
-		// Формируем хлебные крошки
-		$categoriesArray = [];
-		$currPosition = $currentCategory->id;
-		while ($currPosition)
-		{
-			$tempCat = Models\CategoryModel::findFirst($currPosition);
-
-			if (!$tempCat)
-			{
-				$currPosition = 0;
-			}
-
-			$cat['name'] = $tempCat->name;
-
-			$childrenCats = Models\CategoryModel::findFirst([
-				'parent_id = :id:',
-				'bind' => ['id' => $tempCat->id]
-			]);
-
-			if ($childrenCats)
-			{
-				$cat['path'] = '/catalog/show/' . $tempCat->seo_name . '/';
-
-			} else {
-
-				$cat['path'] = '/products/list/' . $tempCat->seo_name . '/';
-			}
-
-			array_unshift($categoriesArray, $cat);
-			$currPosition = $tempCat->parent_id;
-		}
-
-		// Категории для сайдбара
-		$sidebarCats = Models\CategoryModel::find([
-			'parent_id = 0',
-			'order' => 'sort,name'
-		]);
-		$currentCategoryParentId = $currentCategory->id;
-		$currentPosition = $currentCategory->parent_id;
-		while ($currentPosition)
-		{
-			if ($currentCategory->parent_id)
-			{
-				$parentCat = Models\CategoryModel::findFirst($currentPosition);
-				$currentCategoryParentId = $parentCat->id;
-				$currentPosition = $parentCat->parent_id;
-			} else {
-				$currentPosition = 0;
-			}
-
-		}
-		$sidebarCatsForView = [];
-		foreach ($sidebarCats as $sidebarCat)
-		{
-			$tempSidebarCat['name'] = $sidebarCat->name;
-			$sidebarCatChildren = Models\CategoryModel::findFirst([
-				'parent_id = :id:',
-				'bind' => ['id' => $sidebarCat->id]
-			]);
-			if ($sidebarCatChildren)
-			{
-				$tempSidebarCat['path'] = '/catalog/show/' . $sidebarCat->seo_name . '/';
-			} else {
-				$tempSidebarCat['path'] = '/products/list/' . $sidebarCat->seo_name . '/';
-			}
-			if ($sidebarCat->id == $currentCategoryParentId)
-			{
-				$tempSidebarCat['active'] = true;
-			} else {
-				$tempSidebarCat['active'] = false;
-			}
-			$sidebarCatsForView[] = $tempSidebarCat;
+		$category = Category::getCategoryBySeoName($this->di, $catSeoName, true);
+		if (!$category) {
+			return $this->response->redirect('catalog/');
 		}
 
 		// Список товаров
@@ -146,7 +45,7 @@ class ProductsController extends BaseFrontController
 		$page = $this->request->getQuery('page', ['trim', 'int']);
 		$prodCats = Models\ProductCategoryModel::find([
 			'category_id = :categoryId:',
-			'bind' => ['categoryId' => $currentCategory->id]
+			'bind' => ['categoryId' => $category->id]
 		]);
 
 		if (count($prodCats) > 0)
@@ -228,9 +127,9 @@ class ProductsController extends BaseFrontController
 			$productsForView = null;
 		}
 
-		$this->view->breadcrumbs = $categoriesArray;
-		$this->view->name = $categoriesArray[count($categoriesArray) - 1]['name'];
-		$this->view->sidebar_categories = $sidebarCatsForView;
+		$this->view->breadcrumbs = $category->getParentsCategories();
+		$this->view->name = $category->name;
+		$this->view->sidebar_categories = $category::getMainCategories($this->di, false, [$category->seo_name]);
 		$this->view->products = $productsForView;
 		$this->view->sort = ($sort) ? $sort : 'DESC';
 
@@ -240,90 +139,41 @@ class ProductsController extends BaseFrontController
 	public function showAction()
 	{
 		$productSeoName = trim(strip_tags($this->dispatcher->getParams()[0]));
-		if (!$productSeoName)
-		{
-			return $this->dispatcher->forward([
-				'controller' => 'products',
-				'action' => 'notfound'
-			]);
+		if (!$productSeoName) {
+			return $this->response->redirect('products/notfound');
 		}
-		$currentProduct = Models\ProductModel::findFirst([
-			'seo_name = :productSeoName: AND public = 1',
-			'bind' => ['productSeoName' => $productSeoName]
-		]);
-		if (!$currentProduct)
-		{
-			return $this->dispatcher->forward([
-				'controller' => 'products',
-				'action' => 'notfound'
-			]);
+		$product = Product::getProductBySeoName($this->di, $productSeoName, true);
+		if (!$product) {
+			return $this->response->redirect('products/notfound');
 		}
-
-		//Главная категория
-
-		$prodCatMain = Models\ProductCategoryModel::findFirst([
-			'product_id = :productId:',
-			'bind' => ['productId' => $currentProduct->id]
-		]);
-		$currentCategory = Models\CategoryModel::findFirst($prodCatMain->category_id);
 
 		// Формируем хлебные крошки
-
-		$categoriesArray = [];
-		$currPosition = $currentCategory->id;
-		while ($currPosition)
-		{
-			$tempCat = Models\CategoryModel::findFirst($currPosition);
-
-			if (!$tempCat)
-			{
-				$currPosition = 0;
-			}
-
-			$cat['name'] = $tempCat->name;
-
-			$childrenCats = Models\CategoryModel::findFirst([
-				'parent_id = :id:',
-				'bind' => ['id' => $tempCat->id]
-			]);
-
-			if ($childrenCats)
-			{
-				$cat['path'] = '/catalog/show/' . $tempCat->seo_name . '/';
-
-			} else {
-
-				$cat['path'] = '/products/list/' . $tempCat->seo_name . '/';
-			}
-
-			array_unshift($categoriesArray, $cat);
-			$currPosition = $tempCat->parent_id;
-		}
-		$categoriesArray[] = ['name' => $currentProduct->name];
+		$breadcrumbs = $product->mainCategory->getParentsCategories();
+		$breadcrumbs[] = $product;
 
 		//Формируем данные товара для представления
 
 		$currentProductForView = [];
-		$currentProductForView['name'] = $currentProduct->name;
-		$currentProductForView['articul'] = $currentProduct->articul;
-		$currentProductForView['main_curancy'] = $currentProduct->main_curancy;
-		$priceName = 'price_' . $currentProduct->main_curancy;
-		if ($currentProduct->$priceName == 0)
+		$currentProductForView['name'] = $product->name;
+		$currentProductForView['articul'] = $product->articul;
+		$currentProductForView['main_curancy'] = $product->main_curancy;
+		$priceName = 'price_' . $product->main_curancy;
+		if ($product->$priceName == 0)
 		{
-			$currentProductForView['alt_price'] = $currentProduct->price_alternative;
+			$currentProductForView['alt_price'] = $product->price_alternative;
 		} else {
-			$currentProductForView['price'] = number_format($currentProduct->$priceName, 2, '.', ' ');
+			$currentProductForView['price'] = number_format($product->$priceName, 2, '.', ' ');
 		}
-		$currentProductForView['country'] = Models\CountryModel::findFirst([$currentProduct->country_id])->name;
-		if ($currentProduct->brand)
+		$currentProductForView['country'] = Models\CountryModel::findFirst([$product->country_id])->name;
+		if ($product->brand)
 		{
-			$currentProductForView['brand'] = $currentProduct->brand;
+			$currentProductForView['brand'] = $product->brand;
 		}
-		if ($currentProduct->short_description)
+		if ($product->short_description)
 		{
-			$currentProductForView['short_desc'] = $currentProduct->short_description;
+			$currentProductForView['short_desc'] = $product->short_description;
 		}
-		$prodParams = Models\ProductParamModel::getParamsByProductId($currentProduct->id);
+		$prodParams = Models\ProductParamModel::getParamsByProductId($product->id);
 		if ($prodParams)
 		{
 			foreach ($prodParams as $param)
@@ -331,13 +181,13 @@ class ProductsController extends BaseFrontController
 				$currentProductForView['parameters'][$param->name] =  $param->value;
 			}
 		}
-		if ($currentProduct->full_description)
+		if ($product->full_description)
 		{
-			$currentProductForView['full_desc'] = $currentProduct->full_description;
+			$currentProductForView['full_desc'] = $product->full_description;
 		}
 		$prodImages = Models\ProductImageModel::find([
 			'product_id = :prodId:',
-			'bind' => ['prodId' => $currentProduct->id],
+			'bind' => ['prodId' => $product->id],
 			'order' => 'sort'
 		]);
 		if (count($prodImages) > 0)
@@ -362,7 +212,7 @@ class ProductsController extends BaseFrontController
 		// Видео
 		$prodVideos = Models\ProductVideoModel::find([
 			'product_id = ?1',
-			'bind' => [1 => $currentProduct->id],
+			'bind' => [1 => $product->id],
 			'order' => 'sort'
 		]);
 		if (count($prodVideos))
@@ -381,7 +231,7 @@ class ProductsController extends BaseFrontController
 		// Файлы
 		$prodFiles = Models\ProductFileModel::find([
 			'product_id = ?1',
-			'bind' => [1 => $currentProduct->id]
+			'bind' => [1 => $product->id]
 		]);
 		if (count($prodFiles))
 		{
@@ -394,49 +244,9 @@ class ProductsController extends BaseFrontController
 			}
 		}
 
-		// Формируем категории для сайдбара
-
-		$sidebarCatsForView = [];
-		$prodCats = Models\ProductCategoryModel::find([
-			'product_id = :prodId:',
-			'bind' => ['prodId' => $currentProduct->id]
-		]);
-		$activeCats = [];
-		foreach ($prodCats as $prodCat)
-		{
-			$activeCats[] = Models\CategoryModel::getRootCategoryByChildId($prodCat->category_id);
-		}
-		$mainCats = Models\CategoryModel::getMainCategories();
-		foreach ($mainCats as $mainCat)
-		{
-			$tempSidebarCat['name'] = $mainCat->name;
-			$mainCatChildren = Models\CategoryModel::findFirst([
-				'parent_id = :id:',
-				'bind' => ['id' => $mainCat->id]
-			]);
-			if ($mainCatChildren)
-			{
-				$tempSidebarCat['path'] = '/catalog/show/' . $mainCat->seo_name . '/';
-			} else {
-				$tempSidebarCat['path'] = '/products/list/' . $mainCat->seo_name . '/';
-			}
-			$tempSidebarCat['active'] = false;
-			foreach ($activeCats as $activeCat)
-			{
-				if ($activeCat->id == $mainCat->id)
-				{
-					$tempSidebarCat['active'] = true;
-					break;
-				}
-			}
-			$sidebarCatsForView[] = $tempSidebarCat;
-		}
-
-		//
-
-		$this->view->breadcrumbs = $categoriesArray;
+		$this->view->breadcrumbs = $breadcrumbs;
 		$this->view->product = $currentProductForView;
-		$this->view->sidebar_categories = $sidebarCatsForView;
+		$this->view->sidebar_categories = Category::getMainCategories($this->di, false, $product->categories);
 
 		echo $this->view->render('products/product');
 	}
