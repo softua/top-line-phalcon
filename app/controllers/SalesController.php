@@ -15,32 +15,7 @@ class SalesController extends BaseFrontController
 		parent::initialize();
 		$this->tag->appendTitle('Акционные предложения');
 
-		$mainCategories = Models\CategoryModel::find([
-			'parent_id = 0',
-			'order' => 'sort, name'
-		]);
-		$mainCategoriesForView = [];
-		for ($i = 0; $i < count($mainCategories); $i++)
-		{
-			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\CategoryModel::findFirst([
-				'parent_id = :id:',
-				'bind' => ['id' => $mainCategories[$i]->id]
-			]);
-			if ($mainCategories[$i]->seo_name === 'servisnyie_uslugi_montaj') {
-				$mainCategoriesForView[$i]['path'] = $this->url->get('service');
-			}
-			elseif ($areThereChildrenCats)
-			{
-				$mainCategoriesForView[$i]['path'] = '/catalog/show/' . $mainCategories[$i]->seo_name . '/';
-
-			} else {
-
-				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
-			}
-		}
-
-		$this->view->sidebar_categories = $mainCategoriesForView;
+		$this->view->sidebar_categories = \App\Category::getMainCategories($this->di, false);
 	}
 
 	public function notFoundAction()

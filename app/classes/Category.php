@@ -25,66 +25,56 @@ class Category
 	public $active = false;
 	public $images = [];
 	public $mainImage;
-	private $parentsArray = [];
+	private $parentsCats = [];
+	private $childrenCats = [];
 
-	public function setDi($di)
-	{
-		$this->_di = $di;
-		$this->_url = $this->_di->get('url');
-	}
-
-	public function setLink($customLink = null)
-	{
-		$this->edit_link = $this->_url->get('admin/editcategory/') . $this->id;
-		if ($customLink) {
-			$this->link = $customLink;
-			return;
-		}
-		if (!$this->link) {
-			if ($this->seo_name === 'servisnyie_uslugi_montaj') {
-				$this->link = $this->_url->get('service');
-			} elseif ($this->areThereChildrenCategories()) {
-				$this->link = $this->_url->get('catalog/show/') . $this->seo_name . '/';
-			} else {
-				$this->link = $this->_url->get('products/list/') . $this->seo_name . '/';
-			}
-		}
-	}
-
+	/**
+	 * Если дочерние категории не инициализированы, вызывает метод для получения категорий из БД.<br>
+	 * Потом еще раз проверяет уже проинициализированые дочерние категории.<br>
+	 * Если дочерние категории проинициализированы, сразу проверяет есть категории или нет.
+	 * @return bool Возвращает true, если дочерние категории есть, иначе - false.
+	 */
 	private function areThereChildrenCategories()
 	{
-		$children = Models\CategoryModel::find([
-			'parent_id = ?1',
-			'bind' => [1 => $this->id]
-		]);
-		if (count($children))
-			return true;
-		else
+		if (is_array($this->childrenCats) && empty($this->childrenCats)) {
+			$this->setChildrenCats();
+			if ($this->childrenCats === false) {
+				return false;
+			} else {
+				return true;
+			}
+		} elseif ($this->childrenCats === false) {
 			return false;
+		} else {
+			return true;
+		}
 	}
 
-	public function setImages()
+	/**
+	 * Вызывается только из areThereChildrenCategories()
+	 */
+	private function setChildrenCats()
 	{
-		$images = Models\CategoryImageModel::find([
-			'category_id = ' . $this->id
-		]);
-		if (count($images)) {
-			$i = 0;
-			foreach ($images as $image) {
-				if (file_exists($image->pathname)) {
-					$this->images[] = $this->_url->getStatic() . $image->pathname;
-					if ($i === 0)
-						$this->mainImage = $this->_url->getStatic() . $image->pathname;
-				} else {
-					$this->images[] = $this->_url->getStatic('img/no_foto_110x110.png');
-					if ($i === 0)
-						$this->mainImage = $this->_url->getStatic('img/no_foto_110x110.png');
-				}
-				$i++;
+		$children = Models\CategoryModel::query()
+			->where('parent_id = ?1')->bind([1 => $this->id])
+			->orderBy('sort, name')
+			->execute();
+		if (count($children)) {
+			foreach ($children as $cat) {
+				$newCategory = new self();
+				$newCategory->setDi($this->_di);
+				$newCategory->id = $cat->id;
+				$newCategory->name = $cat->name;
+				$newCategory->parent_id = $cat->parent_id;
+				$newCategory->seo_name = $cat->seo_name;
+				$newCategory->sort = $cat->sort;
+				$newCategory->setLink();
+				$this->childrenCats[] = $newCategory;
 			}
 		} else {
-			$this->mainImage = $this->_url->getStatic('img/no_foto_110x110.png');
+			$this->childrenCats = false;
 		}
+
 	}
 
 	private function setParentsCategories($di, $includeCurrent = true)
@@ -105,23 +95,79 @@ class Category
 			$tempCat->seo_name = $dbCat->seo_name;
 			$tempCat->sort = $dbCat->sort;
 			$tempCat->setLink();
-			array_unshift($this->parentsArray, $tempCat);
+			array_unshift($this->parentsCats, $tempCat);
 		}
-		if (!count($this->parentsArray)) {
-			$this->parentsArray = null;
+		if (!count($this->parentsCats)) {
+			$this->parentsCats = null;
+		}
+	}
+
+	/**
+	 * Внедряет зависимости.
+	 * @param $di Контейнер зависимостей.
+	 */
+	public function setDi($di)
+	{
+		$this->_di = $di;
+		$this->_url = $this->_di->get('url');
+	}
+
+	/**
+	 * Устанавливает ссылки категории (обычная + редактирование)
+	 * @param null|string $customLink Если передается кастомная ссылка, она будет установлена.
+	 */
+	public function setLink($customLink = null)
+	{
+		$this->edit_link = $this->_url->get('admin/editcategory/') . $this->id;
+		if ($customLink) {
+			$this->link = $customLink;
+			return;
+		}
+		if (!$this->link) {
+			if ($this->seo_name === 'servisnyie_uslugi_montaj') {
+				$this->link = $this->_url->get('service');
+			} elseif ($this->areThereChildrenCategories()) {
+				$this->link = $this->_url->get('catalog/show/') . $this->seo_name . '/';
+			} else {
+				$this->link = $this->_url->get('products/list/') . $this->seo_name . '/';
+			}
+		}
+	}
+
+	public function setImages()
+	{
+		$images = Models\CategoryImageModel::query()
+			->where('category_id = ?1')->bind([1 => $this->id])
+			->execute();
+		if (count($images)) {
+			$i = 0;
+			foreach ($images as $image) {
+				if (file_exists($image->pathname)) {
+					$this->images[] = $this->_url->getStatic($image->pathname);
+					if ($i === 0)
+						$this->mainImage = $this->_url->getStatic($image->pathname);
+				} else {
+					$this->images[] = $this->_url->getStatic('img/no_foto_110x110.png');
+					if ($i === 0)
+						$this->mainImage = $this->_url->getStatic('img/no_foto_110x110.png');
+				}
+				$i++;
+			}
+		} else {
+			$this->mainImage = $this->_url->getStatic('img/no_foto_110x110.png');
 		}
 	}
 
 	public function getParentsCategories()
 	{
-		if ($this->parentsArray === null) {
+		if ($this->parentsCats === null) {
 			return null;
 		}
-		if (!count($this->parentsArray)) {
+		if (!count($this->parentsCats)) {
 			$this->setParentsCategories($this->_di);
-			return $this->parentsArray;
+			return $this->parentsCats;
 		} else {
-			return $this->parentsArray;
+			return $this->parentsCats;
 		}
 	}
 
