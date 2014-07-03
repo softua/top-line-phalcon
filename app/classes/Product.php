@@ -32,8 +32,30 @@ class Product
 	public $meta_description;
 	public $public;
 	public $top;
-	public $categories = [];
-	public $mainCategory;
+	private $categories = [];
+	private $mainCategory;
+	private $files = [];
+
+	private function setCategories()
+	{
+		$dbcats = Models\ProductCategoryModel::query()
+			->where('product_id = ?1')->bind([1 => $this->id])
+			->execute();
+		if (!count($dbcats)) {
+			$this->categories = false;
+			$this->mainCategory = false;
+		} else {
+			foreach ($dbcats as $productCategory) {
+				$this->categories[] = Category::getCategoryById($this->_di, $productCategory->category_id, false, true);
+			}
+			$this->mainCategory = $this->categories[0];
+		}
+	}
+
+	private function setFiles()
+	{
+		//TODO: Реализовать получение файлов из БД.
+	}
 
 	public function setDi($di)
 	{
@@ -41,12 +63,68 @@ class Product
 		$this->_url = $this->_di->get('url');
 	}
 
-	public static function getProductBySeoName($di, $seoName, $categories = false)
+	public function setCategoriesIfNone()
+	{
+		if (is_array($this->categories) && empty($this->categories)) {
+			$this->setCategories();
+		}
+	}
+
+	public function setFilesIfNone()
+	{
+		if (is_array($this->files) && empty($this->files)) {
+			$this->setFiles();
+		}
+	}
+
+	public function getCategories()
+	{
+		if (is_array($this->categories) && empty($this->categories)) {
+			$this->setCategories();
+			if ($this->categories === false) {
+				return null;
+			} else {
+				return $this->categories;
+			}
+		} elseif ($this->categories === false) {
+			return null;
+		} else {
+			return $this->categories;
+		}
+	}
+
+	public function getFiles()
+	{
+		if (is_array($this->files) && empty($this->files)) {
+			$this->setFiles();
+		} elseif ($this->files === false) {
+			return null;
+		} else {
+			return $this->files;
+		}
+	}
+
+	public function getMainCategory()
+	{
+		if($this->mainCategory === null) {
+			$this->setCategories();
+			if ($this->mainCategory === false) {
+				return null;
+			} else {
+				return $this->mainCategory;
+			}
+		} elseif ($this->mainCategory === false) {
+			return null;
+		} else {
+			return $this->mainCategory;
+		}
+	}
+
+	public static function getProductBySeoName($di, $seoName, $withCategories = false)
 	{
 		$dbProduct = Models\ProductModel::query()
-			->where('seo_name = ?1')
+			->where('seo_name = ?1')->bind([1 => $seoName])
 			->andWhere('public = 1')
-			->bind([1 => $seoName])
 			->execute()
 			->getFirst();
 		if (!$dbProduct) {
@@ -73,18 +151,8 @@ class Product
 		$product->meta_description = $dbProduct->meta_description;
 		$product->public = $dbProduct->public;
 		$product->top = $dbProduct->top;
-		if ($categories) {
-			$dbcats = Models\ProductCategoryModel::query()
-				->where('product_id = ?1')->bind([1 => $product->id])
-				->execute();
-			if (!count($dbcats)) {
-				$product->categories = null;
-			} else {
-				foreach ($dbcats as $dbRow) {
-					$product->categories[] = Category::getCategoryById($di, $dbRow->category_id, false, true);
-				}
-				$product->mainCategory = $product->categories[0];
-			}
+		if ($withCategories) {
+			$product->setCategoriesIfNone();
 		}
 		return $product;
 	}

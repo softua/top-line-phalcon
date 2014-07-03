@@ -148,7 +148,7 @@ class ProductsController extends BaseFrontController
 		}
 
 		// Формируем хлебные крошки
-		$breadcrumbs = $product->mainCategory->getParentsCategories();
+		$breadcrumbs = $product->getMainCategory()->getParentsCategories();
 		$breadcrumbs[] = $product;
 
 		//Формируем данные товара для представления
@@ -246,7 +246,7 @@ class ProductsController extends BaseFrontController
 
 		$this->view->breadcrumbs = $breadcrumbs;
 		$this->view->product = $currentProductForView;
-		$this->view->sidebar_categories = Category::getMainCategories($this->di, false, $product->categories);
+		$this->view->sidebar_categories = Category::getMainCategories($this->di, false, $product->getCategories());
 
 		echo $this->view->render('products/product');
 	}
