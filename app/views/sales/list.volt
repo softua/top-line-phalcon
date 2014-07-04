@@ -19,49 +19,40 @@
 				{% for item in data.items %}
 					<li class="sales__item sales__item--label-sales">
 						<figure class="sales__item__img">
-							<img src="{{ item['img'] }}" alt="{{ item['name'] }}"/>
+							{% if item.getMainImage().pageListPath is not false %}
+								<img src="{{ item.getMainImage().pageListPath }}" alt="{{ item.name }}"/>
+							{% else %}
+								<img src="{{ static_url('img/no_foto.png') }}" alt="{{ item.name }}"/>
+							{% endif %}
 							<figcaption class="sales__item__img__caption">
-								{{ item['name'] }}
+								{{ item.name }}
 							</figcaption>
 						</figure>
 						<div class="sales__item__text-wrapper">
-							{{ item['short_description'] }}
-							<a class="sales__item__more" href="{{ item['href'] }}" title="{{ item['name'] }}">Подробнее...</a>
+							{{ item.shortContent }}
+							<a class="sales__item__more" href="{{ item.path }}" title="{{ item.name }}">Подробнее...</a>
 						</div>
 					</li>
 				{% endfor %}
 			</ul><!-- end sales -->
 
-			{% if data.total_pages > 1 %}
+			{% if data.links is defined and data.links is not empty %}
 				<ul class="pagination">
-					{% if data.current != data.first %}
-						<li class="pagination__item pagination__item--prev">
-							<a class="pagination__item__link" href="{{ url('sales/?page=') }}{{ data.first }}">←</a>
-						</li>
-					{% endif %}
-
-					{% for key, link in data.links %}
-						{% if key == paginate.current %}
+					{% for link in data.links %}
+						{% if link.active is true %}
 							<li class="pagination__item active">
-								<a class="pagination__item__link" href="{{ link }}">{{ key + 1 }}</a>
+								<a class="pagination__item__link" href="{{ link.href }}">{{ link.name }}</a>
 							</li>
 						{% else %}
 							<li class="pagination__item">
-								<a class="pagination__item__link" href="{{ link }}">{{ key + 1 }}</a>
+								<a class="pagination__item__link" href="{{ link.href }}">{{ link.name }}</a>
 							</li>
 						{% endif %}
 					{% endfor %}
-
-					{% if data.current != data.last %}
-						<li class="pagination__item pagination__item--next">
-							<a class="pagination__item__link" href="{{ url('sales/?page=') }}{{ data.last }}">→</a>
-						</li>
-					{% endif %}
-
 				</ul>
 			{% endif %}
 		{% else %}
-			<h1>Извините, акционных предлжений нет.</h1>
+			<h1>Извините, акционных предложений нет.</h1>
 		{% endif %}
 	</main>
 {% endblock %}

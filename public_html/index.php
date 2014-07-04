@@ -5,8 +5,6 @@ try {
 	ini_set('session.auto_start', '0');
 	ini_set('session.use_cookies', '0');
 
-	define('BASE_URL', '../app/');
-
 	// Создание DI
 	$di = new \Phalcon\DI\FactoryDefault();
 
@@ -15,15 +13,16 @@ try {
 		$url = new \Phalcon\Mvc\Url();
 		$url->setBaseUri('http://' . $_SERVER['HTTP_HOST'] .'/');
 		$url->setStaticBaseUri('http://' . $_SERVER['HTTP_HOST'] . '/public_html/');
+		$url->setBasePath($_SERVER['DOCUMENT_ROOT'] . '/');
 		return $url;
 	});
 
     // Регистрация автозагрузчика
 	$loader = new \Phalcon\Loader();
 	$loader->registerNamespaces([
-		'App' => BASE_URL . 'classes/',
-		'App\Controllers' => BASE_URL . 'controllers/',
-		'App\Models' => BASE_URL . 'models/'
+		'App' => $di['url']->path('app/') . 'classes/',
+		'App\Controllers' => $di['url']->path('app/') . 'controllers/',
+		'App\Models' => $di['url']->path('app/') . 'models/'
 	])->register();
 
 	// Подключаем конфигурацию как сервис
@@ -88,7 +87,7 @@ try {
 	});
 
 	// Роуты
-	require BASE_URL . 'classes/Routes.php';
+	require $di['url']->path('app/classes/Routes.php');
 
     // Обработка запроса
     $application = new \Phalcon\Mvc\Application($di);

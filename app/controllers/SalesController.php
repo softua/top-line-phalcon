@@ -7,6 +7,7 @@
 
 namespace App\Controllers;
 use App\Models;
+use App;
 
 class SalesController extends BaseFrontController
 {
@@ -27,51 +28,10 @@ class SalesController extends BaseFrontController
 	public function indexAction()
 	{
 		$currentPage = $this->request->getQuery('page', 'int');
-		$sales = Models\PageModel::find([
-			'type_id = 5 AND public = 1',
-			'order' => 'time, name'
-		]);
-		$salesArray = [];
-		if (count($sales)) {
-			foreach ($sales as $sale) {
-				$tempSale = [];
-				$tempSale['name'] = $sale->name;
-				$tempSale['short_description'] = $sale->short_content;
-				$tempSale['href'] = $this->url->get('sales/show/') . $sale->seo_name;
-				$salesImages = Models\PageImageModel::find([
-					'page_id = ?1',
-					'bind' => [1 => $sale->id],
-					'order' => 'sort'
-				]);
-				if ($salesImages->count()) {
-					$imgPath = 'staticPages/images/' . $salesImages[0]->id . '__page_list.' . $salesImages[0]->extension;
-					if (file_exists($imgPath)) {
-						$tempSale['img'] = $this->url->getStatic($imgPath);
-					} else {
-						$tempSale['img'] = $this->url->getStatic('img/no_foto.png');
-					}
-				} else {
-					$tempSale['img'] = $this->url->getStatic('img/no_foto.png');
-				}
-				$salesArray[] = $tempSale;
-			}
-		} else {
-			$salesArray = null;
-		}
-		if ($salesArray) {
-			$paginator = new \Phalcon\Paginator\Adapter\NativeArray([
-				'data' => $salesArray,
-				'limit' => 10,
-				'page' => ($currentPage) ? $currentPage : 1
-			]);
-			$data = $paginator->getPaginate();
-			$data->links = [];
-			while (count($data->links) < $data->total_pages) {
-				$data->links[] = $this->url->get('sales/?page=') . (count($data->links) + 1);
-			}
-		} else {
-			$data = null;
-		}
+
+		$sales = App\Sale::getSales($this->di, true);
+		$data = new App\Paginator($this->di, $sales, 10, $currentPage);
+		$data->paginate($this->url->get('sales/?page='));
 
 		$this->view->data = $data;
 
@@ -81,59 +41,21 @@ class SalesController extends BaseFrontController
 	public function showAction()
 	{
 		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
+		$currentPage = $this->request->getQuery('page', 'int');
+
 		if (!$seoName) {
 			return $this->response->redirect('sales/notfound');
 		}
-		$page = Models\PageModel::findFirst([
-			'seo_name = ?1',
-			'bind' => [1 => $seoName]
-		]);
-		if ($page) {
-			$pageForView = [];
-		} else {
-			return $this->response->redirect('sales/notfound');
-		}
-		$pageForView['name'] = $page->name;
-		$pageForView['full_content'] = $page->full_content;
-		$pageImages = $page->getImages(['order' => 'sort']);
-		if (count($pageImages)) {
-			$imgPath = 'staticPages/images/' . $pageImages[0]->id . '__page_description.' . $pageImages[0]->extension;
-			if (file_exists($imgPath)) {
-				$pageForView['img'] = $this->url->getStatic($imgPath);
-			} else {
-				$pageForView['img'] = $this->url->getStatic('img/no_foto.png');
-			}
-		} else {
-			$pageForView['img'] = $this->url->getStatic('img/no_foto.png');
-		}
-		$pageProducts = $page->getProducts(['order' => '[\App\Models\ProductModel].price_uah DESC']);
-		if (count($pageProducts)) {
-			$pageForView['products'] = [];
-			foreach ($pageProducts as $prod) {
-				$tempProd = [];
-				$tempProd['name'] = $prod->name;
-				$tempProd['articul'] = $prod->articul;
-				$tempProd['short_description'] = $prod->short_description;
-				$tempProd['link'] = $this->url->get('products/show/') . $prod->seo_name;
-				$imgs = $prod->getImages(['order' => 'sort']);
-				if (count($imgs)) {
-					$imgPath = 'products/' . $prod->id . '/images/' . $imgs[0]->id . '__product_list.' . $imgs[0]->extension;
-					if (file_exists($imgPath)) {
-						$tempProd['img'] = $this->url->getStatic($imgPath);
-					} else {
-						$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
-					}
-				} else {
-					$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
-				}
-				$pageForView['products'][] = $tempProd;
-			}
-		} else {
-			$pageForView['products'] = null;
+		$page = App\Sale::getSaleBySeoName($this->di, $seoName, true);
+
+		if ($page->hasProducts()) {
+			$newPaginator = new App\Paginator($this->di, $page->getProducts(), 6, $currentPage);
+			$products = $newPaginator->paginate('sales/show/' . $page->seoName . '?page=');
+			$this->view->products = $products;
 		}
 
-		$this->view->data = $pageForView;
+		$this->view->page = $page;
 
 		echo $this->view->render('sales/description');
 	}
-} 
+}
