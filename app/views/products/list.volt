@@ -59,53 +59,63 @@
 			</div>
 		</div>
 
-		{% if products.items is defined and products.items is not empty %}
-			<div class="products-list--outer-wrapper">
+		<div class="products-list--outer-wrapper">
+			{% if data.items is defined and data.items is not empty %}
 				<ul class="products-list">
-					{% for product in products.items %}
+					{% for product in data.items %}
 						<li class="products-list__item">
 							<h2 class="products-list__title">
-								<a href="{{ product['path'] }}" title="{{ product['name'] }}">{{ product['name'] }}</a>
+								<a href="{{ product.path }}" title="{{ product.name }}">{{ product.name }}</a>
 							</h2>
-							<figure class="products-list__img">
-								<img src="{{ product['img'] }}" alt="{{ product['name'] }}"/>
-							</figure>
-							<div class="products-list__code">Артикул: {{ product['articul'] }}</div>
-							{{ product['short_desc'] }}
+							{% if product.hasSales() is true and product.novelty is true %}
+								<figure class="products-list__img products-list__img--new products-list__img--sale">
+									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
+								</figure>
+							{% elseif product.hasSales() %}
+								<figure class="products-list__img products-list__img--sale">
+									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
+								</figure>
+							{% elseif product.novelty is true %}
+								<figure class="products-list__img products-list__img--new">
+									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
+								</figure>
+							{% else %}
+								<figure class="products-list__img">
+									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
+								</figure>
+							{% endif %}
+							<div class="products-list__code">Артикул: {{ product.articul }}</div>
+							{{ product.short_description }}
 						</li>
 					{% endfor %}
 				</ul><!-- end products-list -->
+			{% else %}
+				В данной категории пока нет товаров
+			{% endif %}
 
-				{% if products.total_pages > 1 %}
-					<ul class="pagination">
-						{% if products.current is not products.first %}
+			{% if data.links is defined and data.links is not empty %}
+				<ul class="pagination">
+					{% for link in data.links %}
+						{% if link.name is data.first %}
 							<li class="pagination__item pagination__item--prev">
-								<a class="pagination__item__link" href="{{ products.links[0] }}" title="Первая">←</a>
+								<a class="pagination__item__link" href="{{ link.href }}" title="Первая">←</a>
 							</li>
-						{% endif %}
-
-						{% for key, link in products.links %}
-							{% if key + 1 is products.current %}
-								<li class="pagination__item active">
-									<a class="pagination__item__link" href="{{ link }}" title="{{ key + 1 }}">{{ key + 1 }}</a>
-								</li>
-							{% else %}
-								<li class="pagination__item">
-									<a class="pagination__item__link" href="{{ link }}" title="{{ key + 1 }}">{{ key + 1 }}</a>
-								</li>
-							{% endif %}
-						{% endfor %}
-
-						{% if products.current is not products.last %}
+						{% elseif link.name is data.last %}
 							<li class="pagination__item pagination__item--next">
-								<a class="pagination__item__link" href="{{ products.links[products.last - 1] }}" title="Последняя">→</a>
+								<a class="pagination__item__link" href="{{ link.href }}" title="Последняя">→</a>
+							</li>
+						{% elseif link.active is true %}
+							<li class="pagination__item active">
+								<a class="pagination__item__link" href="{{ link.href }}" title="{{ link.name }}">{{ link.name }}</a>
+							</li>
+						{% else %}
+							<li class="pagination__item">
+								<a class="pagination__item__link" href="{{ link.href }}" title="{{ link.name }}">{{ link.name }}</a>
 							</li>
 						{% endif %}
-					</ul>
-				{% endif %}
-			</div>
-		{% else %}
-			В данной категории пока нет товаров
-		{% endif %}
+					{% endfor %}
+				</ul>
+			{% endif %}
+		</div>
 	</main>
 {% endblock %}

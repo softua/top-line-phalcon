@@ -35,13 +35,14 @@
 			</div>
 			{% if products.items is defined and products.items is not empty %}
 				<ul class="products-list">
+
 					{% for product in products.items %}
 						<li class="products-list__item">
 							<h2 class="products-list__title">
-								<a href="" title="{{ product.name }}">{{ product.name }}</a>
+								<a href="{{ product.path }}" title="{{ product.name }}">{{ product.name }}</a>
 							</h2>
 							<figure class="products-list__img">
-								<img src="{{ static_url('img/no_foto.png') }}" alt="{{ product.name }}"/>
+								<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
 							</figure>
 							<div class="products-list__code">Артикул: {{ product.articul }}</div>
 							{{ product.short_description }}

@@ -8,6 +8,8 @@
 namespace App\Controllers;
 use App\Category;
 use App\Models;
+use App\Page;
+use App\Paginator;
 use App\Product;
 
 class ProductsController extends BaseFrontController
@@ -32,9 +34,8 @@ class ProductsController extends BaseFrontController
 	public function listAction()
 	{
 		$catSeoName = $this->dispatcher->getParams()[0];
-		if (!$catSeoName) {
-			return $this->response->redirect('catalog/');
-		}
+		if (!$catSeoName) return $this->response->redirect('catalog/');
+
 		$category = Category::getCategoryBySeoName($this->di, $catSeoName, true);
 		if (!$category) {
 			return $this->response->redirect('catalog/');
@@ -43,94 +44,17 @@ class ProductsController extends BaseFrontController
 		// Список товаров
 		$sort = $this->request->getQuery('sort', ['trim', 'striptags']);
 		$page = $this->request->getQuery('page', ['trim', 'int']);
-		$prodCats = Models\ProductCategoryModel::find([
-			'category_id = :categoryId:',
-			'bind' => ['categoryId' => $category->id]
-		]);
 
-		if (count($prodCats) > 0)
-		{
-			$queryString = '';
-			$queryStringArray = [];
-			foreach ($prodCats as $prodCat)
-			{
-				$queryStringArray[] = $prodCat->product_id;
-			}
-			$queryStringArray = array_unique($queryStringArray);
-			for ($j = 0; $j < count($queryStringArray); $j++)
-			{
-				if ($j == 0)
-					$queryString = 'id = ' . $queryStringArray[$j];
-				else
-					$queryString .= ' OR id = ' . $queryStringArray[$j];
-			}
-			if (!$sort || $sort === 'DESC') {
-				$productList = Models\ProductModel::find([
-					$queryString,
-					'order' => 'price_uah DESC'
-				]);
-			} else {
-				$productList = Models\ProductModel::find([
-					$queryString,
-					'order' => 'price_uah ASC'
-				]);
-			}
-			$productsArray = [];
-			foreach ($productList as $product)
-			{
-				if (!$product->public)
-					continue;
-				$tempProd['name'] = $product->name;
-				$tempProd['articul'] = $product->articul;
-				$tempProd['short_desc'] = $product->short_description;
-				$tempProd['path'] = $this->url->get('products/show/') . $product->seo_name;
-				$prodImages = Models\ProductImageModel::find([
-					'product_id = :id:',
-					'bind' => ['id' => $product->id],
-					'order' => 'sort'
-				]);
-				if (count($prodImages) > 0)
-				{
-					$pathname = 'products/' . $prodImages[0]->product_id . '/images/' . $prodImages[0]->id . '__product_list.' . $prodImages[0]->extension;
-					if (file_exists($pathname))
-					{
-						$tempProd['img'] = $this->url->getStatic($pathname);
-					} else {
-						$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
-					}
-				} else {
-					$tempProd['img'] = $this->url->getStatic('img/no_foto.png');
-				}
-				$productsArray[] = $tempProd;
-			}
-		} else {
-			$productsArray = null;
-		}
-		if ($productsArray) {
-			$paginator = new \Phalcon\Paginator\Adapter\NativeArray([
-				'data' => $productsArray,
-				'limit' => 10,
-				'page' => ($page) ? $page : 1
-			]);
-			$productsForView = $paginator->getPaginate();
-			$productsForView->links = [];
-			if ($productsForView->total_pages > 1) {
-				for ($i = 0; $i < $productsForView->total_pages; $i++) {
-					if (!$sort || $sort === 'DESC') {
-						$productsForView->links[$i+1] = $this->url->get('products/list/') . $catSeoName . '/?page=' . ($i+1);
-					} else {
-						$productsForView->links[$i+1] = $this->url->get('products/list/') . $catSeoName . '/?sort=ASC&page=' . ($i+1);
-					}
-				}
-			}
-		} else {
-			$productsForView = null;
-		}
+		$products = Product::getProductsByCategories($this->di, [$category], false, true, true, $sort);
+		if ($products) {
+			$paginator = new Paginator($this->di, $products, 10, $page);
+			$data = $paginator->paginate('products/list/' . $category->seo_name . '/?sort=' . $sort . '&page=');
+		} else $data = null;
 
 		$this->view->breadcrumbs = $category->getParentsCategories();
 		$this->view->name = $category->name;
 		$this->view->sidebar_categories = $category::getMainCategories($this->di, false, [$category->seo_name]);
-		$this->view->products = $productsForView;
+		$this->view->data = $data;
 		$this->view->sort = ($sort) ? $sort : 'DESC';
 
 		echo $this->view->render('products/list');

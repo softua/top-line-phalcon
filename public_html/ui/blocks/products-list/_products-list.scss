@@ -45,6 +45,26 @@
         text-align: center;
     }
 
+	&__img--sale:after {
+		content: '';
+		width: 70px;
+		height: 70px;
+		background: url("/public_html/img/sales/list.png") no-repeat center;
+		position: absolute;
+		left: -24px;
+		top: -22px;
+	}
+
+	&__img--new:after {
+		content: '';
+		width: 31px;
+		height: 98px;
+		background: url("/public_html/img/newy/list-1.png") no-repeat center;
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+
     &__code {
         color: #5e5d5d;
         font-size: 12px;
