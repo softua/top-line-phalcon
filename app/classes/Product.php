@@ -34,11 +34,15 @@ class Product
 	public $top;
 	public $path;
 	public $editPath;
+	public $novelty;
+
 	private $categories = [];
 	private $mainCategory;
-	private $files = [];
+	private $_files = [];
 	private $_sales = [];
 	private $_images = [];
+	private $_videos = [];
+
 
 	private function setCategories()
 	{
@@ -58,7 +62,11 @@ class Product
 
 	private function _setFiles()
 	{
-		//TODO: Реализовать получение файлов из БД.
+		if (is_array($this->_files) && empty($this->_files)) {
+			$files = File::getFilesByProduct($this->_di, $this);
+			if (!$files || !count($files)) $this->_files = false;
+			else $this->_files = $files;
+		}
 	}
 
 	private function _setPath()
@@ -128,6 +136,16 @@ class Product
 		}
 	}
 
+	private function _setVideos()
+	{
+		$videos = Video::getVideosByProduct($this->_di, $this);
+		if ($videos && count($videos)) {
+			$this->_videos = $videos;
+		} else {
+			$this->_videos = false;
+		}
+	}
+
 	public function setDi($di)
 	{
 		$this->_di = $di;
@@ -157,15 +175,20 @@ class Product
 
 	public function setFilesIfNone()
 	{
-		if (is_array($this->files) && empty($this->files)) {
-			$this->setFiles();
-		}
+		if (is_array($this->_files) && empty($this->_files)) $this->setFiles();
 	}
 
 	public function setImages()
 	{
 		if (is_array($this->_images) && empty($this->_images)) {
 			$this->_setImages();
+		}
+	}
+
+	public function setVideos()
+	{
+		if (is_array($this->_videos) && empty($this->_videos)) {
+			$this->_setVideos();
 		}
 	}
 
@@ -187,13 +210,13 @@ class Product
 
 	public function getFiles()
 	{
-		if (is_array($this->files) && empty($this->files)) {
+		if (is_array($this->_files) && empty($this->_files)) {
 			$this->_setFiles();
-		} elseif ($this->files === false) {
-			return null;
-		} else {
-			return $this->files;
+			if ($this->_files === false) return null;
+			else return $this->_files;
 		}
+		elseif ($this->_files === false) return null;
+		else return $this->_files;
 	}
 
 	public function getMainCategory()
@@ -238,6 +261,12 @@ class Product
 		else return null;
 	}
 
+	public function getVideos()
+	{
+		if ($this->hasVideos()) return $this->_videos;
+		else return null;
+	}
+
 	public function hasSales()
 	{
 		if (is_array($this->_sales) && empty($this->_sales)) {
@@ -255,6 +284,27 @@ class Product
 			if ($this->_images === false) return false;
 			else return true;
 		} elseif ($this->_images === false) return false;
+		else return true;
+	}
+
+	public function hasVideos()
+	{
+		if (is_array($this->_videos) && empty($this->_videos)) $this->_setVideos();
+
+		if ($this->_videos === false) return false;
+		else return true;
+
+	}
+
+	public function hasFiles()
+	{
+		if (is_array($this->_files) && empty($this->_files)) {
+			$this->_setFiles();
+
+			if ($this->_files === false) return false;
+			else return true;
+		}
+		elseif ($this->_files === false) return false;
 		else return true;
 	}
 
@@ -289,6 +339,7 @@ class Product
 		$product->meta_description = $dbProduct->meta_description;
 		$product->public = $dbProduct->public;
 		$product->top = $dbProduct->top;
+		$product->novelty = $dbProduct->novelty;
 		$product->setPath();
 		if ($withCategories) {
 			$product->setCategoriesIfNone();
@@ -336,6 +387,7 @@ class Product
 		$product->meta_description = $dbProduct->meta_description;
 		$product->public = $dbProduct->public;
 		$product->top = $dbProduct->top;
+		$product->novelty = $dbProduct->novelty;
 		$product->setPath();
 		if ($withCategories) {
 			$product->setCategoriesIfNone();
@@ -381,6 +433,7 @@ class Product
 			$product->meta_description = $dbProduct->meta_description;
 			$product->public = $dbProduct->public;
 			$product->top = $dbProduct->top;
+			$product->novelty = $dbProduct->novelty;
 			$product->setPath();
 			if ($withCategories) {
 				$product->setCategoriesIfNone();
@@ -451,6 +504,7 @@ class Product
 			$product->meta_description = $dbProduct->meta_description;
 			$product->public = $dbProduct->public;
 			$product->top = $dbProduct->top;
+			$product->novelty = $dbProduct->novelty;
 			$product->setPath();
 			if ($withCategories) {
 				$product->setCategoriesIfNone();
@@ -466,4 +520,49 @@ class Product
 
 		return $products;
 	}
-} 
+
+	public static function getNovelty($di, $withCategories = false, $withImages = true)
+	{
+		$prods = Models\ProductModel::query()
+			->where('novelty = 1')
+			->orderBy('price_uah DESC')
+			->execute();
+		if (!$prods || !count($prods)) return null;
+
+		$products = [];
+		foreach ($prods as $dbProduct) {
+			$product = new self();
+			$product->setDi($di);
+			$product->id = $dbProduct->id;
+			$product->name = $dbProduct->name;
+			$product->type = $dbProduct->type;
+			$product->articul = $dbProduct->articul;
+			$product->model = $dbProduct->model;
+			$product->country_id = $dbProduct->country_id;
+			$product->brand = $dbProduct->brand;
+			$product->main_curancy = $dbProduct->main_curancy;
+			$product->price_eur = $dbProduct->price_eur;
+			$product->price_usd = $dbProduct->price_usd;
+			$product->price_uah = $dbProduct->price_uah;
+			$product->price_alternative = $dbProduct->price_alternative;
+			$product->short_description = $dbProduct->short_description;
+			$product->full_description = $dbProduct->full_description;
+			$product->seo_name = $dbProduct->seo_name;
+			$product->meta_keywords = $dbProduct->meta_keywords;
+			$product->meta_description = $dbProduct->meta_description;
+			$product->public = $dbProduct->public;
+			$product->top = $dbProduct->top;
+			$product->novelty = $dbProduct->novelty;
+			$product->setPath();
+			if ($withCategories) {
+				$product->setCategoriesIfNone();
+			}
+			if ($withImages) {
+				$product->setImages();
+			}
+			$products[] = $product;
+		}
+
+		return $products;
+	}
+}

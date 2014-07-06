@@ -75,11 +75,12 @@ class ProductsController extends BaseFrontController
 		$breadcrumbs = $product->getMainCategory()->getParentsCategories();
 		$breadcrumbs[] = $product;
 
-		//Формируем данные товара для представления
+		//Формируем данные товара для представления TODO: не знаю, зачем так сделал. Потом нужно будет переделать.
 
 		$currentProductForView = [];
 		$currentProductForView['name'] = $product->name;
 		$currentProductForView['articul'] = $product->articul;
+		$currentProductForView['seo_name'] = $product->seo_name;
 		$currentProductForView['main_curancy'] = $product->main_curancy;
 		$priceName = 'price_' . $product->main_curancy;
 		if ($product->$priceName == 0)
@@ -109,64 +110,17 @@ class ProductsController extends BaseFrontController
 		{
 			$currentProductForView['full_desc'] = $product->full_description;
 		}
-		$prodImages = Models\ProductImageModel::find([
-			'product_id = :prodId:',
-			'bind' => ['prodId' => $product->id],
-			'order' => 'sort'
-		]);
-		if (count($prodImages) > 0)
-		{
-			foreach ($prodImages as $image)
-			{
-				if (file_exists('products/' . $image->product_id . '/images/' . $image->id . '__product_description.' . $image->extension))
-				{
-					$tempImage['desc'] = '/products/' . $image->product_id . '/images/' . $image->id . '__product_description.' . $image->extension;
-				} else {
-					$tempImage['desc'] = '/img/no_foto.png';
-				}
-				if (file_exists('products/' . $image->product_id . '/images/' . $image->id . '__product_thumb.' . $image->extension))
-				{
-					$tempImage['thumb'] = '/products/' . $image->product_id . '/images/' . $image->id . '__product_thumb.' . $image->extension;
-				} else {
-					$tempImage['thumb'] = '/img/no_foto.png';
-				}
-				$currentProductForView['images'][] = $tempImage;
-			}
-		}
+		$currentProductForView['sales'] = $product->hasSales();
+		$currentProductForView['novelty'] = $product->novelty;
+
+		// Картинки
+		$currentProductForView['images'] = $product->getImages();
+
 		// Видео
-		$prodVideos = Models\ProductVideoModel::find([
-			'product_id = ?1',
-			'bind' => [1 => $product->id],
-			'order' => 'sort'
-		]);
-		if (count($prodVideos))
-		{
-			foreach ($prodVideos as $video)
-			{
-				$tempVideo = [];
-				$tempVideo['id'] = $video->id;
-				$tempVideo['name'] = ($video->name) ? $video->name : $video->href;
-				$tempVideo['href'] = $video->href;
-				$tempVideo['sort'] = $video->sort;
-				$tempVideo['product_id'] = $video->product_id;
-				$currentProductForView['video'][] = $tempVideo;
-			}
-		}
+		$currentProductForView['video'] = $product->getVideos();
+
 		// Файлы
-		$prodFiles = Models\ProductFileModel::find([
-			'product_id = ?1',
-			'bind' => [1 => $product->id]
-		]);
-		if (count($prodFiles))
-		{
-			foreach ($prodFiles as $file)
-			{
-				$tempFile = [];
-				$tempFile['name'] = $file->name;
-				$tempFile['path'] = '/' . $file->pathname;
-				$currentProductForView['files'][] = $tempFile;
-			}
-		}
+		$currentProductForView['files'] = $product->getFiles();
 
 		$this->view->breadcrumbs = $breadcrumbs;
 		$this->view->product = $currentProductForView;

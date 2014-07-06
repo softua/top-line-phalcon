@@ -44,14 +44,20 @@
 				<div class="product__info">
 					{% if product['images'] is defined and product['images'] is not empty %}
 						<div class="product__gallery">
-							<figure class="product__gallery__full">
-								<img class="product__gallery__full__img" src="{{ product['images'][0]['desc'] }}" alt=""/>
+							{% if product['sales'] %}
+								<figure class="product__gallery__full product__gallery__full--sale">
+								<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
 							</figure>
+							{% else %}
+								<figure class="product__gallery__full">
+									<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
+								</figure>
+							{% endif %}
 							<ul class="product__gallery__thumbs">
 								{% for image in product['images'] %}
 									<li class="product__gallery__thumbs__item">
-										<a class="product__gallery__thumbs__link" href="{{ image['desc'] }}" title="">
-											<img src="{{ image['thumb'] }}" alt=""/>
+										<a class="product__gallery__thumbs__link" href="{{ image.productDescriptionPath }}" title="">
+											<img src="{{ image.productThumbPath }}" alt=""/>
 										</a>
 									</li>
 								{% endfor %}
@@ -65,6 +71,17 @@
 						</div>
 					{% endif %}
 					<div class="product__info__wrapper">
+
+						{% if product['sales'] %}
+							<a href="{{ url('sales/product/') }}{{ product['seo_name'] }}" title="Перейкти к акциям с этим товаром">
+								<img class="product__info__sale-btn" src="/public_html/img/sales/btn.png" alt="Скидки"/>
+							</a>
+						{% endif %}
+
+						{% if product['novelty'] %}
+							<img class="product__info__novelty" src="{{ static_url('img/novelty/novelty-btn.png') }}" alt="Новинка"/>
+						{% endif %}
+
 						{% if product['alt_price'] is defined %}
 							<div class="product__info__instock product__info__instock--null">{{ product['alt_price'] }}</div>
 							<div class="product__info__price">Стоимость уточняйте</div>
@@ -109,12 +126,18 @@
 				<div class="product__actions">
 					{% if product['video'] is defined and product['video'] is not empty %}
 						{% for video in product['video'] %}
-							<a class="product__actions__video" href="{{ video['href'] }}" title="Смотреть видео" target="_blank">{{ video['name'] }}</a>
+							<a class="product__actions__video" href="{{ video.href }}" title="Смотреть видео" target="_blank">
+								{% if video.name %}
+									{{ video.name }}
+								{% else %}
+									{{ video.href }}
+								{% endif %}
+							</a>
 						{% endfor %}
 					{% endif %}
 					{% if product['files'] is defined and product['files'] is not empty %}
 						{% for file in product['files'] %}
-							<a class="product__actions__pdf" href="{{ file['path'] }}" title="Открыть файл" target="_blank">{{ file['name'] }}</a>
+							<a class="product__actions__pdf" href="{{ static_url(file.pathName) }}" title="Открыть файл" target="_blank">{{ file.name }}</a>
 						{% endfor %}
 					{% endif %}
 				</div>

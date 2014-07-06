@@ -30,19 +30,19 @@
 					Установка оборудования и монтаж
 					<div class="services__item__actions">
 						<a class="services__item__file-link" href="" title="">Перечень услуг (PDF)</a>
-						<a class="btn-next" href="" title="">Заказать услугу</a>
+						<a class="btn-next" href="{{ url('contacts#form') }}" title="">Заказать услугу</a>
 					</div>
 				</li>
 				<li class="services__item">
 					Техническое и послегалантерейное  обслуживание
 					<div class="services__item__actions">
-						<a class="btn-next" href="" title="">Заказать услугу</a>
+						<a class="btn-next" href="{{ url('contacts#form') }}" title="">Заказать услугу</a>
 					</div>
 				</li>
 				<li class="services__item">
 					Запасные части
 					<div class="services__item__actions">
-						<a class="btn-next" href="" title="">Заказать услугу</a>
+						<a class="btn-next" href="{{ url('contacts#form') }}" title="">Заказать услугу</a>
 					</div>
 				</li>
 			</ul>
@@ -79,8 +79,8 @@
 				<div class="article__actions__social">
 					<div class="pluso" data-background="transparent" data-options="small,square,line,horizontal,nocounter,theme=08" data-services="yandex,vkontakte,facebook,twitter,livejournal,google,blogger"></div>
 				</div>
-				<a href="" title="">Подписаться на новости сервиса</a>
-				<a class="main__back" href="" title="">Все новости </a>
+				<a href="{{ url('contacts#form') }}" title="">Подписаться на новости сервиса</a>
+				<a class="main__back" href="{{ url('company/news/') }}" title="">Все новости </a>
 			</div>
 		</div>
 	</main>

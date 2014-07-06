@@ -59,6 +59,7 @@ class ProductModel extends \Phalcon\Mvc\Model
 	public $meta_description;
 	public $public;
 	public $top;
+	public $novelty;
 
 	/***
 	 * Проверка является ли Seo-название уникальным

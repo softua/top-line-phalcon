@@ -588,6 +588,7 @@ class AdminController extends BaseAdminController
 			$inputs['meta_description'] = $product->meta_description;
 			$inputs['public'] = $product->public;
 			$inputs['top'] = $product->top;
+			$inputs['novelty'] = $product->novelty;
 
 			if ($inputs['main_curancy'] == 'eur')
 				$inputs['price'] = $product->price_eur;
@@ -639,6 +640,7 @@ class AdminController extends BaseAdminController
 				$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
 				$inputs['public'] = $this->request->getPost('public', ['trim', 'striptags']);
 				$inputs['top'] = $this->request->getPost('top', ['trim', 'striptags']);
+				$inputs['novelty'] = $this->request->getPost('novelty', ['trim', 'striptags']);
 
 				$validation = new Validation();
 
@@ -727,10 +729,11 @@ class AdminController extends BaseAdminController
 						$product->public = $inputs['public'] = 1;
 					else
 						$product->public = $inputs['public'] = 0;
-					if ($inputs['top'] == 'on')
-						$product->top = $inputs['top'] = 1;
-					else
-						$product->top = $inputs['top'] = 0;
+					if ($inputs['top'] == 'on') $product->top = $inputs['top'] = 1;
+					else $product->top = $inputs['top'] = 0;
+
+					if ($inputs['novelty'] == 'on') $product->novelty = $inputs['novelty'] = 1;
+					else $product->novelty = $inputs['novelty'] = 0;
 
 					$product->seo_name = $inputs['seo_name'];
 

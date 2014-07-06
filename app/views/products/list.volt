@@ -67,23 +67,15 @@
 							<h2 class="products-list__title">
 								<a href="{{ product.path }}" title="{{ product.name }}">{{ product.name }}</a>
 							</h2>
-							{% if product.hasSales() is true and product.novelty is true %}
-								<figure class="products-list__img products-list__img--new products-list__img--sale">
-									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
-								</figure>
-							{% elseif product.hasSales() %}
-								<figure class="products-list__img products-list__img--sale">
-									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
-								</figure>
-							{% elseif product.novelty is true %}
-								<figure class="products-list__img products-list__img--new">
-									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
-								</figure>
-							{% else %}
-								<figure class="products-list__img">
-									<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
-								</figure>
-							{% endif %}
+							<figure class="products-list__img">
+								<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
+								{% if product.hasSales() %}
+									<img class="products-list__img--sale" src="{{ static_url('img/sales/list.png') }}" alt="Акция"/>
+								{% endif %}
+								{% if product.novelty %}
+									<img class="products-list__img--novelty" src="{{ static_url('img/novelty/list-1.png') }}" alt="Акция"/>
+								{% endif %}
+							</figure>
 							<div class="products-list__code">Артикул: {{ product.articul }}</div>
 							{{ product.short_description }}
 						</li>

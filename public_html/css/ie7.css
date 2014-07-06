@@ -1226,14 +1226,14 @@ input:focus, textarea:focus, button {
   z-index: 1;
 }
 .new-products__img .before {
-  width: 91px;
-  height: 54px;
+  width: 79px;
+  height: 80px;
   content: '';
   display: block;
   position: absolute;
-  top: -9px;
-  right: -8px;
-  background: url("../img/css/label_sales.png");
+  top: -8px;
+  right: -7px;
+  background: url("/public_html/img/novelty/main-page.png");
 }
 .new-products__img .after {
   content: '';
@@ -1505,6 +1505,44 @@ input:focus, textarea:focus, button {
   width: 144px;
   font-weight: 600;
 }
+.product__info__sale-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+@media (min-width: 1500px) {
+  .product__info__sale-btn {
+    width: 150px;
+    top: 75px;
+  }
+}
+@media (max-width: 1499px) {
+  .product__info__sale-btn {
+    width: 70px;
+  }
+}
+.product__info__novelty {
+  position: absolute;
+  top: 0;
+  left: 180px;
+}
+@media (min-width: 1500px) {
+  .product__info__novelty {
+    width: 150px;
+  }
+}
+@media (max-width: 1499px) {
+  .product__info__novelty {
+    width: 70px;
+    top: 15px;
+    left: 160px;
+  }
+}
+@media (max-width: 1060px) {
+  .product__info__novelty {
+    top: 80px;
+  }
+}
 .product__gallery {
   float: left;
   overflow: hidden;
@@ -1519,6 +1557,15 @@ input:focus, textarea:focus, button {
 }
 .product__gallery__full__img {
   max-height: 100%;
+}
+.product__gallery__full--sale:after {
+  content: '';
+  width: 80px;
+  height: 78px;
+  position: absolute;
+  background: url(/public_html/img/sales/product-description-2.png) no-repeat center;
+  right: 0;
+  top: 0;
 }
 .product__gallery__thumbs {
   list-style: none;
@@ -1621,20 +1668,16 @@ input:focus, textarea:focus, button {
   line-height: 155px;
   text-align: center;
 }
-.products-list__img--sale:after {
-  content: '';
+.products-list__img--sale {
   width: 70px;
   height: 70px;
-  background: url("/public_html/img/sales/list.png") no-repeat center;
   position: absolute;
   left: -24px;
   top: -22px;
 }
-.products-list__img--new:after {
-  content: '';
+.products-list__img--novelty {
   width: 31px;
   height: 98px;
-  background: url("/public_html/img/newy/list-1.png") no-repeat center;
   position: absolute;
   right: 0;
   top: 0;

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models;
+use App\Product;
 
 class MainController extends BaseFrontController
 {
@@ -36,7 +37,10 @@ class MainController extends BaseFrontController
 			$newsForView = null;
 		}
 
+		$novelties = Product::getNovelty($this->di);
+
 		$this->view->news = $newsForView;
+		$this->view->novelties = $novelties;
 
 		echo $this->view->render('main');
 	}

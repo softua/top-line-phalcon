@@ -230,7 +230,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th><label for="public">public</label></th>
+							<th><label for="public">Опубликовать</label></th>
 							<td>
 								{% if data['public'] is 1 %}
 									<input type="checkbox" id="public" name="public" checked/>
@@ -240,12 +240,22 @@
 							</td>
 						</tr>
 						<tr>
-							<th><label for="top">top</label></th>
+							<th><label for="top">Топ</label></th>
 							<td>
 								{% if data['top'] is 1 %}
 									<input type="checkbox" id="top" name="top" checked/>
 								{% else %}
 									<input type="checkbox" id="top" name="top"/>
+								{% endif %}
+							</td>
+						</tr>
+						<tr>
+							<th><label for="top">Новинка</label></th>
+							<td>
+								{% if data['novelty'] is 1 %}
+									<input type="checkbox" id="novelty" name="novelty" checked/>
+								{% else %}
+									<input type="checkbox" id="novelty" name="novelty"/>
 								{% endif %}
 							</td>
 						</tr>

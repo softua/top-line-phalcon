@@ -127,14 +127,14 @@
         z-index: 1;
 
         @include ie-before {
-            $file: '../img/css/label_sales.png';
+            $file: '/novelty/main-page.png';
             @include my-image-dimensions($file);
             content: '';
             display: block;
             position: absolute;
-            top: -9px;
-            right: -8px;
-            background: url($file);
+            top: -8px;
+            right: -7px;
+            background: url('/public_html/img' + $file);
         }
 
         @include ie-after {

@@ -160,126 +160,35 @@
 			</div>
 		</div><!-- end slider-sales -->
 
-		<div class="new-products--outer-wrapper js-slider">
-			<h2 class="new-products--outer-wrapper__title">Новинки</h2>
+		{% if novelties is defined and novelties is not empty %}
+			<div class="new-products--outer-wrapper js-slider">
+				<h2 class="new-products--outer-wrapper__title">Новинки</h2>
 
-			<div class="bounding-box">
-				<ul class="new-products">
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
+				<div class="bounding-box">
+					<ul class="new-products">
+						{% for novelty in novelties %}
+							<li class="new-products__item">
+								<a class="new-products__link" href="{{ novelty.path }}" title="">
+									<figure class="new-products__img">
+										{% if novelty.getMainImageForList() %}
+											<img src="{{ novelty.getMainImageForList() }}" alt="{{ novelty.name }}"/>
+										{% else %}
+											<img src="{{ static_url('img/no_foto.png') }}" alt="{{ novelty.name }}"/>
+										{% endif %}
+									</figure>
 
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
+									<p>
+										{{ novelty.name }}
+									</p>
 
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
-
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
-
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
-
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
-
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
-
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
-
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
-
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
-
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
-
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
-
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
-
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
-
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-					<li class="new-products__item">
-						<a class="new-products__link" href="" title="">
-							<figure class="new-products__img">
-								<img src="img/dummy/new-product.jpg" alt=""/>
-							</figure>
-
-							<p>3D стенд «развал-схождения»
-								с подъемной платформой
-								URS183D2!
-							</p>
-
-							<span class="new-products__more">Подробнее</span>
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div><!-- end new-products -->
+									<span class="new-products__more">Подробнее</span>
+								</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div><!-- end new-products -->
+		{% endif %}
 
 		<div class="partners--outer-wrapper js-slider">
 			<h2 class="partners--outer-wrapper__title">
