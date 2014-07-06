@@ -1117,7 +1117,7 @@ Enjoy!
             if (!t.hasClass('sh-uniform')) {
                 t.addClass('sh-uniform');
 
-                // Fix upload filename width
+                // Fix uploads filename width
                 if (t.is('input[type="file"]')) {
                     var f = t.parent().find('.filename');
                     f.css('width', f.innerWidth());

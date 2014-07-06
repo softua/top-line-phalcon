@@ -1,6 +1,6 @@
 <?php
 // +------------------------------------------------------------------------+
-// | class.upload.php                                                       |
+// | class.uploads.php                                                       |
 // +------------------------------------------------------------------------+
 // | Copyright (c) Colin Verot 2003-2014. All rights reserved.              |
 // | Version       0.33dev                                                  |
@@ -22,14 +22,14 @@
 // |   Free Software Foundation, Inc., 59 Temple Place, Suite 330,          |
 // |   Boston, MA 02111-1307 USA                                            |
 // |                                                                        |
-// | Please give credit on sites that use class.upload and submit changes   |
+// | Please give credit on sites that use class.uploads and submit changes   |
 // | of the script so other people can use them as well.                    |
 // | This script is free to use, don't abuse.                               |
 // +------------------------------------------------------------------------+
 //
 
 /**
- * Class upload
+ * Class uploads
  *
  * @version   0.33dev
  * @author    Colin Verot <colin@verot.net>
@@ -40,7 +40,7 @@
  */
 namespace App;
 /**
- * Class upload
+ * Class uploads
  *
  * <b>What does it do?</b>
  *
@@ -48,7 +48,7 @@ namespace App;
  * and allows you to do whatever you want with the file, especially if it
  * is an image, and as many times as you want.
  *
- * It is the ideal class to quickly integrate file upload in your site.
+ * It is the ideal class to quickly integrate file uploads in your site.
  * If the file is an image, you can convert, resize, crop it in many ways.
  * You can also apply filters, add borders, text, watermarks, etc...
  * That's all you need for a gallery script for instance. Supported formats
@@ -64,7 +64,7 @@ namespace App;
  * <b>How does it work?</b>
  *
  * You instanciate the class with the $_FILES['my_field'] array
- * where my_field is the field name from your upload form.
+ * where my_field is the field name from your uploads form.
  * The class will check if the original file has been uploaded
  * to its temporary location (alternatively, you can instanciate
  * the class with a local filename).
@@ -91,19 +91,19 @@ namespace App;
  * copied to the given location without any alteration or checks.
  *
  * Don't forget to add <i>enctype="multipart/form-data"</i> in your form
- * tag <form> if you want your form to upload the file.
+ * tag <form> if you want your form to uploads the file.
  *
  * <b>How to use it?</b><br>
  * Create a simple HTML file, with a form such as:
  * <pre>
- * <form enctype="multipart/form-data" method="post" action="upload.php">
+ * <form enctype="multipart/form-data" method="post" action="uploads.php">
  *   <input type="file" size="32" name="image_field" value="">
- *   <input type="submit" name="Submit" value="upload">
+ *   <input type="submit" name="Submit" value="uploads">
  * </form>
  * </pre>
- * Create a file called upload.php:
+ * Create a file called uploads.php:
  * <pre>
- *  $handle = new upload($_FILES['image_field']);
+ *  $handle = new uploads($_FILES['image_field']);
  *  if ($handle->uploaded) {
  *      $handle->file_new_name_body   = 'image_resized';
  *      $handle->image_resize         = true;
@@ -122,39 +122,39 @@ namespace App;
  * <b>How to process a file uploaded via XMLHttpRequest?</b><br>
  * Use the class as following, the rest being the same as above:
  * <pre>
- *  $handle = new upload('php:'.$_SERVER['HTTP_X_FILE_NAME']);
+ *  $handle = new uploads('php:'.$_SERVER['HTTP_X_FILE_NAME']);
  * </pre>
  * Prefixing the argument with "php:" tells the class to retrieve the uploaded data
  * in php://input, and the rest is the stream's filename, which is generally in
  * $_SERVER['HTTP_X_FILE_NAME']. But you can use any other name you see fit:
  * <pre>
- *  $handle = new upload('php:mycustomname.ext');
+ *  $handle = new uploads('php:mycustomname.ext');
  * </pre>
  *
  * <b>How to process local files?</b><br>
  * Use the class as following, the rest being the same as above:
  * <pre>
- *  $handle = new upload('/home/user/myfile.jpg');
+ *  $handle = new uploads('/home/user/myfile.jpg');
  * </pre>
  *
  * <b>How to set the language?</b><br>
  * Instantiate the class with a second argument being the language code:
  * <pre>
- *  $handle = new upload($_FILES['image_field'], 'fr_FR');
- *  $handle = new upload('/home/user/myfile.jpg', 'fr_FR');
+ *  $handle = new uploads($_FILES['image_field'], 'fr_FR');
+ *  $handle = new uploads('/home/user/myfile.jpg', 'fr_FR');
  * </pre>
  *
  * <b>How to output the resulting file or picture directly to the browser?</b><br>
  * Simply call {@link process}() without an argument (or with null as first argument):
  * <pre>
- *  $handle = new upload($_FILES['image_field']);
+ *  $handle = new uploads($_FILES['image_field']);
  *  header('Content-type: ' . $handle->file_src_mime);
  *  echo $handle->Process();
  *  die();
  * </pre>
  * Or if you want to force the download of the file:
  * <pre>
- *  $handle = new upload($_FILES['image_field']);
+ *  $handle = new uploads($_FILES['image_field']);
  *  header('Content-type: ' . $handle->file_src_mime);
  *  header("Content-Disposition: attachment; filename=".rawurlencode($handle->file_src_name).";");
  *  echo $handle->Process();
@@ -185,7 +185,7 @@ namespace App;
  *  <pre>$handle->dir_auto_chmod = true;</pre></li>
  *  <li><b>{@link dir_chmod}</b> chmod used when creating directory or if directory not writeable (default: 0777)<br>
  *  <pre>$handle->dir_chmod = 0777;</pre></li>
- *  <li><b>{@link file_max_size}</b> sets maximum upload size (default: upload_max_filesize from php.ini)<br>
+ *  <li><b>{@link file_max_size}</b> sets maximum uploads size (default: upload_max_filesize from php.ini)<br>
  *  <pre>$handle->file_max_size = '1024'; // 1KB</pre></li>
  *  <li><b>{@link mime_check}</b> sets if the class check the MIME against the {@link allowed} list (default: true)<br>
  *  <pre>$handle->mime_check = true;</pre></li>
@@ -212,23 +212,23 @@ namespace App;
  *  <li><b>{@link image_interlace}</b> if set to true, the image will be saved interlaced (default: false)<br>
  *  <pre>$handle->image_interlace = true;</pre></li>
  * </ul>
- * The following eight settings can be used to invalidate an upload if the file is an image (note that <i>open_basedir</i> restrictions prevent the use of these settings)
+ * The following eight settings can be used to invalidate an uploads if the file is an image (note that <i>open_basedir</i> restrictions prevent the use of these settings)
  * <ul>
- *  <li><b>{@link image_max_width}</b> if set to a dimension in pixels, the upload will be invalid if the image width is greater (default: null)<br>
+ *  <li><b>{@link image_max_width}</b> if set to a dimension in pixels, the uploads will be invalid if the image width is greater (default: null)<br>
  *  <pre>$handle->image_max_width = 200;</pre></li>
- *  <li><b>{@link image_max_height}</b> if set to a dimension in pixels, the upload will be invalid if the image height is greater (default: null)<br>
+ *  <li><b>{@link image_max_height}</b> if set to a dimension in pixels, the uploads will be invalid if the image height is greater (default: null)<br>
  *  <pre>$handle->image_max_height = 100;</pre></li>
- *  <li><b>{@link image_max_pixels}</b> if set to a number of pixels, the upload will be invalid if the image number of pixels is greater (default: null)<br>
+ *  <li><b>{@link image_max_pixels}</b> if set to a number of pixels, the uploads will be invalid if the image number of pixels is greater (default: null)<br>
  *  <pre>$handle->image_max_pixels = 50000;</pre></li>
- *  <li><b>{@link image_max_ratio}</b> if set to a aspect ratio (width/height), the upload will be invalid if the image apect ratio is greater (default: null)<br>
+ *  <li><b>{@link image_max_ratio}</b> if set to a aspect ratio (width/height), the uploads will be invalid if the image apect ratio is greater (default: null)<br>
  *  <pre>$handle->image_max_ratio = 1.5;</pre></li>
- *  <li><b>{@link image_min_width}</b> if set to a dimension in pixels, the upload will be invalid if the image width is lower (default: null)<br>
+ *  <li><b>{@link image_min_width}</b> if set to a dimension in pixels, the uploads will be invalid if the image width is lower (default: null)<br>
  *  <pre>$handle->image_min_width = 100;</pre></li>
- *  <li><b>{@link image_min_height}</b> if set to a dimension in pixels, the upload will be invalid if the image height is lower (default: null)<br>
+ *  <li><b>{@link image_min_height}</b> if set to a dimension in pixels, the uploads will be invalid if the image height is lower (default: null)<br>
  *  <pre>$handle->image_min_height = 500;</pre></li>
- *  <li><b>{@link image_min_pixels}</b> if set to a number of pixels, the upload will be invalid if the image number of pixels is lower (default: null)<br>
+ *  <li><b>{@link image_min_pixels}</b> if set to a number of pixels, the uploads will be invalid if the image number of pixels is lower (default: null)<br>
  *  <pre>$handle->image_min_pixels = 20000;</pre></li>
- *  <li><b>{@link image_min_ratio}</b> if set to a aspect ratio (width/height), the upload will be invalid if the image apect ratio is lower (default: null)<br>
+ *  <li><b>{@link image_min_ratio}</b> if set to a aspect ratio (width/height), the uploads will be invalid if the image apect ratio is lower (default: null)<br>
  *  <pre>$handle->image_min_ratio = 0.5;</pre></li>
  * </ul>
  * <ul>
@@ -534,7 +534,7 @@ namespace App;
  *  <li><b>v 0.23</b> 23/12/2006<br>
  *   - fixed a bug when processing more than once the same uploaded file. If there is an open_basedir restriction, the class now creates a temporary file for the first call to process(). This file will be used for subsequent processes, and will be deleted upon calling clean()</li>
  *  <li><b>v 0.22</b> 16/12/2006<br>
- *   - added automatic creation of a temporary file if the upload directory is not within open_basedir<br>
+ *   - added automatic creation of a temporary file if the uploads directory is not within open_basedir<br>
  *   - fixed a bug which was preventing to work on a local file by overwriting it with its processed copy<br>
  *   - added MIME types video/x-ms-wmv and image/x-png and fixed PNG support for IE weird MIME types<br>
  *   - modified {@link image_ratio_crop} so it can accept one or more from string 'TBLR', determining which side of the image is kept while cropping<br>
@@ -816,10 +816,10 @@ class Upload {
 	var $uploaded;
 
 	/**
-	 * Flag stopping PHP upload checks
+	 * Flag stopping PHP uploads checks
 	 *
 	 * Indicates whether we instanciated the class with a filename, in which case
-	 * we will not check on the validity of the PHP *upload*
+	 * we will not check on the validity of the PHP *uploads*
 	 *
 	 * This flag is automatically set to true when working on a local file
 	 *
@@ -992,8 +992,8 @@ class Upload {
 	 * Default value is true
 	 *
 	 * For instance, on uploading foo.ext,<br>
-	 * if foo.ext already exists, upload will be renamed foo_1.ext<br>
-	 * and if foo_1.ext already exists, upload will be renamed foo_2.ext<br>
+	 * if foo.ext already exists, uploads will be renamed foo_1.ext<br>
+	 * and if foo_1.ext already exists, uploads will be renamed foo_2.ext<br>
 	 *
 	 * Note that this option doesn't have any effect if {@link file_overwrite} is true
 	 *
@@ -1202,7 +1202,7 @@ class Upload {
 	var $image_ratio_y;
 
 	/**
-	 * Set this variable to set a maximum image width, above which the upload will be invalid
+	 * Set this variable to set a maximum image width, above which the uploads will be invalid
 	 *
 	 * Default value is null
 	 *
@@ -1212,7 +1212,7 @@ class Upload {
 	var $image_max_width;
 
 	/**
-	 * Set this variable to set a maximum image height, above which the upload will be invalid
+	 * Set this variable to set a maximum image height, above which the uploads will be invalid
 	 *
 	 * Default value is null
 	 *
@@ -1222,7 +1222,7 @@ class Upload {
 	var $image_max_height;
 
 	/**
-	 * Set this variable to set a maximum number of pixels for an image, above which the upload will be invalid
+	 * Set this variable to set a maximum number of pixels for an image, above which the uploads will be invalid
 	 *
 	 * Default value is null
 	 *
@@ -1232,7 +1232,7 @@ class Upload {
 	var $image_max_pixels;
 
 	/**
-	 * Set this variable to set a maximum image aspect ratio, above which the upload will be invalid
+	 * Set this variable to set a maximum image aspect ratio, above which the uploads will be invalid
 	 *
 	 * Note that ratio = width / height
 	 *
@@ -1244,7 +1244,7 @@ class Upload {
 	var $image_max_ratio;
 
 	/**
-	 * Set this variable to set a minimum image width, below which the upload will be invalid
+	 * Set this variable to set a minimum image width, below which the uploads will be invalid
 	 *
 	 * Default value is null
 	 *
@@ -1254,7 +1254,7 @@ class Upload {
 	var $image_min_width;
 
 	/**
-	 * Set this variable to set a minimum image height, below which the upload will be invalid
+	 * Set this variable to set a minimum image height, below which the uploads will be invalid
 	 *
 	 * Default value is null
 	 *
@@ -1264,7 +1264,7 @@ class Upload {
 	var $image_min_height;
 
 	/**
-	 * Set this variable to set a minimum number of pixels for an image, below which the upload will be invalid
+	 * Set this variable to set a minimum number of pixels for an image, below which the uploads will be invalid
 	 *
 	 * Default value is null
 	 *
@@ -1274,7 +1274,7 @@ class Upload {
 	var $image_min_pixels;
 
 	/**
-	 * Set this variable to set a minimum image aspect ratio, below which the upload will be invalid
+	 * Set this variable to set a minimum image aspect ratio, below which the uploads will be invalid
 	 *
 	 * Note that ratio = width / height
 	 *
@@ -2570,7 +2570,7 @@ class Upload {
 	 * The constructor will check if the file has been uploaded in its temporary location, and
 	 * accordingly will set {@link uploaded} (and {@link error} is an error occurred)
 	 *
-	 * If the file has been uploaded, the constructor will populate all the variables holding the upload
+	 * If the file has been uploaded, the constructor will populate all the variables holding the uploads
 	 * information (none of the processing class variables are used here).
 	 * You can have access to information about the file (name, size, MIME type...).
 	 *
@@ -3032,7 +3032,7 @@ class Upload {
 				}
 			}
 
-			// we need to work some magic if we upload via Flash
+			// we need to work some magic if we uploads via Flash
 			if ($this->file_src_mime == 'application/octet-stream' || !$this->file_src_mime || !is_string($this->file_src_mime) || empty($this->file_src_mime) || strpos($this->file_src_mime, '/') === FALSE) {
 				if ($this->file_src_mime == 'application/octet-stream') $this->log .= '- Flash may be rewriting MIME as application/octet-stream<br />';
 				$this->log .= '- Try to guess MIME type from file extension (' . $this->file_src_name_ext . '): ';
