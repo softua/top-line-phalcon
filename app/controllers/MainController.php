@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models;
 use App\Product;
+use App\Sale;
 
 class MainController extends BaseFrontController
 {
@@ -37,10 +38,9 @@ class MainController extends BaseFrontController
 			$newsForView = null;
 		}
 
-		$novelties = Product::getNovelty($this->di);
-
 		$this->view->news = $newsForView;
-		$this->view->novelties = $novelties;
+		$this->view->novelties = Product::getNovelty($this->di);
+		$this->view->sales = Sale::getSales($this->di, true);
 
 		echo $this->view->render('main');
 	}

@@ -45,6 +45,7 @@ class Page
 			$this->_mainImage = $this->_images[0];
 		} else {
 			$this->_images = false;
+			$this->_mainImage = false;
 		}
 	}
 
@@ -82,6 +83,17 @@ class Page
 		} else {
 			return false;
 		}
+	}
+
+	public function hasImages()
+	{
+		if (is_array($this->_images) && empty($this->_images)) {
+			$this->_setImages();
+			if ($this->_images === false) return false;
+			else return true;
+		}
+		elseif ($this->_images === false) return false;
+		else return true;
 	}
 
 	public static function getPageBySeoName($seoName)
