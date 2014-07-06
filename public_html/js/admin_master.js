@@ -4,17 +4,7 @@
  * Time: 10:50
  */
 
-tinymce.init({
-	selector: '.tinymce',
-	element_format: 'html',
-	language: 'ru',
-	menu : {
-		file   : {title : 'File'  , items : 'newdocument | undo redo | cut copy paste pastetext | selectall | removeformat'},
-		insert : {title : 'Insert', items : 'link media | template hr'},
-		table  : {title : 'Table' , items : 'inserttable tableprops deletetable | cell row column'},
-		tools  : {title : 'Tools' , items : 'spellchecker code'}
-	}
-});
+CKEDITOR.replaceAll('editor');
 
 $.datepicker.setDefaults({
 	dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],

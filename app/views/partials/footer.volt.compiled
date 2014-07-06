@@ -1,13 +1,76 @@
 <footer class="footer--outer-wrapper">
 	<div class="footer">
 		<ul class="footer__nav">
-			<li class="footer__nav__item active"><a class="footer__nav__item__link" href="" title="">Главная</a></li>
-			<li class="footer__nav__item"><a class="footer__nav__item__link" href="" title="">О компании</a></li>
-			<li class="footer__nav__item"><a class="footer__nav__item__link" href="" title="">Каталог</a></li>
-			<li class="footer__nav__item"><a class="footer__nav__item__link" href="" title="">Сервис</a></li>
-			<li class="footer__nav__item"><a class="footer__nav__item__link" href="" title="">Проекты</a></li>
-			<li class="footer__nav__item"><a class="footer__nav__item__link" href="" title="">Видео</a></li>
-			<li class="footer__nav__item"><a class="footer__nav__item__link" href="" title="">Контакты</a></li>
+
+			<?php if ($active_link == 'main') { ?>
+				<li class="footer__nav__item active">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get(); ?>" title="Перейти на главную страницу">Главная</a>
+				</li>
+			<?php } else { ?>
+				<li class="footer__nav__item">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get(); ?>" title="Перейти на главную страницу">Главная</a>
+				</li>
+			<?php } ?>
+
+			<?php if ($active_link == 'company') { ?>
+				<li class="footer__nav__item active">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('company/aboutus'); ?>" title="Перейти на страницу 'О нас'">О компании</a>
+				</li>
+			<?php } else { ?>
+				<li class="footer__nav__item">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('company/aboutus'); ?>" title="Перейти на страницу 'О нас'">О компании</a>
+				</li>
+			<?php } ?>
+
+			<?php if ($active_link == 'catalog') { ?>
+				<li class="footer__nav__item active">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('catalog/'); ?>" title="Перейти в каталог">Каталог</a>
+				</li>
+			<?php } else { ?>
+				<li class="footer__nav__item">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('catalog/'); ?>" title="Перейти в каталог">Каталог</a>
+				</li>
+			<?php } ?>
+
+			<?php if ($active_link == 'service') { ?>
+				<li class="footer__nav__item active">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('service'); ?>" title="Перейти на страницу 'Сервис'">Сервис</a>
+				</li>
+			<?php } else { ?>
+				<li class="footer__nav__item">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('service'); ?>" title="Перейти на страницу 'Сервис'">Сервис</a>
+				</li>
+			<?php } ?>
+
+			<?php if ($active_link == 'projects') { ?>
+				<li class="footer__nav__item active">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('projects/'); ?>" title="Перейти к проектам">Проекты</a>
+				</li>
+			<?php } else { ?>
+				<li class="footer__nav__item">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('projects/'); ?>" title="Перейти к проектам">Проекты</a>
+				</li>
+			<?php } ?>
+
+			<?php if ($active_link == 'video') { ?>
+				<li class="footer__nav__item active">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('video/'); ?>" title="Перейти к видео">Видео</a>
+				</li>
+			<?php } else { ?>
+				<li class="footer__nav__item">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('video/'); ?>" title="Перейти к видео">Видео</a>
+				</li>
+			<?php } ?>
+
+			<?php if ($active_link == 'contacts') { ?>
+				<li class="footer__nav__item active">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('contacts'); ?>" title="Перейти к контактам">Контакты</a>
+				</li>
+			<?php } else { ?>
+				<li class="footer__nav__item">
+					<a class="footer__nav__item__link" href="<?php echo $this->url->get('contacts'); ?>" title="Перейти к контактам">Контакты</a>
+				</li>
+			<?php } ?>
 		</ul>
 
 		<div class="footer__phones">

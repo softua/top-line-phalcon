@@ -92,11 +92,11 @@
 					</tr>
 					<tr>
 						<th><label for="short_desc">Короткое описание:</label></th>
-						<td><textarea class="tinymce" name="short_desc" id="short_desc" rows="10">{{ data['short_description'] }}</textarea></td>
+						<td><textarea class="editor" name="short_desc" id="short_desc" rows="10">{{ data['short_description'] }}</textarea></td>
 					</tr>
 					<tr>
 						<th><label for="full_desc">Полное описание:</label></th>
-						<td><textarea class="tinymce" name="full_desc" id="full_desc" rows="20">{{ data['full_description'] }}</textarea></td>
+						<td><textarea class="editor" name="full_desc" id="full_desc" rows="20">{{ data['full_description'] }}</textarea></td>
 					</tr>
 					<tr>
 						<th><label for="keywords">Meta keywords:</label></th>

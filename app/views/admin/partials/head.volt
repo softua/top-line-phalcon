@@ -9,6 +9,6 @@
 	<link rel="stylesheet" href="/js/vendor/jquery-ui-1.10.4/css/ui-lightness/jquery-ui-1.10.4.css"/>
 	<script src="/js/vendor/jquery-1.11.0.min.js"></script>
 	<script src="/js/vendor/jquery-ui-1.10.4/js/jquery-ui-1.10.4.js"></script>
-	<script src="/js/vendor/tinymce/tinymce.min.js"></script>
+	<script src="/public_html/js/vendor/ckeditor/ckeditor.js"></script>
 	<script src="/js/vendor/jquery.fileupload.js"></script>
 </head>

@@ -62,9 +62,9 @@
 					<th>Короткое описание</th>
 					<td>
 						{% if page['short_content'] is defined %}
-							<textarea name="short-content" cols="30" rows="10" class="tinymce">{{ page['short_content'] }}</textarea>
+							<textarea name="short-content" cols="30" rows="10" class="editor">{{ page['short_content'] }}</textarea>
 						{% else %}
-							<textarea name="short-content" cols="30" rows="10" class="tinymce"></textarea>
+							<textarea name="short-content" cols="30" rows="10" class="editor"></textarea>
 						{% endif %}
 					</td>
 				</tr>
@@ -72,9 +72,9 @@
 					<th>Контент</th>
 					<td>
 						{% if page['short_content'] is defined %}
-							<textarea name="full-content" cols="30" rows="50" class="tinymce">{{ page['full_content'] }}</textarea>
+							<textarea name="full-content" cols="30" rows="50" class="editor">{{ page['full_content'] }}</textarea>
 						{% else %}
-							<textarea name="full-content" cols="30" rows="50" class="tinymce"></textarea>
+							<textarea name="full-content" cols="30" rows="50" class="editor"></textarea>
 						{% endif %}
 					</td>
 				</tr>
