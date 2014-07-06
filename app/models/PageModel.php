@@ -37,6 +37,7 @@ class PageModel extends \Phalcon\Mvc\Model
 	public $meta_keywords;
 	public $meta_description;
 	public $public;
+	public $sort;
 	public $time;
 	public $expiration;
 

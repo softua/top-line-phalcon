@@ -24,4 +24,4 @@ class ServiceController extends BaseFrontController
 
 		echo $this->view->render('service');
 	}
-} 
+}

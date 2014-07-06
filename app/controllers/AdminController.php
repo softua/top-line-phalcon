@@ -1814,6 +1814,7 @@ class AdminController extends BaseAdminController
 			$inputs['video_content'] = trim($this->request->getPost('video-content'));
 			$inputs['meta_keywords'] = trim(strip_tags($this->request->getPost('meta-keywords')));
 			$inputs['meta_description'] = trim(strip_tags($this->request->getPost('meta-description')));
+			$inputs['sort'] = trim(strip_tags($this->request->getPost('sort')));
 			$inputs['public'] = trim(strip_tags($this->request->getPost('public')));
 
 			$validation = new Validation();
@@ -1854,6 +1855,7 @@ class AdminController extends BaseAdminController
 				$newPage->video_content = $inputs['video_content'];
 				$newPage->meta_keywords = $inputs['meta_keywords'];
 				$newPage->meta_description = $inputs['meta_description'];
+				$newPage->sort = $inputs['sort'];
 				if ($inputs['public'] == 'on') {
 					$newPage->public = 1;
 				} else {
@@ -1889,6 +1891,7 @@ class AdminController extends BaseAdminController
 					$pageForView['video_content'] = $inputs['video_content'];
 					$pageForView['meta_keywords'] = $inputs['meta_keywords'];
 					$pageForView['meta_description'] = $inputs['meta_description'];
+					$pageForView['sort'] = $inputs['sort'];
 					$pageForView['public'] = $inputs['public'];
 				}
 			} else {
@@ -1918,6 +1921,7 @@ class AdminController extends BaseAdminController
 				$pageForView['video_content'] = $inputs['video_content'];
 				$pageForView['meta_keywords'] = $inputs['meta_keywords'];
 				$pageForView['meta_description'] = $inputs['meta_description'];
+				$pageForView['sort'] = $inputs['sort'];
 				$pageForView['public'] = $inputs['public'];
 			}
 		}
@@ -1985,6 +1989,7 @@ class AdminController extends BaseAdminController
 	public function editPageAction()
 	{
 		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
+		/** @var Models\PageModel $page */
 		$page = Models\PageModel::findFirst([
 			'seo_name = ?1',
 			'bind' => [1 => $seoName]
@@ -2024,6 +2029,7 @@ class AdminController extends BaseAdminController
 		$pageForView['video_content'] = $page->video_content;
 		$pageForView['meta_keywords'] = $page->meta_keywords;
 		$pageForView['meta_description'] = $page->meta_description;
+		$pageForView['sort'] = $page->sort;
 		$pageForView['public'] = ($page->public == 1) ? 'on' : 'off';
 		$pageImages = Models\PageImageModel::find([
 			'page_id = ?1',
@@ -2058,6 +2064,7 @@ class AdminController extends BaseAdminController
 			$inputs['video_content'] = trim($this->request->getPost('video-content'));
 			$inputs['meta_keywords'] = trim(strip_tags($this->request->getPost('meta-keywords')));
 			$inputs['meta_description'] = trim(strip_tags($this->request->getPost('meta-description')));
+			$inputs['sort'] = trim(strip_tags($this->request->getPost('sort')));
 			$inputs['public'] = trim(strip_tags($this->request->getPost('public')));
 
 			$validation = new Validation();
@@ -2098,6 +2105,7 @@ class AdminController extends BaseAdminController
 				$page->video_content = $inputs['video_content'];
 				$page->meta_keywords = $inputs['meta_keywords'];
 				$page->meta_description = $inputs['meta_description'];
+				$page->sort = $inputs['sort'];
 				if ($inputs['public'] == 'on') {
 					$page->public = 1;
 				} else {
@@ -2133,6 +2141,7 @@ class AdminController extends BaseAdminController
 					$pageForView['video_content'] = $inputs['video_content'];
 					$pageForView['meta_keywords'] = $inputs['meta_keywords'];
 					$pageForView['meta_description'] = $inputs['meta_description'];
+					$pageForView['sort'] = $inputs['sort'];
 					$pageForView['public'] = $inputs['public'];
 				}
 			} else {
@@ -2163,6 +2172,7 @@ class AdminController extends BaseAdminController
 				$pageForView['video_content'] = $inputs['video_content'];
 				$pageForView['meta_keywords'] = $inputs['meta_keywords'];
 				$pageForView['meta_description'] = $inputs['meta_description'];
+				$pageForView['sort'] = $inputs['sort'];
 				$pageForView['public'] = $inputs['public'];
 			}
 		}

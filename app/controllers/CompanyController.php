@@ -213,4 +213,4 @@ class CompanyController extends BaseFrontController
 			echo $this->view->render('news/list');
 		}
 	}
-} 
+}

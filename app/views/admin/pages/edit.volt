@@ -128,6 +128,16 @@
 					</td>
 				</tr>
 				<tr>
+					<th>Сортировка</th>
+					<td>
+						{% if page['sort'] is defined %}
+							<input type="text" name="sort" placeholder="Индекс сортировки" value="{{ page['sort'] }}"/>
+						{% else %}
+							<input type="text" name="sort" placeholder="Индекс сортировки"/>
+						{% endif %}
+					</td>
+				</tr>
+				<tr>
 					<th>Доступность</th>
 					<td>
 						{% if page['public'] is 'on' %}

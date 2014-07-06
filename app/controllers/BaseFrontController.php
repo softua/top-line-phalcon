@@ -6,7 +6,8 @@
  */
 
 namespace App\Controllers;
-use App\Models;
+use App,
+	App\Models;
 class BaseFrontController extends \Phalcon\Mvc\Controller
 {
 	public function initialize()
@@ -16,6 +17,7 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 
 		$this->view->top_products = $this->getTopProducts();
 		$this->view->static_pages = $this->getSubmenuWithCompanyPages();
+		$this->view->infoPages = App\InfoPage::getInfoPages($this->di);
 	}
 
 	public function getTopProducts()
