@@ -92,10 +92,10 @@
 						{% for sale in sales %}
 							<li class="slider-sales__item">
 								<a class="slider-sales__link" href="{{ sale.path }}" title="{{ sale.name }}">
-									<div class="slider-sales__link__wrapper">
+									{#<div class="slider-sales__link__wrapper">
 										<h3 class="slider-sales__title">{{ sale.name }}</h3>
 										{{ sale.shortContent }}
-									</div>
+									</div>#}
 									<figure class="slider-sales__img">
 										{% if sale.hasImages() %}
 											<img src="<?= $sale->getImages()[0]->pageListPath ?>" alt="{{ sale.name }}"/>

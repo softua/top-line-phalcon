@@ -2225,16 +2225,9 @@ class AdminController extends BaseAdminController
 			$file->image_watermark = 'img/watermark.png';
 			$file->image_watermark_position = 'TL';
 			$file->image_resize = true;
-			if ($file->image_src_x >= $file->image_src_y)
-			{
-				$file->image_x = 500;
-				$file->image_ratio_y = true;
-			}
-			elseif ($file->image_src_x < $file->image_src_y)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 358;
-			}
+			$file->image_ratio = true;
+			$file->image_x = 500;
+			$file->image_y = 358;
 			$file->process('staticPages/images');
 			if (!$file->processed)
 			{
@@ -2247,16 +2240,9 @@ class AdminController extends BaseAdminController
 
 			$file->file_new_name_body = $bdFile->id . '__page_list';
 			$file->image_resize = true;
-			if ($file->image_src_x >= $file->image_src_y)
-			{
-				$file->image_x = 173;
-				$file->image_ratio_y = true;
-			}
-			elseif ($file->image_src_x < $file->image_src_y)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 131;
-			}
+			$file->image_ratio = true;
+			$file->image_x = 173;
+			$file->image_y = 131;
 			$file->process('staticPages/images');
 			if (!$file->processed)
 			{
@@ -2269,16 +2255,9 @@ class AdminController extends BaseAdminController
 
 			$file->file_new_name_body = $bdFile->id . '__admin_thumb';
 			$file->image_resize = true;
-			if ($file->image_src_x >= $file->image_src_y)
-			{
-				$file->image_x = 250;
-				$file->image_ratio_y = true;
-			}
-			elseif ($file->image_src_x < $file->image_src_y)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 150;
-			}
+			$file->image_ratio = true;
+			$file->image_x = 250;
+			$file->image_y = 150;
 			$file->process('staticPages/images');
 			if (!$file->processed)
 			{
@@ -2299,16 +2278,8 @@ class AdminController extends BaseAdminController
 			$file->image_watermark = 'img/watermark.png';
 			$file->image_watermark_position = 'TL';
 			$file->image_resize = true;
-			if ($file->image_src_x >= $file->image_src_y)
-			{
-				$file->image_x = 589;
-				$file->image_ratio_y = true;
-			}
-			elseif ($file->image_src_x < $file->image_src_y)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 196;
-			}
+			$file->image_x = 589;
+			$file->image_ratio_y = true;
 			$file->process('staticPages/images');
 			if (!$file->processed)
 			{
@@ -2321,16 +2292,8 @@ class AdminController extends BaseAdminController
 
 			$file->file_new_name_body = $bdFile->id . '__page_list';
 			$file->image_resize = true;
-			if ($file->image_src_x >= $file->image_src_y)
-			{
-				$file->image_x = 465;
-				$file->image_ratio_y = true;
-			}
-			elseif ($file->image_src_x < $file->image_src_y)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 164;
-			}
+			$file->image_x = 465;
+			$file->image_ratio_y = true;
 			$file->process('staticPages/images');
 			if (!$file->processed)
 			{
@@ -2343,16 +2306,8 @@ class AdminController extends BaseAdminController
 
 			$file->file_new_name_body = $bdFile->id . '__admin_thumb';
 			$file->image_resize = true;
-			if ($file->image_src_x >= $file->image_src_y)
-			{
-				$file->image_x = 250;
-				$file->image_ratio_y = true;
-			}
-			elseif ($file->image_src_x < $file->image_src_y)
-			{
-				$file->image_ratio_x = true;
-				$file->image_y = 188;
-			}
+			$file->image_x = 250;
+			$file->image_ratio_y = true;
 			$file->process('staticPages/images');
 			if (!$file->processed)
 			{

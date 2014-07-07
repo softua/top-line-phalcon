@@ -55,7 +55,7 @@
         position: relative;
         min-width: 303px;
         width: 16.6%;
-        height: 240px - $pt - $pb;
+//        height: 240px - $pt - $pb;
         padding: $pt 0 $pb;
 
         @include my-media-queries(min, (350px * 4) + 80) {
@@ -95,10 +95,8 @@
         @include my-border-radius(15px);
         display: block;
         position: relative;
-        width: 298px - $pl - $pr - 6;
-        height: 183px - $pt - 6;
+		width: 298px;
         margin: 0 auto;
-        padding: $pt $pr 0 $pl;
         border: 3px solid #fff;
         color: $colorForeground;
         text-decoration: none;
@@ -127,17 +125,12 @@
     }
 
     &__img {
-        position: absolute;
         margin: 0;
-        left: 5px;
-        bottom: 40px;
-        width: 120px;
-        height: 180px;
-        line-height: 180px;
         text-align: center;
 
         img {
-            vertical-align: middle;
+            vertical-align: top;
+			@include my-border-radius(15px 15px 0 0);
         }
     }
 
@@ -159,10 +152,6 @@
 
     &__remain {
         @include my-border-radius(0 0 12px 12px);
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
         padding: 0 20px;
         background: #828282;
         color: #fff;

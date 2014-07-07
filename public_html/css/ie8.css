@@ -1884,7 +1884,6 @@ input:focus, textarea:focus, button {
   position: relative;
   min-width: 303px;
   width: 16.6%;
-  height: 183px;
   padding: 40px 0 17px;
 }
 .slider-sales__item:after {
@@ -1910,10 +1909,8 @@ input:focus, textarea:focus, button {
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFC8C9C9', endColorstr='#FFF4F4F4');
   display: block;
   position: relative;
-  width: 147px;
-  height: 177px;
+  width: 298px;
   margin: 0 auto;
-  padding: 0 15px 0 130px;
   border: 3px solid #fff;
   color: #212121;
   text-decoration: none;
@@ -1934,17 +1931,11 @@ input:focus, textarea:focus, button {
   font-weight: 600;
 }
 .slider-sales__img {
-  position: absolute;
   margin: 0;
-  left: 5px;
-  bottom: 40px;
-  width: 120px;
-  height: 180px;
-  line-height: 180px;
   text-align: center;
 }
 .slider-sales__img img {
-  vertical-align: middle;
+  vertical-align: top;
 }
 .slider-sales__value {
   margin-top: 12px;
@@ -1960,10 +1951,6 @@ input:focus, textarea:focus, button {
   font-weight: 600;
 }
 .slider-sales__remain {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
   padding: 0 20px;
   background: #828282;
   color: #fff;

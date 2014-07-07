@@ -15,7 +15,7 @@
 					<th>Название</th>
 					<td>
 						{% if page['name'] is defined %}
-							<input type="text" name="name" placeholder="Название" value="{{ page['name'] }}"/>
+							<input type="text" name="name" placeholder="Название" value="{{ page['name']|escape }}"/>
 						{% else %}
 							<input type="text" name="name" placeholder="Название"/>
 						{% endif %}
