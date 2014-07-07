@@ -2,12 +2,11 @@
 	<div class="sidebar__block sidebar__block--info">
 		<h6 class="sidebar__block__title">Информация</h6>
 		<ul class="sidebar__info">
-			<?php foreach ($infoPages as $infoPage) { ?>
-
-			<?php } ?>
-			<li class="sidebar__info__item">
-				<a class="sidebar__info__link" href="<?php echo $infoPage->path; ?>" title="Перейти к странице '<?php echo $infoPage->name; ?>'"><?php echo $infoPage->name; ?></a>
-			</li>
+			<?php $v29312588621iterator = $infoPages; $v29312588621incr = 0; $v29312588621loop = new stdClass(); $v29312588621loop->length = count($v29312588621iterator); $v29312588621loop->index = 1; $v29312588621loop->index0 = 1; $v29312588621loop->revindex = $v29312588621loop->length; $v29312588621loop->revindex0 = $v29312588621loop->length - 1; ?><?php foreach ($v29312588621iterator as $infoPage) { ?><?php $v29312588621loop->first = ($v29312588621incr == 0); $v29312588621loop->index = $v29312588621incr + 1; $v29312588621loop->index0 = $v29312588621incr; $v29312588621loop->revindex = $v29312588621loop->length - $v29312588621incr; $v29312588621loop->revindex0 = $v29312588621loop->length - ($v29312588621incr + 1); $v29312588621loop->last = ($v29312588621incr == ($v29312588621loop->length - 1)); ?>
+				<li class="sidebar__info__item">
+					<a class="sidebar__info__link" href="<?php echo $infoPage->path; ?>" title="Перейти к странице '<?php echo $infoPage->name; ?>'"><?php echo $infoPage->name; ?></a>
+				</li>
+			<?php $v29312588621incr++; } ?>
 		</ul>
 	</div>
 <?php } ?>

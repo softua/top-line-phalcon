@@ -36,25 +36,25 @@
 				</div>
 			</div>
 
-			<form id="form" class="form" action="action.php">
+			<form id="form" class="form" method="post" action="{{ url('contacts') }}">
 				<h2 class="title2">Заполните форму</h2>
 
 				<label>
 					<span class="form__label-name">Ваше имя</span>
-					<input type="text"/>
+					<input type="text" name="name"/>
 				</label>
 				<label>
 					<span class="form__label-name">Ваш e-mail</span>
-					<input type="text"/>
+					<input type="email" name="email"/>
 				</label>
 				<div class="form__as-label">
 					<span class="form__label-name">Ваш телефон</span>
-					<input class="form__prefix" type="text"/> -
-					<input class="form__phone" type="text"/>
+					<input class="form__prefix" type="text" name="phone-prefix"/> -
+					<input class="form__phone" type="text" name="phone-body"/>
 				</div>
 				<label>
 					<span class="form__label-name">Ваше сообщение</span>
-					<textarea></textarea>
+					<textarea name="message"></textarea>
 				</label>
 
 				<button class="form__submit" type="submit">Подать заявку</button>

@@ -43,7 +43,7 @@ require( ['jquery'], function( $ ) {
                 slider: '.slider-sales',
                 sliderItem: '.slider-sales__item',
                 isResponsive: true,
-                autoPlay: true,
+                autoPlay: false,
                 autoPlayDuration: 6000
             } );
 
@@ -51,7 +51,7 @@ require( ['jquery'], function( $ ) {
                 slider: '.new-products',
                 sliderItem: '.new-products__item',
                 isResponsive: true,
-                autoPlay: true,
+                autoPlay: false,
                 autoPlayDuration: 6000
             } );
 
@@ -59,13 +59,13 @@ require( ['jquery'], function( $ ) {
                 slider: '.partners',
                 sliderItem: '.partners__item',
                 isResponsive: true,
-                autoPlay: true,
+                autoPlay: false,
                 autoPlayDuration: 6000
             } );
 
             $( '.slider--outer-wrapper' ).mySliderOpacity( {
                 showArrows: true,
-                autoPlay: true,
+                autoPlay: false,
                 autoPlayDuration: 6000
             } );
         } );
