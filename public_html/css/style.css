@@ -1593,18 +1593,22 @@ input:focus, textarea:focus, button {
   position: relative;
   min-height: 180px;
   margin-bottom: 20px;
-  padding-left: 310px;
+}
+.news-list__item:after {
+  content: '';
+  display: block;
+  clear: both;
+  width: 100%;
 }
 .news-list__item__title {
-  margin: 0;
+  margin: 0 0 10px 0;
   font-size: 16px;
   line-height: 18px;
 }
 .news-list__item__img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 0;
+  display: block;
+  float: left;
+  margin: 0 10px 0 0;
   padding-bottom: 12px;
   background: url("../img/css/shadow-185x12.png") center bottom no-repeat;
 }
@@ -1617,11 +1621,11 @@ input:focus, textarea:focus, button {
 }
 .news-list__item--even {
   padding-left: 0;
-  padding-right: 254px;
 }
 .news-list__item--even .news-list__item__img {
-  left: auto;
-  right: 0;
+  display: block;
+  float: right;
+  margin: 0 0 0 10px;
 }
 
 .news-main-list--outer-wrapper {
