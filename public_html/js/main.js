@@ -8,7 +8,7 @@ var version = {
 
 require.config({
     urlArgs: 'v=' + (isDev ? Math.random() : 0.1),
-    baseUrl: '/js/lib',
+    baseUrl: '/public_html/js/lib',
     paths: {
         jquery: [
 //            '//yandex.st/jquery/' + version.jquery + '/jquery.min',
@@ -17,8 +17,15 @@ require.config({
         myselect: 'plugins/jquery.myselect',
         myslider: 'plugins/jquery.myslider',
         myslideropacity: 'plugins/jquery.myslideropacity',
-        productGallery: '../../ui/blocks/product/product_gallery'
-    }
+        productGallery: '../../ui/blocks/product/product_gallery',
+	    fancyBox: '../vendor/jquery.fancybox.pack'
+    },
+	shim: {
+		fancyBox: {
+			deps: ['jquery'],
+			exports: 'fancybox'
+		}
+	}
 } );
 
 require( ['jquery'], function( $ ) {
@@ -31,7 +38,6 @@ require( ['jquery'], function( $ ) {
             $jsSelect.mySelect();
         } );
     }
-
 
     if ( $( '.product__gallery' ).length ) {
         require( ['productGallery'] );
@@ -70,6 +76,10 @@ require( ['jquery'], function( $ ) {
             } );
         } );
     }
+
+	if ($('.fancybox').length) {
+		require(['../../ui/blocks/fancybox/fancybox']);
+	}
 
     if ( !isDev ) {
         require( ['pluso'] );

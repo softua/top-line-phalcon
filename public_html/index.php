@@ -44,6 +44,18 @@ try {
 		]);
 	});
 
+	// Работа с БД через PDO
+	$di->setShared('pdo', function () use($di) {
+		$host = $di['config']->db['host'];
+		$username = $di['config']->db['username'];
+		$password = $di['config']->db['password'];
+		$dbName = $di['config']->db['dbname'];
+		$options = [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''];
+
+		$pdo = new PDO('mysql:host=' . $host . ';dbname=' . $dbName, $username, $password, $options);
+		return $pdo;
+	});
+
 	// Collection Manager
 	$di->set('collectionManager', function(){
 		return new \Phalcon\Mvc\Collection\Manager();

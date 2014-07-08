@@ -46,17 +46,24 @@
 						<div class="product__gallery">
 							{% if product['sales'] %}
 								<figure class="product__gallery__full product__gallery__full--sale">
-								<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
+									{#TODO: сюда нужна большая картинка#}
+									<a class="fancybox" href="<?= $product['images'][0]->productDescriptionPath ?>">
+										<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
+									</a>
 							</figure>
 							{% else %}
 								<figure class="product__gallery__full">
-									<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
+									{#TODO: сюда нужна большая картинка#}
+									<a class="fancybox" href="<?= $product['images'][0]->productDescriptionPath ?>">
+										<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
+									</a>
 								</figure>
 							{% endif %}
 							<ul class="product__gallery__thumbs">
 								{% for image in product['images'] %}
 									<li class="product__gallery__thumbs__item">
-										<a class="product__gallery__thumbs__link" href="{{ image.productDescriptionPath }}" title="">
+										{#TODO: сюда нужна большая картинка#}
+										<a class="product__gallery__thumbs__link" href="{{ image.productDescriptionPath }}" title="" data-big-img-path="{{ image.productDescriptionPath }}">
 											<img src="{{ image.productThumbPath }}" alt=""/>
 										</a>
 									</li>
