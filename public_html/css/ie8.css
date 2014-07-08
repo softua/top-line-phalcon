@@ -1471,7 +1471,7 @@ input:focus, textarea:focus, button {
   position: relative;
   min-height: 180px;
   margin-bottom: 20px;
-  padding-left: 254px;
+  padding-left: 310px;
 }
 .news-list__item__title {
   margin: 0;
@@ -1488,8 +1488,7 @@ input:focus, textarea:focus, button {
 }
 .news-list__item__img img {
   display: block;
-  width: 223px;
-  height: 165px;
+  width: 300px;
 }
 .news-list__item--even {
   padding-left: 0;
