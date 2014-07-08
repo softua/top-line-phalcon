@@ -89,7 +89,7 @@ class AdminController extends BaseAdminController
 				}
 			} else {
 				$this->tag->prependTitle('Вход');
-				$this->view->errors = ['Вход' => 'Неверный логин или пароль'];
+				$this->view->errors = ['Вход' => ['Неверный логин или пароль']];
 				echo $this->view->render('admin/auth/login');
 			}
 		}
