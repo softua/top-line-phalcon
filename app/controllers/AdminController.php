@@ -1768,27 +1768,24 @@ class AdminController extends BaseAdminController
 	public function pagesAction()
 	{
 		$this->tag->prependTitle('Статические страницы');
-		$pages = Models\PageModel::find([
-			'order' => 'type_id, time DESC'
-		]);
-		if (count($pages)) {
-			$pagesForView = [];
-			foreach ($pages as $page) {
-				$tempPage = [];
-				$tempPage['name'] = $page->name;
-				$tempPage['type'] = Models\PageTypeModel::findFirst($page->type_id)->full_name;
-				$tempPage['datetime'] = date('d.m.Y', strtotime($page->time));
-				if ($tempPage['type'] == 'Видео') {
-					$tempPage['link'] = $this->url->get('video/') . '#' . $page->seo_name;
-				} else {
-					$tempPage['link'] = '---';
+
+		$sth = $this->di['pdo']->prepare('SELECT * FROM pages_types');
+		$sth->execute();
+		$types = $sth->fetchAll();
+
+		$pagesForView = [];
+		if (!$types || !count($types)) $pageForView = null;
+		$sth2 = $this->di['pdo']->prepare('SELECT * FROM pages WHERE type_id = ? ORDER BY sort, time DESC');
+
+		foreach ($types as $type) {
+			$pagesForView[$type['full_name']] = [];
+			$sth2->execute([$type['id']]);
+			$pages = $sth2->fetchAll();
+			if ($pages && count($pages)) {
+				foreach ($pages as $page) {
+					$pagesForView[$type['full_name']][] = $page;
 				}
-				$tempPage['seo_name'] = $page->seo_name;
-				$tempPage['public'] = $page->public;
-				$pagesForView[] = $tempPage;
 			}
-		} else {
-			$pagesForView = null;
 		}
 
 		$this->view->pages = $pagesForView;
