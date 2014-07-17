@@ -16,7 +16,7 @@ class PageController extends BaseFrontController
 		parent::initialize();
 
 		$this->view->active_link = 'main';
-		$this->view->sidebar_categories = App\Category::getMainCategories($this->di, false);
+		$this->view->sidebar_categories = Models\Category::getMainCategories(false);
 	}
 
 	public function showAction()
@@ -24,7 +24,7 @@ class PageController extends BaseFrontController
 		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
 		if (!$seoName) return $this->response->redirect();
 
-		$page = App\InfoPage::getPageBySeoName($this->di, $seoName);
+		$page = Models\InfoPage::getPageBySeoName($seoName);
 		if (!$page) return $this->response->redirect();
 		else $this->view->page = $page;
 

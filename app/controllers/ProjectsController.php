@@ -21,7 +21,7 @@ class ProjectsController extends BaseFrontController
 	public function indexAction()
 	{
 		// Список проектов
-		$projects = Models\PageModel::find([
+		$projects = Models\Page::find([
 			'type_id = 2 AND public = 1'
 		]);
 		$projectsForView = [];
@@ -62,7 +62,7 @@ class ProjectsController extends BaseFrontController
 		if (!$seoName) {
 			return $this->response->redirect('projects/notfound');
 		} else {
-			$page = Models\PageModel::findFirst([
+			$page = Models\Page::findFirst([
 				'seo_name = ?1 AND public = 1',
 				'bind' => [1 => $seoName]
 			]);

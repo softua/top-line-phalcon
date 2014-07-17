@@ -21,8 +21,8 @@ class CatalogController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$this->view->categories = App\Category::getMainCategories($this->di, true);
-		$this->view->sidebar_categories = App\Category::getMainCategories($this->di);
+		$this->view->categories = Models\Category::getMainCategories(true);
+		$this->view->sidebar_categories = Models\Category::getMainCategories();
 
 		echo $this->view->render('products/catalog');
 	}
@@ -34,13 +34,15 @@ class CatalogController extends BaseFrontController
 		if (!$categorySeoName) {
 			return $this->response->redirect('catalog');
 		}
-		$category = App\Category::getCategoryBySeoName($this->di, $categorySeoName, true);
+		$category = Models\Category::getCategoryBySeoName($categorySeoName, true);
+
 		if ($category) {
 			$this->view->breadcrumbs = $category->getParentsCategories();
 		}
 
-		$this->view->categories = App\Category::getChildrenCategoriesByParentSeoName($this->di, $categorySeoName);
-		$this->view->sidebar_categories = App\Category::getMainCategories($this->di, false, [$category->seo_name]);
+
+		$this->view->categories = Models\Category::getChildrenCategoriesByParentSeoName($categorySeoName);
+		$this->view->sidebar_categories = Models\Category::getMainCategories(false, [$category->seo_name]);
 
 		echo $this->view->render('products/catalog');
 	}

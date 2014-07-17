@@ -52,7 +52,7 @@ class VideoController extends BaseFrontController
 	public function indexAction()
 	{
 		// Список видео
-		$videos = Models\PageModel::find([
+		$videos = Models\Page::find([
 			'type_id = 3 AND public = 1',
 			'order' => 'time DESC'
 		]);

@@ -2,12 +2,11 @@
 
 namespace App\Controllers;
 
-use App;
-use App\MainCategories;
-use App\Models;
-use App\Translit;
-use App\Validation;
-use App\Upload;
+use App,
+	App\Models,
+	App\Translit,
+	App\Validation,
+	App\Upload;
 
 class AdminController extends BaseAdminController
 {
@@ -23,7 +22,7 @@ class AdminController extends BaseAdminController
 			}
 
 		} else {
-			$this->user = Models\UserModel::find((int)trim($this->cookies->get('user')->getValue()))[0];
+			$this->user = Models\User::find((int)trim($this->cookies->get('user')->getValue()))[0];
 
 			$this->cookies->set('user', $this->user->id, time() + $this->config->cookie['lifetime']);
 			$this->cookies->send();
@@ -69,7 +68,7 @@ class AdminController extends BaseAdminController
 			$login = $this->request->getPost('login', ['striptags', 'trim']);
 			$password = $this->request->getPost('password', ['striptags', 'trim']);
 
-			$users = Models\UserModel::query()
+			$users = Models\User::query()
 				->where('login = :login:')
 				->bind(['login' => $login])
 				->execute();
@@ -106,8 +105,8 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Пользователи');
 
-		$allUsers = Models\UserModel::find();
-		$roles = Models\RoleModel::find();
+		$allUsers = Models\User::find();
+		$roles = Models\Role::find();
 
 		$this->view->users = $allUsers;
 		$this->view->roles = $roles;
@@ -119,8 +118,8 @@ class AdminController extends BaseAdminController
 	{
 		$id = $this->dispatcher->getParams()[0];
 		$this->tag->prependTitle('Редактирование');
-		$user = Models\UserModel::find($id)[0];
-		$roles = Models\RoleModel::find();
+		$user = Models\User::find($id)[0];
+		$roles = Models\Role::find();
 
 		// POST запрос
 		if ($this->request->isPost())
@@ -165,7 +164,7 @@ class AdminController extends BaseAdminController
 
 		// GET запрос
 		if ($this->request->isGet()) {
-			$this->view->roles = Models\RoleModel::find();
+			$this->view->roles = Models\Role::find();
 			echo $this->view->render('admin/users/new');
 		}
 
@@ -189,7 +188,7 @@ class AdminController extends BaseAdminController
 			$validation->isUniqueUser($login, false);
 
 			if ($validation->validate()) { // Создаем юзера и переходим к их списку
-				$user = new Models\UserModel();
+				$user = new Models\User();
 
 				$user->login = $login;
 				$user->password = $this->crypt->encryptBase64($password);
@@ -204,7 +203,7 @@ class AdminController extends BaseAdminController
 					$this->view->errors = ['БД' => $user->getMessages()];
 				}
 			} else {
-				$this->view->roles = Models\RoleModel::find();
+				$this->view->roles = Models\Role::find();
 				$this->view->errors = $validation->getMessages();
 
 				echo $this->view->render('admin/users/new');
@@ -216,7 +215,7 @@ class AdminController extends BaseAdminController
 	{
 		$id = $this->dispatcher->getParams()[0];
 
-		$user = Models\UserModel::find($id);
+		$user = Models\User::find($id);
 		$user->delete();
 
 		if ($this->cookies->get('user')->getValue() == $id) {
@@ -230,7 +229,7 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Категории');
 
-		$this->view->mainCategories = App\Category::getMainCategories($this->di);
+		$this->view->mainCategories = Models\Category::getMainCategories($this->di);
 
 		echo $this->view->render('admin/categories/categories');
 	}
@@ -239,7 +238,7 @@ class AdminController extends BaseAdminController
 	{
 		$parent = $this->dispatcher->getParams()[0];
 		if($this->request->isAjax() && $parent != null) {
-			$categories = Models\CategoryModel::getCategories($parent);
+			$categories = Models\Category::getCategories($parent);
 
 			if($categories)
 				echo json_encode($categories);
@@ -256,7 +255,7 @@ class AdminController extends BaseAdminController
 		$parent = $this->dispatcher->getParams()[0];
 		$this->tag->prependTitle('Редактирование');
 
-		$fullParentCategory = Models\CategoryModel::getFullCategoryName($parent);
+		$fullParentCategory = Models\Category::getFullCategoryName($parent);
 
 		$this->view->fullParentCategory = $fullParentCategory;
 		$this->view->parent = $parent;
@@ -264,7 +263,7 @@ class AdminController extends BaseAdminController
 		// POST запрос
 		if ($this->request->isPost())
 		{
-			$category = new Models\CategoryModel();
+			$category = new Models\Category();
 
 			$name = $this->request->getPost('name', ['striptags', 'trim']);
 			$sort = $this->request->getPost('sort', ['striptags', 'trim', 'int']);
@@ -285,18 +284,17 @@ class AdminController extends BaseAdminController
 					$category->seo_name = Translit::get_seo_keyword($name, true);
 
 				} else {
-					$category->seo_name = Models\CategoryModel::getCategory($parent)->seo_name . '__' . Translit::get_seo_keyword($name, true);
+					$category->seo_name = Models\Category::getCategory($parent)->seo_name . '__' . Translit::get_seo_keyword($name, true);
 				}
 				$category->sort = (int)$sort;
 
-				if ($category->save())
+				if ($category->dbSave())
 				{
 					return $this->response->redirect('admin/categories');
 
 				} else {
 					$this->view->errors = ['БД' => $category->getMessages()];
 				}
-
 			} else {
 				$this->view->errors = $validation->getMessages();
 			}
@@ -308,16 +306,13 @@ class AdminController extends BaseAdminController
 	public function editCategoryAction()
 	{
 		$id = $this->dispatcher->getParams()[0];
-		if ($id == null)
-		{
-			return $this->response->redirect('admin/categories');
-		}
+		if ($id == null) return $this->response->redirect('admin/categories');
 
 		$this->tag->prependTitle('Редактирование');
 
-		$category = Models\CategoryModel::findFirst($id);
+		$category = Models\Category::findFirst($id);
 		$this->view->category = $category;
-		$fullParentCategory = Models\CategoryModel::getCategoryWithFullName($category->parent_id)['full_name'];
+		$fullParentCategory = Models\Category::getCategoryWithFullName($category->parent_id)['full_name'];
 		$this->view->fullParentCategory = $fullParentCategory;
 
 		// POST
@@ -326,7 +321,7 @@ class AdminController extends BaseAdminController
 			$name = $this->request->getPost('name', ['striptags', 'trim']);
 			$sort = $this->request->getPost('sort', ['striptags', 'trim', 'int']);
 
-			$validation = new \App\Validation();
+			$validation = new Validation();
 			$validation->isNotEmpty([
 				'Категория' => $name,
 				'Порядок' => $sort
@@ -339,7 +334,7 @@ class AdminController extends BaseAdminController
 					$category->seo_name = Translit::get_seo_keyword($name, true);
 
 				} else {
-					$category->seo_name = Models\CategoryModel::findFirst($category->parent_id)->seo_name . '__' . Translit::get_seo_keyword($name, true);
+					$category->seo_name = Models\Category::findFirst($category->parent_id)->seo_name . '__' . Translit::get_seo_keyword($name, true);
 
 				}
 				$category->sort = (int)$sort;
@@ -355,19 +350,15 @@ class AdminController extends BaseAdminController
 			}
 		}
 
-		$tempFotos = Models\CategoryImageModel::find([
-			'category_id = :cat:',
-			'bind' => ['cat' => $id]
-		]);
-
-		$i = 0;
-		$fotos = [];
-		foreach ($tempFotos as $foto)
-		{
-			$fotos[$i]['id'] = $foto->id;
-			$fotos[$i]['path'] = '/' . $foto->pathname;
-			$i++;
-		}
+		/** @var Models\ImageCategory[] $fotos */
+		$fotos = Models\ImageCategory::query()
+			->where('belongs = \'category\'')
+			->andWhere('belongs_id = ?1', [1 => $id])
+			->orderBy('sort')
+			->execute()->filter(function(Models\ImageCategory $img) {
+				$img->setPaths();
+				return $img;
+			});
 
 		$this->view->fotos = $fotos;
 
@@ -378,8 +369,8 @@ class AdminController extends BaseAdminController
 	{
 		$id = $this->dispatcher->getParams()[0];
 		if($id && $id != '0') {
-			$category = Models\CategoryModel::find($id);
-			$children = Models\CategoryModel::getCategories($id);
+			$category = Models\Category::find($id);
+			$children = Models\Category::getCategories($id);
 			if($children === null)
 				$category->delete();
 
@@ -391,14 +382,14 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Товары');
 
-		$mainCats = Models\CategoryModel::getMainCategories();
-		$products = Models\ProductModel::getProducts();
+		$mainCats = Models\Category::getMainCategories();
+		$products = Models\Product::getProducts();
 
 		$productsWithoutCategories = [];
-		$allProducts = Models\ProductModel::find();
+		$allProducts = Models\Product::find();
 		foreach ($allProducts as $product)
 		{
-			$countProducts = Models\ProductCategoryModel::query()
+			$countProducts = Models\ProductCategory::query()
 				->where('product_id = :id:')
 				->bind(['id' => $product->id])
 				->execute()->count();
@@ -421,7 +412,7 @@ class AdminController extends BaseAdminController
 		{
 			if ($categoryId)
 			{
-				$products = Models\ProductModel::getProducts($categoryId);
+				$products = Models\Product::getProducts($categoryId);
 
 				if ($products && count($products))
 					echo json_encode($products);
@@ -441,9 +432,9 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Добавление товара');
 
-		$types = Models\PossibleProductTypesModel::getAllTypesAsString();
-		$countries = Models\CountryModel::getAllTypesAsString();
-		$brands = Models\PossibleBrandsModel::getAllTypesAsString();
+		$types = Models\PossibleProductType::getAllTypesAsString();
+		$countries = Models\Country::getAllTypesAsString();
+		$brands = Models\PossibleBrand::getAllTypesAsString();
 
 		$this->view->types = $types;
 		$this->view->countries = $countries;
@@ -508,11 +499,11 @@ class AdminController extends BaseAdminController
 			if ($validation->validate())
 			{
 				// Добавляем возможные варианты стран, типов и брендов для автодополнения
-				Models\CountryModel::addCountry($inputs['country']);
-				Models\PossibleBrandsModel::addBrand($inputs['brand']);
-				Models\PossibleProductTypesModel::addType($inputs['type']);
+				Models\Country::addCountry($inputs['country']);
+				Models\PossibleBrand::addBrand($inputs['brand']);
+				Models\PossibleProductType::addType($inputs['type']);
 
-				$product = new Models\ProductModel();
+				$product = new Models\Product();
 
 				$product->name = $inputs['name'];
 				$product->type = $inputs['type'];
@@ -526,20 +517,20 @@ class AdminController extends BaseAdminController
 				$product->meta_keywords = $inputs['keywords'];
 				$product->meta_description = $inputs['description'];
 				$product->public = 0;
-				$product->country_id = Models\CountryModel::findFirst([
+				$product->country_id = Models\Country::findFirst([
 					'name = ?1',
 					'bind' => [1 => $inputs['country']]
 				])->id;
-				$product->seo_name = Models\ProductModel::generateSeoName($product);
+				$product->seo_name = Models\Product::generateSeoName($product);
 
-				$prices = Models\ExchangeModel::setPrices($product->main_curancy, floatval($inputs['price']));
+				$prices = Models\Exchange::setPrices($product->main_curancy, floatval($inputs['price']));
 				$product->price_eur = $prices['price_eur'];
 				$product->price_usd = $prices['price_usd'];
 				$product->price_uah = $prices['price_uah'];
 
 				if ($product->save())
 				{
-					if (Models\ProductModel::isUniqueSeoName($product->seo_name)) // Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
+					if (Models\Product::isUniqueSeoName($product->seo_name)) // Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
 					{
 						return $this->response->redirect('admin/editproduct/' . $product->id . '/');
 
@@ -567,7 +558,8 @@ class AdminController extends BaseAdminController
 
 		if ($id && preg_match('/\d+/', $id)) // Если ID есть, обрабатываем запрос
 		{
-			$product = Models\ProductModel::getProductById($id);  // объект товара, с которым работаем
+			/** @var Models\Product $product */
+			$product = Models\Product::getProductById($id);  // объект товара, с которым работаем
 
 			if (!$product)
 				return $this->response->redirect('admin');
@@ -578,7 +570,7 @@ class AdminController extends BaseAdminController
 			$inputs['type'] = $product->type;
 			$inputs['articul'] = $product->articul;
 			$inputs['model'] = $product->model;
-			$inputs['country'] = Models\CountryModel::findFirst($product->country_id)->name;
+			$inputs['country'] = Models\Country::findFirst($product->country_id)->name;
 			$inputs['brand'] = $product->brand;
 			$inputs['main_curancy'] = $product->main_curancy;
 			$inputs['price_alternative'] = $product->price_alternative;
@@ -597,12 +589,12 @@ class AdminController extends BaseAdminController
 			elseif ($inputs['main_curancy'] == 'uah')
 				$inputs['price'] = $product->price_uah;
 
-			if (count($product->categories))
+			if (count($product->_categories))
 			{
 				$productCats = [];
-				foreach ($product->categories as $cat)
+				foreach ($product->_categories as $cat)
 				{
-					$productCats[] = Models\CategoryModel::getCategoryWithFullName($cat->id);
+					$productCats[] = Models\Category::getCategoryWithFullName($cat->id);
 				}
 				$inputs['categories'] = $productCats;
 			}
@@ -678,16 +670,16 @@ class AdminController extends BaseAdminController
 				if ($validation->isFloat(['Цена' => $inputs['price']], true))
 					$inputs['price'] = preg_replace('/,/', '.', $inputs['price']); // меняем "," на "."
 
-				if (!Models\ProductModel::isUniqueSeoName($inputs['seo_name']))
+				if (!Models\Product::isUniqueSeoName($inputs['seo_name']))
 					$validation->setMessageManual('SEO название', 'SEO название не уникально');
 
 				// Если пройдена вся валидация
 				if ($validation->validate())
 				{
 					// Добавляем возможные варианты стран, типов и брендов для автодополнения
-					Models\CountryModel::addCountry($inputs['country']);
-					Models\PossibleBrandsModel::addBrand($inputs['brand']);
-					Models\PossibleProductTypesModel::addType($inputs['type']);
+					Models\Country::addCountry($inputs['country']);
+					Models\PossibleBrand::addBrand($inputs['brand']);
+					Models\PossibleProductType::addType($inputs['type']);
 
 					$product->name = $inputs['name'];
 					$product->type = $inputs['type'];
@@ -696,7 +688,7 @@ class AdminController extends BaseAdminController
 					if ($inputs['model'])
 						$product->model = $inputs['model'];
 
-					$product->country_id = Models\CountryModel::findFirst([
+					$product->country_id = Models\Country::findFirst([
 						'name = ?1',
 						'bind' => [1 => $inputs['country']]
 					])->id;
@@ -706,7 +698,7 @@ class AdminController extends BaseAdminController
 
 					$product->main_curancy = $inputs['main_curancy'];
 
-					$prices = Models\ExchangeModel::setPrices($inputs['main_curancy'], floatval($inputs['price']));
+					$prices = Models\Exchange::setPrices($inputs['main_curancy'], floatval($inputs['price']));
 					$product->price_eur = $prices['price_eur'];
 					$product->price_usd = $prices['price_usd'];
 					$product->price_uah = $prices['price_uah'];
@@ -749,39 +741,34 @@ class AdminController extends BaseAdminController
 				}
 			}
 
-			$fotos = [];
-			$i = 0;
-
-			foreach ($product->getImages(['order' => 'sort']) as $bdFoto)
-			{
-				$fotos[$i]['id'] = $bdFoto->id;
-				$fotos[$i]['path'] = '/products/' . $bdFoto->product_id . '/images/' . $bdFoto->id . '__admin_thumb.' . $bdFoto->extension;
-				$i++;
-			}
+			$fotos = $product->getImages();
 
 			//Список акций
-			$allSales = Models\PageModel::query()
+			$allSales = Models\Sale::query()
 				->where('type_id = 5')
 				->columns(['id', 'name'])
 				->orderBy('expiration, name')
 				->execute()
 				->toArray();
 			$salesForView = [];
-			foreach ($product->getSales() as $sale) {
-				$tempSale = [];
-				$tempSale['id'] = $sale->id;
-				$tempSale['href'] = $this->url->get('sales/show/') . $sale->seo_name;
-				$tempSale['name'] = $sale->name;
-				$salesForView[] = $tempSale;
+			if ($product->getSales()) {
+				foreach ($product->getSales() as $sale) {
+					$tempSale = [];
+					$tempSale['id'] = $sale->id;
+					$tempSale['href'] = $this->url->get('sales/show/') . $sale->seo_name;
+					$tempSale['name'] = $sale->name;
+					$salesForView[] = $tempSale;
+				}
 			}
+
 
 			$this->view->data = $inputs;
 			$this->view->id = $id;
-			$this->view->categories = json_encode(Models\CategoryModel::find()->toArray());
-			$this->view->types = Models\PossibleProductTypesModel::getAllTypesAsString();
-			$this->view->countries = Models\CountryModel::getAllTypesAsString();
-			$this->view->brands = Models\PossibleBrandsModel::getAllTypesAsString();
-			$this->view->parameters = Models\ProductParamModel::getParamsByProductId($id);
+			$this->view->categories = json_encode(Models\Category::find()->toArray());
+			$this->view->types = Models\PossibleProductType::getAllTypesAsString();
+			$this->view->countries = Models\Country::getAllTypesAsString();
+			$this->view->brands = Models\PossibleBrand::getAllTypesAsString();
+			$this->view->parameters = Models\ProductParam::getParamsByProductId($id);
 			$this->view->fotos = $fotos;
 			$this->view->files = $product->files;
 			$this->view->allSales = json_encode($allSales);
@@ -802,7 +789,7 @@ class AdminController extends BaseAdminController
 
 		if ($id && preg_match('/\d+/', $id))
 		{
-			$product = Models\ProductModel::findFirst($id);
+			$product = Models\Product::findFirst($id);
 			$product->delete();
 
 			$this->response->redirect('admin/products');
@@ -820,10 +807,10 @@ class AdminController extends BaseAdminController
 
 		if ($id)
 		{
-			$product = Models\ProductModel::getProductById($id);
+			$product = Models\Product::getProductById($id);
 
 			// Товары с таким же SEO-названием
-			$sameProducts = Models\ProductModel::find([
+			$sameProducts = Models\Product::find([
 				'seo_name = :name: AND id != :id:',
 				'bind' => ['name' => $product->seo_name, 'id' => $id]
 			]);
@@ -842,7 +829,7 @@ class AdminController extends BaseAdminController
 				'brand' => $product->brand
 			];
 
-			$data['country'] = Models\CountryModel::findFirst($product->country_id)->name;
+			$data['country'] = Models\Country::findFirst($product->country_id)->name;
 
 			if ($product->main_curancy == 'eur')
 				$data['price'] = $product->price_eur;
@@ -868,7 +855,7 @@ class AdminController extends BaseAdminController
 					$data['seo_name'] = $product->seo_name;
 
 					// Товары с таким же SEO-названием
-					$sameProducts = Models\ProductModel::find([
+					$sameProducts = Models\Product::find([
 						'seo_name = :name: AND id != :id:',
 						'bind' => ['name' => $product->seo_name, 'id' => $product->id]
 					]);
@@ -901,11 +888,11 @@ class AdminController extends BaseAdminController
 
 		if ($this->request->isAjax() && $categoryId && $productId && preg_match('/\d+/', $categoryId) && preg_match('/\d+/', $productId))
 		{
-			$prodCat = new Models\ProductCategoryModel();
+			$prodCat = new Models\ProductCategory();
 			$prodCat->product_id = $productId;
 			$prodCat->category_id = $categoryId;
 
-			$sameCats = Models\ProductCategoryModel::find([
+			$sameCats = Models\ProductCategory::find([
 				'product_id = :prod: AND category_id = :cat:',
 				'bind' => ['prod' => $productId, 'cat' => $categoryId]
 			]);
@@ -918,7 +905,7 @@ class AdminController extends BaseAdminController
 
 			if ($prodCat->save())
 			{
-				echo json_encode(Models\CategoryModel::getCategoryWithFullName($categoryId));
+				echo json_encode(Models\Category::getCategoryWithFullName($categoryId));
 			}
 			else
 				echo null;
@@ -935,7 +922,7 @@ class AdminController extends BaseAdminController
 
 		if ($this->request->isAjax())
 		{
-			$prodCat = Models\ProductCategoryModel::findFirst([
+			$prodCat = Models\ProductCategory::findFirst([
 				'product_id = :prodId: AND category_id = :catId:',
 				'bind' => ['prodId' => $productId, 'catId' => $catId]
 			]);
@@ -955,7 +942,7 @@ class AdminController extends BaseAdminController
 	{
 		if ($this->request->isAjax())
 		{
-			echo Models\PossibleParametersModel::getAllParameters(true);
+			echo Models\PossibleParameter::getAllParameters(true);
 
 		} else
 		{
@@ -973,21 +960,21 @@ class AdminController extends BaseAdminController
 
 			if ($prodId && preg_match('/\d+/', $prodId) && $paramName && $paramValue)
 			{
-				Models\PossibleParametersModel::addParameter($paramName); // добавляем название параметра в ощий список
-				Models\PossibleParametersModel::addParameter($paramValue); // добавляем значение параметра в ощий список
+				Models\PossibleParameter::addParameter($paramName); // добавляем название параметра в ощий список
+				Models\PossibleParameter::addParameter($paramValue); // добавляем значение параметра в ощий список
 
-				$prodParam = Models\ProductParamModel::findFirst([
+				$prodParam = Models\ProductParam::findFirst([
 					'name = :name: AND product_id = :id:',
 					'bind' => ['name' => $paramName, 'id' => $prodId]
 				]);
 
 				if (!$prodParam)
 				{
-					$param = new Models\ProductParamModel();
+					$param = new Models\ProductParam();
 					$param->name = $paramName;
 					$param->value = $paramValue;
 					$param->product_id = $prodId;
-					$param->sort = Models\ProductParamModel::find([
+					$param->sort = Models\ProductParam::find([
 						'product_id = :id:',
 						'bind' => ['id' => $prodId]
 					])->count();
@@ -1015,7 +1002,7 @@ class AdminController extends BaseAdminController
 		$id = $this->dispatcher->getParams()[0];
 		if ($id && preg_match('/\d+/', $id))
 		{
-			$param = Models\ProductParamModel::findFirst($id);
+			$param = Models\ProductParam::findFirst($id);
 
 			$this->view->data = [
 				'id' => $param->id,
@@ -1025,7 +1012,7 @@ class AdminController extends BaseAdminController
 				'sort' => $param->sort
 			];
 
-			$allParams = Models\PossibleParametersModel::find();
+			$allParams = Models\PossibleParameter::find();
 
 			$possibleParamsNames = [];
 
@@ -1050,8 +1037,8 @@ class AdminController extends BaseAdminController
 
 				if ($validation->validate())
 				{
-					Models\PossibleParametersModel::addParameter($inputs['name']);
-					Models\PossibleParametersModel::addParameter($inputs['value']);
+					Models\PossibleParameter::addParameter($inputs['name']);
+					Models\PossibleParameter::addParameter($inputs['value']);
 
 					$param->name = $inputs['name'];
 					$param->value = $inputs['value'];
@@ -1110,7 +1097,7 @@ class AdminController extends BaseAdminController
 			$paramId = $this->dispatcher->getParams()[0];
 			if ($paramId && preg_match('/\d+/', $paramId))
 			{
-				$param = Models\ProductParamModel::findFirst($paramId);
+				$param = Models\ProductParam::findFirst($paramId);
 				if ($param->delete())
 					echo json_encode(true);
 				else
@@ -1133,7 +1120,7 @@ class AdminController extends BaseAdminController
 
 			for ($i = 0; $i < count($paramIds); $i++)
 			{
-				$param = Models\ProductParamModel::findFirst($paramIds[$i]);
+				$param = Models\ProductParam::findFirst($paramIds[$i]);
 
 				if ($param)
 				{
@@ -1150,211 +1137,38 @@ class AdminController extends BaseAdminController
 
 	public function uploadFotoAction()
 	{
-		/*
-		 * Возможные варианты картинок:
-		 * - 'original' - оригинал картинки;
-		 * - 'original_w' - оригинал с водяным знаком;
-		 * - 'product_description' - картинка для описания товара (290x300);
-		 * - 'product_thumb' - картинка для миниатюры в описании товара (55x47);
-		 * - 'product_list' - картинка для списка товаров (155x155);
-		 * - 'product_top' - миниатюра для панели "Лидеры продаж" (198x160);
-		 * - 'admin_thumb' - картинка для миниатюры в админке (250x150).
-		*/
-
-		if (!$this->request->isAjax())
-		{
-			echo null;
+		if (!$this->request->isAjax()) {
+			echo 'null';
 			return false;
 		}
 
-		$productId = trim(strip_tags($_GET['prodId']));
+		$productId = $this->request->getQuery('prodId', ['striptags', 'trim']);
 
-		$file = new Upload($_FILES['fotos'], 'ru');
-
-		if (!$file->file_is_image || !preg_match('/\d+/', $productId))
-		{
-			$file->clean();
-			echo 'false';
-			return false;
-		}
-
-		$sort = Models\ProductImageModel::find(['product_id = \'' . $productId . '\''])->count();
-		$bdFile = new Models\ProductImageModel();
-		$bdFile->product_id = $productId;
-		$bdFile->sort = $sort;
-		$bdFile->extension = $file->file_src_name_ext;
-
-		// Загружаем оригинальный файл
-
-		if ($bdFile->save())
-		{
-			$file->file_new_name_body = $bdFile->id . '__original';
-			if (!file_exists('products/' . $productId . '/images'))
-			{
-				mkdir('products/' . $productId . '/images', 0777, true);
-			}
-			$file->process('products/' . $productId . '/images');
-			if (!$file->processed)
-			{
-				echo 'false';
-				$file->clean();
-				return false;
-			}
-		} else {
-			echo 'false';
-			$file->clean();
-			return false;
-		}
-
-		// Загружаем оригинальный файл с водяным знаком
-
-		$file->file_new_name_body = $bdFile->id . '__original_w';
-		$file->image_watermark = 'img/watermark.png';
-		$file->image_watermark_position = 'TL';
-		$file->process('products/' . $productId . '/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
-
-		// Загружаем картинку для описания товара
-
-		$file->file_new_name_body = $bdFile->id . '__product_description';
-		$file->image_watermark = 'img/watermark.png';
-		$file->image_watermark_position = 'TL';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 290;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 300;
-		}
-		$file->process('products/' . $productId . '/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
-
-		// Загружаем миниатюру для описания товара
-
-		$file->file_new_name_body = $bdFile->id . '__product_thumb';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 55;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 47;
-		}
-		$file->process('products/' . $productId . '/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
-
-		// Загружаем картинку для списка товаров
-
-		$file->file_new_name_body = $bdFile->id . '__product_list';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 155;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 155;
-		}
-		$file->process('products/' . $productId . '/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
-
-		// Загружаем картинку для панели "Лидеры продаж"
-
-		$file->file_new_name_body = $bdFile->id . '__product_top';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 198;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 160;
-		}
-		$file->process('products/' . $productId . '/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
-
-		// Загружаем миниатюру для админки
-
-		$file->file_new_name_body = $bdFile->id . '__admin_thumb';
-		$file->image_resize = true;
-		if ($file->image_src_x >= $file->image_src_y)
-		{
-			$file->image_x = 250;
-			$file->image_ratio_y = true;
-		}
-		elseif ($file->image_src_x < $file->image_src_y)
-		{
-			$file->image_ratio_x = true;
-			$file->image_y = 150;
-		}
-		$file->process('products/' . $productId . '/images');
-		if (!$file->processed)
-		{
-			echo 'false';
-			$file->clean();
-			return false;
-		}
+		$image = Models\ImageProduct::uploadImageAndReturn($productId);
 
 		// Возвращаем тумбу для админки
+		if ($image) {
+			$result['id'] = $image->id;
+			$result['path'] = $image->imgAdminPath;
 
-		$result['id'] = $bdFile->id;
-		$result['path'] = '/products/' . $productId . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension;
-
-		echo json_encode($result);
-		$file->clean();
-		return true;
+			echo json_encode($result);
+			return true;
+		}
 	}
 
 	public function sortFotosAction()
 	{
-		if ($this->request->isAjax() && $this->request->isPost())
-		{
+		if ($this->request->isAjax() && $this->request->isPost()) {
 			$fotoIds = json_decode($this->request->getPost('ids'));
 
 			for ($i = 0; $i < count($fotoIds); $i++)
 			{
-				$foto = Models\ProductImageModel::findFirst($fotoIds[$i]);
+				/** @var Models\ImageProduct | null $foto */
+				$foto = Models\ImageProduct::findFirst($fotoIds[$i]);
 
-				if ($foto)
-				{
+				if ($foto) {
 					$foto->sort = $i;
-					$foto->save();
+					$foto->dbSave();
 				}
 			}
 
@@ -1366,53 +1180,32 @@ class AdminController extends BaseAdminController
 
 	public function deleteProductFotoAction()
 	{
-		if (!$this->request->isAjax() && !$this->request->isPost())
-		{
+		if (!$this->request->isAjax() || !$this->request->isPost()) {
 			echo 'false';
 			return false;
 		}
 
 		$id = $this->request->getPost('id', ['trim', 'striptags']);
-		$bdFile = Models\ProductImageModel::findFirst($id);
 
-		if ($bdFile)
-		{
-			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original.' . $bdFile->extension)) {
-				Models\ProductImageModel::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original.' . $bdFile->extension);
-			}
-			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original_w.' . $bdFile->extension)) {
-				Models\ProductImageModel::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__original_w.' . $bdFile->extension);
-			}
-			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_description.' . $bdFile->extension)) {
-				Models\ProductImageModel::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_description.' . $bdFile->extension);
-			}
-			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_thumb.' . $bdFile->extension)) {
-				Models\ProductImageModel::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_thumb.' . $bdFile->extension);
-			}
-			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension)) {
-				Models\ProductImageModel::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension);
-			}
-			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_list.' . $bdFile->extension)) {
-				Models\ProductImageModel::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_list.' . $bdFile->extension);
-			}
-			if (file_exists('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_top.' . $bdFile->extension)) {
-				Models\ProductImageModel::deleteFiles('products/' . $bdFile->product_id . '/images/' . $bdFile->id . '__product_top.' . $bdFile->extension);
-			}
-		} else {
-			echo 'false';
+		/** @var Models\ImageProduct | null $image */
+		$image = Models\ImageProduct::query()
+			->where('id = ?1')->bind([1 => $id])
+			->execute()
+			->getFirst();
+
+		if (!$image) {
+			echo "false";
 			return false;
 		}
 
-		if ($bdFile->delete())
-		{
-			echo 'true';
+		if ($image->deleteImages()) {
+			echo "true";
 			return true;
-
-		} else {
-			echo 'false';
+		}
+		else {
+			echo "false";
 			return false;
 		}
-
 	}
 
 	public function uploadFileAction()
@@ -1498,8 +1291,8 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Настройки');
 
-		$data['curancy_eur'] = Models\ExchangeModel::findFirst(['curancy = \'eur\''])->value;
-		$data['curancy_usd'] = Models\ExchangeModel::findFirst(['curancy = \'usd\''])->value;
+		$data['curancy_eur'] = Models\Exchange::findFirst(['curancy = \'eur\''])->value;
+		$data['curancy_usd'] = Models\Exchange::findFirst(['curancy = \'usd\''])->value;
 
 		if ($this->request->isPost())
 		{
@@ -1519,8 +1312,8 @@ class AdminController extends BaseAdminController
 
 			if ($validation->validate())
 			{
-				$curancyEur = Models\ExchangeModel::findFirst(['curancy = \'eur\'']);
-				$curancyUsd = Models\ExchangeModel::findFirst(['curancy = \'usd\'']);
+				$curancyEur = Models\Exchange::findFirst(['curancy = \'eur\'']);
+				$curancyUsd = Models\Exchange::findFirst(['curancy = \'usd\'']);
 
 				$curancyEur->value = $inputs['curancy_eur'];
 				$curancyUsd->value = $inputs['curancy_usd'];
@@ -1533,11 +1326,11 @@ class AdminController extends BaseAdminController
 					$this->view->errors = ['success' => ['Данные успешно сохранены']];
 
 					// Пересчет всех цен
-					foreach (Models\ProductModel::find() as $product)
+					foreach (Models\Product::find() as $product)
 					{
 						$prices = [];
 						$priceName = 'price_' . $product->main_curancy;
-						$prices = Models\ExchangeModel::setPrices($product->main_curancy, $product->$priceName);
+						$prices = Models\Exchange::setPrices($product->main_curancy, $product->$priceName);
 
 						$product->price_eur = $prices['price_eur'];
 						$product->price_usd = $prices['price_usd'];
@@ -1561,95 +1354,48 @@ class AdminController extends BaseAdminController
 
 	public function uploadFotoCategoryAction()
 	{
-		if (!$this->request->isAjax())
-		{
-			echo null;
+		if (!$this->request->isAjax()) {
+			echo "false";
 			return false;
 		}
 
-		$categoryId = trim(strip_tags($_GET['catId']));
+		$categoryId = $this->request->getQuery('catId', ['striptags', 'trim']);
+		$image = Models\ImageCategory::uploadFotosAndReturn($categoryId);
 
-		$file = new Upload($_FILES['fotos'], 'ru');
+		if ($image) {
+			$result['id'] = $image->id;
+			$result['path'] = $image->imgPath;
 
-		if (!$file->file_is_image || !preg_match('/\d+/', $categoryId))
-		{
-			$file->clean();
-			echo 'false';
-			return false;
+			echo json_encode($result);
+			return true;
 		}
-
-		$bdFile = new Models\CategoryImageModel();
-		$bdFile->pathname = '/';
-		$bdFile->category_id = $categoryId;
-
-		if ($bdFile->save())
-		{
-			if (!file_exists('categories'))
-			{
-				mkdir('categories', 0777, true);
-			}
-
-			$file->image_resize = true;
-			$file->image_ratio_crop = true;
-			if ($file->image_src_x >= $file->image_src_y)
-			{
-				$file->image_x = 110;
-				$file->image_ratio_y = true;
-			}
-			elseif ($file->image_src_x < $file->image_src_y)
-			{
-				$file->image_y = 110;
-				$file->image_ratio_x = true;
-			}
-			$file->file_new_name_body = $bdFile->id;
-			$file->process('categories');
-
-			if ($file->processed)
-			{
-				$bdFile->pathname = str_replace('\\', '/', $file->file_dst_pathname);
-				$bdFile->save();
-				$file->clean();
-				$result['id'] = $bdFile->id;
-				$result['path'] = '/' . $bdFile->pathname;
-
-				echo json_encode($result);
-				return true;
-			}
-		} else {
-			$file->clean();
-			echo 'false';
-			return false;
-		}
-
 	}
 
 	public function deleteCategoryFotoAction()
 	{
-		if (!$this->request->isAjax() || !$this->request->isPost())
-		{
+		if (!$this->request->isAjax() || !$this->request->isPost()) {
 			echo null;
 			return false;
 		}
 
 		$id = $this->request->getPost('id', ['trim', 'striptags']);
-		$bdFile = Models\CategoryImageModel::findFirst($id);
+		/** @var Models\ImageCategory $bdFile */
+		$bdFile = Models\ImageCategory::findFirst($id);
 
-		if (!preg_match('/\d+/', $id))
-		{
+		if (!preg_match('/\d+/', $id)) {
 			echo 'false';
 			return false;
 		}
 
-		if ($bdFile && file_exists($bdFile->pathname))
+		$bdFile->setDI();
+		if ($bdFile && $bdFile->isFileExists())
 		{
-			Models\CategoryImageModel::deleteFiles($bdFile->pathname);
+			Models\ImageCategory::deleteFiles($this->url->path('public_html/Uploads/db_images/' . $bdFile->id . '__category.' . $bdFile->extension));
 		}
 
-		if ($bdFile->delete())
-		{
+		if ($bdFile->delete()) {
 			echo 'true';
 			return true;
-
 		} else {
 			echo 'false';
 			return false;
@@ -1665,7 +1411,7 @@ class AdminController extends BaseAdminController
 
 		foreach ($ids as $index => $id)
 		{
-			$video = Models\ProductVideoModel::findFirst($id);
+			$video = Models\ProductVideo::findFirst($id);
 			if ($video)
 			{
 				$video->sort = $index;
@@ -1683,14 +1429,14 @@ class AdminController extends BaseAdminController
 		$href = trim(strip_tags($this->request->getPost('href')));
 		$prodId = trim(strip_tags($this->request->getPost('prodId')));
 
-		$video = new Models\ProductVideoModel();
+		$video = new Models\ProductVideo();
 		if ($name)
 			$video->name = $name;
 		else
 			$video->name = $href;
 		$video->href = $href;
 		$video->product_id = $prodId;
-		$video->sort = Models\ProductVideoModel::find([
+		$video->sort = Models\ProductVideo::find([
 			'product_id = ?1',
 			'bind' => [1 => $prodId]
 		])->count();
@@ -1717,7 +1463,7 @@ class AdminController extends BaseAdminController
 		$id = trim(strip_tags($this->dispatcher->getParams()[0]));
 		if ($id && preg_match('/\d+/', $id))
 		{
-			$video = Models\ProductVideoModel::findFirst($id);
+			$video = Models\ProductVideo::findFirst($id);
 			if ($video)
 			{
 				$video->delete();
@@ -1743,7 +1489,7 @@ class AdminController extends BaseAdminController
 		$href = trim(strip_tags($this->request->getPost('href')));
 		if ($id && preg_match('/\d+/', $id))
 		{
-			$video = Models\ProductVideoModel::findFirst($id);
+			$video = Models\ProductVideo::findFirst($id);
 			if (!$video)
 			{
 				echo 'false';
@@ -1829,7 +1575,7 @@ class AdminController extends BaseAdminController
 			], 200, false);
 			if (!preg_match('/\d+/', $inputs['type_id']))
 				$validation->setMessageManual('Тип', 'Неверно указан тип');
-			$samePages = Models\PageModel::findFirst([
+			$samePages = Models\Page::findFirst([
 				'seo_name = ?1',
 				'bind' => [1 => $inputs['seo_name']]
 			]);
@@ -1837,7 +1583,7 @@ class AdminController extends BaseAdminController
 				$validation->setMessageManual('СЕО название', 'Такое название уже существует');
 			if ($validation->validate())
 			{
-				$newPage = new Models\PageModel();
+				$newPage = new Models\Page();
 				$newPage->name = $inputs['name'];
 				$newPage->seo_name = $inputs['seo_name'];
 				$newPage->type_id = $inputs['type_id'];
@@ -1866,7 +1612,7 @@ class AdminController extends BaseAdminController
 					$pageForView['name'] = $inputs['name'];
 					$pageForView['seo_name'] = $inputs['seo_name'];
 					$pageForView['types'] =[];
-					$types = Models\PageTypeModel::find();
+					$types = Models\PageType::find();
 					if (count($types))
 					{
 						foreach ($types as $type)
@@ -1896,7 +1642,7 @@ class AdminController extends BaseAdminController
 				$pageForView['name'] = $inputs['name'];
 				$pageForView['seo_name'] = $inputs['seo_name'];
 				$pageForView['types'] =[];
-				$types = Models\PageTypeModel::find();
+				$types = Models\PageType::find();
 				if (count($types))
 				{
 					foreach ($types as $type)
@@ -1925,7 +1671,7 @@ class AdminController extends BaseAdminController
 
 		if (!$pageForView['types'])
 		{
-			$types = Models\PageTypeModel::find();
+			$types = Models\PageType::find();
 			if (count($types))
 			{
 				foreach ($types as $type)
@@ -1953,7 +1699,7 @@ class AdminController extends BaseAdminController
 				'action' => 'pages'
 			]);
 		}
-		$page = Models\PageModel::findFirst([
+		$page = Models\Page::findFirst([
 			'seo_name = ?1',
 			'bind' => [1 => $seoName]
 		]);
@@ -1986,8 +1732,8 @@ class AdminController extends BaseAdminController
 	public function editPageAction()
 	{
 		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
-		/** @var Models\PageModel $page */
-		$page = Models\PageModel::findFirst([
+		/** @var Models\Page $page */
+		$page = Models\Page::findFirst([
 			'seo_name = ?1',
 			'bind' => [1 => $seoName]
 		]);
@@ -2002,7 +1748,7 @@ class AdminController extends BaseAdminController
 		$pageForView['id'] = $page->id;
 		$pageForView['name'] = $page->name;
 		$pageForView['seo_name'] = $page->seo_name;
-		$types = Models\PageTypeModel::find();
+		$types = Models\PageType::find();
 		if (count($types))
 		{
 			foreach ($types as $type)
@@ -2080,7 +1826,7 @@ class AdminController extends BaseAdminController
 			if (!preg_match('/\d+/', $inputs['type_id'])) {
 				$validation->setMessageManual('Тип', 'Неверно указан тип');
 			}
-			$samePages = Models\PageModel::findFirst([
+			$samePages = Models\Page::findFirst([
 				'seo_name = ?1 AND id <> ?2',
 				'bind' => [1 => $inputs['seo_name'], 2 => $page->id]
 			]);
@@ -2116,7 +1862,7 @@ class AdminController extends BaseAdminController
 					$pageForView['name'] = $inputs['name'];
 					$pageForView['seo_name'] = $inputs['seo_name'];
 					$pageForView['types'] =[];
-					$types = Models\PageTypeModel::find();
+					$types = Models\PageType::find();
 					if (count($types))
 					{
 						foreach ($types as $type)
@@ -2147,7 +1893,7 @@ class AdminController extends BaseAdminController
 				$pageForView['name'] = $inputs['name'];
 				$pageForView['seo_name'] = $inputs['seo_name'];
 				$pageForView['types'] =[];
-				$types = Models\PageTypeModel::find();
+				$types = Models\PageType::find();
 				if (count($types))
 				{
 					foreach ($types as $type)
@@ -2181,8 +1927,7 @@ class AdminController extends BaseAdminController
 
 	public function uploadStaticPageFotoAction()
 	{
-		if (!$this->request->isAjax())
-		{
+		if (!$this->request->isAjax() || !$this->request->isPost()) {
 			echo null;
 			return false;
 		}
@@ -2208,8 +1953,8 @@ class AdminController extends BaseAdminController
 		$bdFile->extension = $file->file_src_name_ext;
 		$bdFile->save();
 
-		$page = Models\PageModel::findFirst($bdFile->page_id);
-		if ($page->type_id == 1 || $page->type_id == 2 || $page->type_id == 3 || $page->type_id == 4) {
+		$page = Models\Page::findFirst($bdFile->page_id);
+		if ($page->type_id == 1 || $page->type_id == 2 || $page->type_id == 3 || $page->type_id == 4 || $page->type_id == 6) {
 		/*
 		 * Возможные варианты картинок:
 		 * - 'page_description' - картинка для описания проекта (500x358);
@@ -2396,7 +2141,7 @@ class AdminController extends BaseAdminController
 			echo "false";
 			return false;
 		}
-		$product = Models\ProductModel::findFirst($prodId);
+		$product = Models\Product::findFirst($prodId);
 		if (!$product) {
 			echo "false";
 			return false;
@@ -2408,7 +2153,7 @@ class AdminController extends BaseAdminController
 			echo "false";
 			return false;
 		}
-		$searchedSale = Models\PageModel::findFirst($saleId);
+		$searchedSale = Models\Page::findFirst($saleId);
 		if (!$searchedSale) {
 			echo "false";
 			return false;
@@ -2435,7 +2180,7 @@ class AdminController extends BaseAdminController
 			echo "false";
 			return false;
 		}
-		$product = Models\ProductModel::findFirst($prodId);
+		$product = Models\Product::findFirst($prodId);
 		if (!$product) {
 			echo "false";
 			return false;

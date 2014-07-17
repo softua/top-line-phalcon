@@ -168,7 +168,9 @@
 								<ul data-uploaded-list="fotos" data-product-id="{{ data['id'] }}" class="thumbnails">
 									{% if fotos is defined and fotos is not empty %}
 										{% for foto in fotos %}
-											<li data-uploaded-id="{{ foto['id'] }}" data-delete-foto="true"><img src="{{ foto['path'] }}" alt="/" class="thumbnail"/></li>
+											<li data-uploaded-id="{{ foto.id }}" data-delete-foto="true">
+												<img src="{{ foto.imgAdminPath }}" alt="" class="thumbnail"/>
+											</li>
 										{% endfor %}
 									{% endif %}
 								</ul>

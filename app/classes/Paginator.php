@@ -12,6 +12,7 @@ class Paginator
 {
 	protected $_di;
 	protected $_url;
+
 	private $_paginator;
 	public $items = [];
 	public $before;
@@ -23,9 +24,9 @@ class Paginator
 	public $totalItems;
 	public $links = [];
 
-	public function __construct($di, $data, $limit = 10, $page = 1)
+	public function __construct($data, $limit = 10, $page = 1)
 	{
-		$this->setDi($di);
+		$this->setDI();
 		$this->_paginator = new \Phalcon\Paginator\Adapter\NativeArray([
 			'data' => $data,
 			'limit' => $limit,
@@ -33,9 +34,9 @@ class Paginator
 		]);
 	}
 
-	public function setDi($di)
+	public function setDI($di = null)
 	{
-		$this->_di = $di;
+		$this->_di = \Phalcon\DI::getDefault();
 		$this->_url = $this->_di->get('url');
 	}
 

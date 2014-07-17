@@ -42,7 +42,12 @@
 					<li class="catalog__item">
 						<a class="catalog__item__link" href="{{ category.link }}" title="{{ category.name }}">
 							<figure class="catalog__item__img">
-								<img src="{{ category.mainImage }}" alt="{{ category.name }}"/>
+								{% if category.mainImage %}
+									<img src="{{ category.mainImage.imgPath }}" alt="{{ category.name }}"/>
+								{% else %}
+									<img src="{{ static_url('img/no_foto.png') }}" alt="{{ category.name }}"/>
+								{% endif %}
+
 							</figure>
 							{{ category.name }}
 						</a>

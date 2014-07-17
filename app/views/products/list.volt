@@ -68,7 +68,12 @@
 								<a href="{{ product.path }}" title="{{ product.name }}">{{ product.name }}</a>
 							</h2>
 							<figure class="products-list__img">
-								<img src="{{ product.getMainImageForList() }}" alt="{{ product.name }}"/>
+								{% if product.hasImages() %}
+									<img src="{{ product.getMainImage().imgListPath }}" alt="{{ product.name }}"/>
+								{% else %}
+									<img src="{{ static_url('img/no_foto.png') }}" alt="{{ product.name }}"/>
+								{% endif %}
+
 								{% if product.hasSales() %}
 									<img class="products-list__img--sale" src="{{ static_url('img/sales/list.png') }}" alt="Акция"/>
 								{% endif %}

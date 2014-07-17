@@ -38,7 +38,9 @@
 			<ul data-uploaded-list="fotos-categories" data-category-id="{{ category.id }}" class="thumbnails">
 				{% if fotos is defined and fotos is not empty %}
 					{% for foto in fotos %}
-						<li data-uploaded-id="{{ foto['id'] }}" data-delete-category-foto="true"><img src="{{ foto['path'] }}" alt="/" class="thumbnail"/></li>
+						<li data-uploaded-id="{{ foto.id }}" data-delete-category-foto="true">
+							<img src="{{ foto.imgPath }}" alt="{{ foto.name }}" class="thumbnail"/>
+						</li>
 					{% endfor %}
 				{% endif %}
 			</ul>

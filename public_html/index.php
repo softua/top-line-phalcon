@@ -1,10 +1,6 @@
 <?
 
 try {
-	// Отключаем PHP сессии
-	ini_set('session.auto_start', '0');
-	ini_set('session.use_cookies', '0');
-
 	// Создание DI
 	$di = new \Phalcon\DI\FactoryDefault();
 

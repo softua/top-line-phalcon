@@ -3,8 +3,6 @@
 namespace App\Controllers;
 
 use App\Models;
-use App\Product;
-use App\Sale;
 
 class MainController extends BaseFrontController
 {
@@ -18,7 +16,7 @@ class MainController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$news = Models\PageModel::find([
+		$news = Models\Page::find([
 			'type_id = 4 AND public = 1',
 			'order' => 'time DESC',
 			'limit' => 3
@@ -39,8 +37,8 @@ class MainController extends BaseFrontController
 		}
 
 		$this->view->news = $newsForView;
-		$this->view->novelties = Product::getNovelty($this->di);
-		$this->view->sales = Sale::getSales($this->di, true);
+		$this->view->novelties = Models\Product::getNovelty($this->di);
+		$this->view->sales = Models\Sale::getSales($this->di, true);
 
 		echo $this->view->render('main');
 	}

@@ -6,11 +6,8 @@
  */
 
 namespace App\Controllers;
-use App\Category;
-use App\Models;
-use App\Page;
-use App\Paginator;
-use App\Product;
+use App\Paginator,
+	App\Models;
 
 class ProductsController extends BaseFrontController
 {
@@ -26,7 +23,7 @@ class ProductsController extends BaseFrontController
 	{
 		$this->response->setStatusCode(404, 'Not found')->send();
 
-		$this->view->sidebar_categories = Category::getMainCategories($this->di);
+		$this->view->sidebar_categories = Models\Category::getMainCategories($this->di);
 
 		echo $this->view->render('products/notfound');
 	}
@@ -36,7 +33,7 @@ class ProductsController extends BaseFrontController
 		$catSeoName = $this->dispatcher->getParams()[0];
 		if (!$catSeoName) return $this->response->redirect('catalog/');
 
-		$category = Category::getCategoryBySeoName($this->di, $catSeoName, true);
+		$category = Models\Category::getCategoryBySeoName($catSeoName, true);
 		if (!$category) {
 			return $this->response->redirect('catalog/');
 		}
@@ -45,15 +42,16 @@ class ProductsController extends BaseFrontController
 		$sort = $this->request->getQuery('sort', ['trim', 'striptags']);
 		$page = $this->request->getQuery('page', ['trim', 'int']);
 
-		$products = Product::getProductsByCategories($this->di, [$category], false, true, true, $sort);
+		$products = Models\Product::getProductsByCategories([$category], false, true, true, $sort);
 		if ($products) {
-			$paginator = new Paginator($this->di, $products, 10, $page);
+			$paginator = new Paginator($products, 10, $page);
 			$data = $paginator->paginate('products/list/' . $category->seo_name . '/?sort=' . $sort . '&page=');
-		} else $data = null;
+		}
+		else $data = null;
 
 		$this->view->breadcrumbs = $category->getParentsCategories();
 		$this->view->name = $category->name;
-		$this->view->sidebar_categories = $category::getMainCategories($this->di, false, [$category->seo_name]);
+		$this->view->sidebar_categories = Models\Category::getMainCategories(false, [$category->seo_name]);
 		$this->view->data = $data;
 		$this->view->sort = ($sort) ? $sort : 'DESC';
 
@@ -66,7 +64,7 @@ class ProductsController extends BaseFrontController
 		if (!$productSeoName) {
 			return $this->response->redirect('products/notfound');
 		}
-		$product = Product::getProductBySeoName($this->di, $productSeoName, true);
+		$product =Models\Product::getProductBySeoName($productSeoName, true);
 		if (!$product) {
 			return $this->response->redirect('products/notfound');
 		}
@@ -89,7 +87,7 @@ class ProductsController extends BaseFrontController
 		} else {
 			$currentProductForView['price'] = number_format($product->$priceName, 2, '.', ' ');
 		}
-		$currentProductForView['country'] = Models\CountryModel::findFirst([$product->country_id])->name;
+		$currentProductForView['country'] = Models\Country::findFirst([$product->country_id])->name;
 		if ($product->brand)
 		{
 			$currentProductForView['brand'] = $product->brand;
@@ -98,7 +96,7 @@ class ProductsController extends BaseFrontController
 		{
 			$currentProductForView['short_desc'] = $product->short_description;
 		}
-		$prodParams = Models\ProductParamModel::getParamsByProductId($product->id);
+		$prodParams = Models\ProductParam::getParamsByProductId($product->id);
 		if ($prodParams)
 		{
 			foreach ($prodParams as $param)
@@ -124,7 +122,7 @@ class ProductsController extends BaseFrontController
 
 		$this->view->breadcrumbs = $breadcrumbs;
 		$this->view->product = $currentProductForView;
-		$this->view->sidebar_categories = Category::getMainCategories($this->di, false, $product->getCategories());
+		$this->view->sidebar_categories = Models\Category::getMainCategories(false, $product->getCategories());
 
 		echo $this->view->render('products/product');
 	}
@@ -148,7 +146,7 @@ class ProductsController extends BaseFrontController
 			return false;
 		}
 		// Список товаров
-		$prodCats = Models\ProductCategoryModel::find([
+		$prodCats = Models\ProductModels\Category::find([
 			'category_id = :categoryId:',
 			'bind' => ['categoryId' => $currentCategory->id]
 		]);
@@ -170,7 +168,7 @@ class ProductsController extends BaseFrontController
 					$queryString .= ' OR id = ' . $queryStringArray[$j];
 			}
 
-			$productList = Models\ProductModel::find([
+			$productList = Models\Product::find([
 				$queryString,
 				'order' => 'price_uah ' . $sort
 			]);

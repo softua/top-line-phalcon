@@ -65,7 +65,7 @@ class CompanyController extends BaseFrontController
 	{
 		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
 		if ($seoName) {
-			$page = Models\PageModel::findFirst([
+			$page = Models\Page::findFirst([
 				'seo_name = ?1',
 				'bind' => [1 => $seoName]
 			]);
@@ -119,7 +119,7 @@ class CompanyController extends BaseFrontController
 		// Описание новости
 		if ($this->dispatcher->getParams()[0]) {
 			$seoName = $this->dispatcher->getParams()[0];
-			$oneNews = Models\PageModel::findFirst([
+			$oneNews = Models\Page::findFirst([
 				'type_id = 4 AND seo_name = ?1',
 				'bind' => [1 => $seoName]
 			]);
@@ -154,12 +154,12 @@ class CompanyController extends BaseFrontController
 			$sort = $this->request->getQuery('sort', 'int');
 			$currentPage = $this->request->getQuery('page', 'int');
 			if (!$sort || $sort === 1) {
-				$news = Models\PageModel::find([
+				$news = Models\Page::find([
 					'type_id = 4',
 					'order' => 'time DESC'
 				]);
 			} else {
-				$news = Models\PageModel::find([
+				$news = Models\Page::find([
 					'type_id = 4',
 					'order' => 'time ASC'
 				]);
