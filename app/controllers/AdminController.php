@@ -1154,6 +1154,10 @@ class AdminController extends BaseAdminController
 			echo json_encode($result);
 			return true;
 		}
+		else {
+			echo "false";
+			return false;
+		}
 	}
 
 	public function sortFotosAction()
@@ -1732,17 +1736,42 @@ class AdminController extends BaseAdminController
 	public function editPageAction()
 	{
 		$seoName = trim(strip_tags($this->dispatcher->getParams()[0]));
-		/** @var Models\Page $page */
-		$page = Models\Page::findFirst([
-			'seo_name = ?1',
-			'bind' => [1 => $seoName]
-		]);
-		if (!$page) {
+		/** @var Models\CompanyPage | Models\Project | Models\Video | Models\News | Models\Sale | Models\InfoPage | null $page */
+		$pages = Models\Page::query()
+			->where('seo_name = ?1')->bind([1 => $seoName])
+			->execute()->filter(function(Models\Page $item) {
+				$newPage = null;
+				switch ($item->type_id) {
+					case 1: $newPage = new Models\CompanyPage(); break;
+					case 2: $newPage = new Models\Project(); break;
+					case 3: $newPage = new Models\Video(); break;
+					case 4: $newPage = new Models\News(); break;
+					case 5: $newPage = new Models\Sale(); break;
+					case 6: $newPage = new Models\InfoPage(); break;
+				}
+				$newPage->id = $item->id;
+				$newPage->name = $item->name;
+				$newPage->short_content = $item->short_content;
+				$newPage->full_content = $item->full_content;
+				$newPage->video_content = $item->video_content;
+				$newPage->seo_name = $item->seo_name;
+				$newPage->type_id = $item->type_id;
+				$newPage->meta_keywords = $item->meta_keywords;
+				$newPage->meta_description = $item->meta_description;
+				$newPage->public = $item->public;
+				$newPage->sort = $item->sort;
+				$newPage->time = $item->time;
+				$newPage->expiration = $item->expiration;
+				return $newPage;
+			});
+
+		if (!$pages) {
 			return $this->dispatcher->forward([
 				'controller' => 'admin',
 				'action' => 'pages'
 			]);
 		}
+		else $page = $pages[0];
 		$this->tag->prependTitle('Редактирование страницы');
 		$pageForView = [];
 		$pageForView['id'] = $page->id;
@@ -1767,6 +1796,7 @@ class AdminController extends BaseAdminController
 		if ($page->expiration) {
 			$pageForView['expiration'] = date('Y-m-d', strtotime($page->expiration));
 		}
+
 		$pageForView['short_content'] = $page->short_content;
 		$pageForView['full_content'] = $page->full_content;
 		$pageForView['video_content'] = $page->video_content;
@@ -1774,29 +1804,9 @@ class AdminController extends BaseAdminController
 		$pageForView['meta_description'] = $page->meta_description;
 		$pageForView['sort'] = $page->sort;
 		$pageForView['public'] = ($page->public == 1) ? 'on' : 'off';
-		$pageImages = Models\PageImageModel::find([
-			'page_id = ?1',
-			'bind' => [1 => $page->id],
-			'order' => 'sort'
-		]);
-		if (count($pageImages)) {
-			foreach ($pageImages as $image) {
-				$tempImage = [];
-				$tempImage['id'] = $image->id;
-				$path = 'staticPages/images/' . $image->id . '__admin_thumb.' . $image->extension;
-				if (file_exists($path)) {
-					$tempImage['path'] = '/' . $path;
-				} else {
-					$tempImage['path'] = '/img/no-foto.png';
-				}
-				$pageForView['fotos'][] = $tempImage;
-			}
-		} else {
-			$pageForView['fotos'] = null;
-		}
+		$pageForView['fotos'] = $page->getImages();
 
-		if ($this->request->isPost())
-		{
+		if ($this->request->isPost()) {
 			$inputs = [];
 			$inputs['name'] = trim(strip_tags($this->request->getPost('name')));
 			$inputs['seo_name'] = Translit::get_seo_keyword($inputs['name'], true);
@@ -1933,146 +1943,118 @@ class AdminController extends BaseAdminController
 		}
 
 		$pageId = trim(strip_tags($this->dispatcher->getParams()[0]));
-
-		$file = new Upload($_FILES['fotos'], 'ru');
-
-		if (!$file->file_is_image || !preg_match('/\d+/', $pageId))
-		{
-			$file->clean();
-			echo 'false';
+		/** @var Models\Page | null $page */
+		$page = Models\Page::findFirst($pageId);
+		if (!$pageId) {
+			echo "false";
 			return false;
 		}
 
-		$sort = Models\PageImageModel::find([
-			'page_id = ?1',
-			'bind' => [1 => $pageId]
-		])->count();
-		$bdFile = new Models\PageImageModel();
-		$bdFile->page_id = $pageId;
-		$bdFile->sort = $sort;
-		$bdFile->extension = $file->file_src_name_ext;
-		$bdFile->save();
+		if ($page->type_id == 1) {
+			$image = Models\ImageCompany::uploadImageAndReturn($pageId);
 
-		$page = Models\Page::findFirst($bdFile->page_id);
-		if ($page->type_id == 1 || $page->type_id == 2 || $page->type_id == 3 || $page->type_id == 4 || $page->type_id == 6) {
-		/*
-		 * Возможные варианты картинок:
-		 * - 'page_description' - картинка для описания проекта (500x358);
-		 * - 'page_list' - картинка для списка проектов (173x131);
-		 * - 'admin_thumb' - картинка для миниатюры в админке (250x150).
-		*/
-			// Загружаем картинку для описания проекта
+			// Возвращаем тумбу для админки
+			if ($image) {
+				$result['id'] = $image->id;
+				$result['path'] = $image->imgAdminPath;
 
-			$file->file_new_name_body = $bdFile->id . '__page_description';
-			$file->image_watermark = 'img/watermark.png';
-			$file->image_watermark_position = 'TL';
-			$file->image_resize = true;
-			$file->image_ratio = true;
-			$file->image_x = 500;
-			$file->image_y = 358;
-			$file->process('staticPages/images');
-			if (!$file->processed)
-			{
-				echo 'false';
-				$file->clean();
-				return false;
+				echo json_encode($result);
+				return true;
 			}
-
-			// Загружаем картинку для списка проектов
-
-			$file->file_new_name_body = $bdFile->id . '__page_list';
-			$file->image_resize = true;
-			$file->image_ratio = true;
-			$file->image_x = 173;
-			$file->image_y = 131;
-			$file->process('staticPages/images');
-			if (!$file->processed)
-			{
-				echo 'false';
-				$file->clean();
-				return false;
-			}
-
-			// Загружаем миниатюру для админки
-
-			$file->file_new_name_body = $bdFile->id . '__admin_thumb';
-			$file->image_resize = true;
-			$file->image_ratio = true;
-			$file->image_x = 250;
-			$file->image_y = 150;
-			$file->process('staticPages/images');
-			if (!$file->processed)
-			{
-				echo 'false';
-				$file->clean();
-				return false;
-			}
-		} elseif ($page->type_id == 5) {
-		/*
-		 * Возможные варианты картинок:
-		 * - 'page_description' - картинка для описания проекта (589x196);
-		 * - 'page_list' - картинка для списка проектов (465x164);
-		 * - 'admin_thumb' - картинка для миниатюры в админке (250x188).
-		*/
-			// Загружаем картинку для описания проекта
-
-			$file->file_new_name_body = $bdFile->id . '__page_description';
-			$file->image_watermark = 'img/watermark.png';
-			$file->image_watermark_position = 'TL';
-			$file->image_resize = true;
-			$file->image_x = 589;
-			$file->image_ratio_y = true;
-			$file->process('staticPages/images');
-			if (!$file->processed)
-			{
-				echo 'false';
-				$file->clean();
-				return false;
-			}
-
-			// Загружаем картинку для списка проектов
-
-			$file->file_new_name_body = $bdFile->id . '__page_list';
-			$file->image_resize = true;
-			$file->image_x = 465;
-			$file->image_ratio_y = true;
-			$file->process('staticPages/images');
-			if (!$file->processed)
-			{
-				echo 'false';
-				$file->clean();
-				return false;
-			}
-
-			// Загружаем миниатюру для админки
-
-			$file->file_new_name_body = $bdFile->id . '__admin_thumb';
-			$file->image_resize = true;
-			$file->image_x = 250;
-			$file->image_ratio_y = true;
-			$file->process('staticPages/images');
-			if (!$file->processed)
-			{
-				echo 'false';
-				$file->clean();
+			else {
+				echo "false";
 				return false;
 			}
 		}
+		elseif ($page->type_id == 2) {
+			$image = Models\ImageProject::uploadImageAndReturn($pageId);
 
-		// Возвращаем тумбу для админки
+			// Возвращаем тумбу для админки
+			if ($image) {
+				$result['id'] = $image->id;
+				$result['path'] = $image->imgAdminPath;
 
-		$result['id'] = $bdFile->id;
-		$result['path'] = '/staticPages/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension;
+				echo json_encode($result);
+				return true;
+			}
+			else {
+				echo "false";
+				return false;
+			}
+		}
+		elseif ($page->type_id == 3) {
+			$image = Models\ImageInfo::uploadImageAndReturn($pageId);
 
-		echo json_encode($result);
-		$file->clean();
-		return true;
+			// Возвращаем тумбу для админки
+			if ($image) {
+				$result['id'] = $image->id;
+				$result['path'] = $image->imgAdminPath;
+
+				echo json_encode($result);
+				return true;
+			}
+			else {
+				echo "false";
+				return false;
+			}
+		}
+		elseif ($page->type_id == 4) {
+			$image = Models\ImageNews::uploadImageAndReturn($pageId);
+
+			// Возвращаем тумбу для админки
+			if ($image) {
+				$result['id'] = $image->id;
+				$result['path'] = $image->imgAdminPath;
+
+				echo json_encode($result);
+				return true;
+			}
+			else {
+				echo "false";
+				return false;
+			}
+		}
+		elseif ($page->type_id == 5) {
+			$image = Models\ImageSale::uploadImageAndReturn($pageId);
+
+			// Возвращаем тумбу для админки
+			if ($image) {
+				$result['id'] = $image->id;
+				$result['path'] = $image->imgAdminPath;
+
+				echo json_encode($result);
+				return true;
+			}
+			else {
+				echo "false";
+				return false;
+			}
+		}
+		elseif ($page->type_id == 6) {
+			$image = Models\ImageInfo::uploadImageAndReturn($pageId);
+
+			// Возвращаем тумбу для админки
+			if ($image) {
+				$result['id'] = $image->id;
+				$result['path'] = $image->imgAdminPath;
+
+				echo json_encode($result);
+				return true;
+			}
+			else {
+				echo "false";
+				return false;
+			}
+		}
+		else {
+			echo "false";
+			return false;
+		}
 	}
 
 	public function deleteStaticPageFotoAction()
 	{
-		if (!$this->request->isAjax() || !$this->request->isPost())
-		{
+		if (!$this->request->isAjax() || !$this->request->isPost()) {
 			echo 'false';
 			return false;
 		}

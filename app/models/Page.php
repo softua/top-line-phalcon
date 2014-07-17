@@ -67,34 +67,6 @@ class Page extends \Phalcon\Mvc\Model
 		else return false;
 	}
 
-	protected function _setImages($belongs)
-	{
-		/** @var Image[] $images */
-		$images = Image::query()
-			->where('belongs = ?1')->bind([1 => $belongs])
-			->andWhere('belongs_id = ?2', [2 => $this->id])
-			->orderBy('sort')
-			->execute()->filter(function(Image $item) {
-				return $item;
-			});
-
-		if (count($images)) {
-			$this->_images = $images;
-			$this->_mainImage = $this->_images[0];
-		}
-		else {
-			$this->_images = false;
-			$this->_mainImage = false;
-		}
-	}
-
-	public function setImages($belongs)
-	{
-		if (!$this->_images) {
-			$this->_setImages($belongs);
-		}
-	}
-
 	public static function getPageBySeoName($seoName)
 	{
 		if (!trim(strip_tags($seoName))) return false;

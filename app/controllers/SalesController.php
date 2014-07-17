@@ -16,7 +16,7 @@ class SalesController extends BaseFrontController
 		parent::initialize();
 		$this->tag->appendTitle('Акционные предложения');
 
-		$this->view->sidebar_categories = \App\Category::getMainCategories($this->di, false);
+		$this->view->sidebar_categories = Models\Category::getMainCategories($this->di, false);
 	}
 
 	public function notFoundAction()
@@ -29,8 +29,8 @@ class SalesController extends BaseFrontController
 	{
 		$currentPage = $this->request->getQuery('page', 'int');
 
-		$sales = App\Sale::getSales($this->di, true);
-		$data = new App\Paginator($this->di, $sales, 10, $currentPage);
+		$sales = Models\Sale::getSales(true);
+		$data = new App\Paginator($sales, 10, $currentPage);
 		$data->paginate($this->url->get('sales/?page='));
 
 		$this->view->data = $data;

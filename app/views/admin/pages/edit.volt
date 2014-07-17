@@ -121,7 +121,9 @@
 						<ul data-uploaded-list="pages-fotos" data-page-id="{{ page['id'] }}" class="thumbnails">
 							{% if page['fotos'] is defined and page['fotos'] is not empty %}
 								{% for foto in page['fotos'] %}
-									<li data-uploaded-id="{{ foto['id'] }}" data-delete-static-page-foto="true"><img src="{{ foto['path'] }}" alt="/" class="thumbnail"/></li>
+									<li data-uploaded-id="{{ foto.id }}" data-delete-static-page-foto="true">
+										<img src="{{ foto.imgAdminPath }}" alt="" class="thumbnail"/>
+									</li>
 								{% endfor %}
 							{% endif %}
 						</ul>

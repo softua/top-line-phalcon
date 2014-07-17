@@ -8,18 +8,18 @@
 namespace App\Models;
 
 
-class InfoPage extends Page
+class News extends Page
 {
 	public $path;
 
 	public function setImages()
 	{
 		if ($this->_images === null) {
-			$this->_images = ImageCompany::query()
-				->where('belongs = \'project\'')
+			$this->_images = ImageNews::query()
+				->where('belongs = \'news\'')
 				->andWhere('belongs_id = ?1', [1 => $this->id])
 				->orderBy('sort')
-				->execute()->filter(function(ImageCompany $item) {
+				->execute()->filter(function(ImageNews $item) {
 					$item->setPaths();
 					return $item;
 				});
@@ -38,14 +38,14 @@ class InfoPage extends Page
 		else return $this->_images;
 	}
 
-	public static function getInfoPages()
+	public static function getProjects()
 	{
-		/** @var InfoPage[] $pages */
+		/** @var self[] $pages */
 		$pages = self::query()
-			->where('type_id = 6')
-			->andWhere('public = 1')
+			->where('type_id = \'4\'')
+			->andWhere('public = \'1\'')
 			->orderBy('sort, name')
-			->execute()->filter(function(InfoPage $page) {
+			->execute()->filter(function(self $page) {
 				$page->time = strtotime($page->time);
 				$page->path = \Phalcon\DI::getDefault()['url']->get('page/show/' . $page->seo_name);
 				return $page;
@@ -57,7 +57,7 @@ class InfoPage extends Page
 
 	public static function getPageBySeoName($seoName)
 	{
-		/** @var InfoPage $page */
+		/** @var Project $page */
 		$page = self::query()
 			->where('seo_name = ?1')->bind([1 => $seoName])
 			->execute()

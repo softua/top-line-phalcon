@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	<a href="/admin/addpage" class="btn btn-primary">Добавить статическую страницу</a>
+	<a href="{{ url('admin/addpage') }}" class="btn btn-primary">Добавить статическую страницу</a>
 	{% if pages is defined and pages is not empty %}
 		{% for type, page in pages %}
 			{% if page is defined and page is not empty %}
@@ -50,5 +50,5 @@
 	{% else %}
 		Еще нет страниц
 	{% endif %}
-	<a href="/admin/addpage" class="btn btn-primary">Добавить статическую страницу</a>
+	<a href="{{ url('admin/addpage') }}" class="btn btn-primary">Добавить статическую страницу</a>
 {% endblock %}

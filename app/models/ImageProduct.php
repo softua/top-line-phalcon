@@ -25,6 +25,10 @@ class ImageProduct extends Image
 	/** @var string картинка для миниатюры в админке (250x150) */
 	public $imgAdminPath;
 
+	public function onConstruct()
+	{
+		$this->setDI();
+	}
 
 	public function setPaths()
 	{

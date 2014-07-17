@@ -9,11 +9,11 @@ namespace App\Models;
 use App,
 	App\Upload;
 
-class ImageProject extends Image
+class ImageInfo extends Image
 {
-	/** @var string картинка для описания проекта (500 x 358) */
+	/** @var string картинка для описания страницы (500 x 358) */
 	public $imgDescriptionPath;
-	/** @var  string картинка для списка проектов (173 x 131) */
+	/** @var  string картинка для списка инфо страниц (173 x 131) */
 	public $imgListPath;
 	/** @var  string картинка для миниатюры в админке (250 x 150) */
 	public $imgAdminPath;
@@ -26,14 +26,14 @@ class ImageProject extends Image
 	public function setPaths()
 	{
 		if ($this->imgDescriptionPath === null) {
-			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__project_description.' . $this->extension);
-			if (file_exists($path)) $this->imgDescriptionPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__project_description.' . $this->extension);
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__info_description.' . $this->extension);
+			if (file_exists($path)) $this->imgDescriptionPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__info_description.' . $this->extension);
 			else $this->imgDescriptionPath = false;
 		}
 
 		if ($this->imgListPath === null) {
-			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__project_list.' . $this->extension);
-			if (file_exists($path)) $this->imgDescriptionPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__project_list.' . $this->extension);
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__info_list.' . $this->extension);
+			if (file_exists($path)) $this->imgDescriptionPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__info_list.' . $this->extension);
 			else $this->imgDescriptionPath = false;
 		}
 
@@ -45,26 +45,26 @@ class ImageProject extends Image
 	}
 
 	/**
-	 * @param int $projectId
+	 * @param int $infoId
 	 * @return ImageProduct | false | null
 	 */
-	public static function uploadImageAndReturn($projectId)
+	public static function uploadImageAndReturn($infoId)
 	{
 		$file = new Upload($_FILES['fotos'], 'ru');
 
-		if (!$file->file_is_image || !preg_match('/\d+/', $projectId)) {
+		if (!$file->file_is_image || !preg_match('/\d+/', $infoId)) {
 			$file->clean();
 			return null;
 		}
 
 		$sort = self::query()
-			->where('belongs = \'project\'')
-			->andWhere('belongs_id = ?1', [1 => $projectId])
+			->where('belongs = \'info\'')
+			->andWhere('belongs_id = ?1', [1 => $infoId])
 			->execute()->count();
 
 		$image = new self();
-		$image->belongs = 'project';
-		$image->belongs_id = $projectId;
+		$image->belongs = 'info';
+		$image->belongs_id = $infoId;
 		$image->extension = $file->file_src_name_ext;
 		$image->sort = $sort;
 
@@ -72,9 +72,9 @@ class ImageProject extends Image
 
 			$path = \Phalcon\DI::getDefault()->get('url');
 
-			// Загружаем картинку для описания проекта
+			// Загружаем картинку для описания инфо страницы
 
-			$file->file_new_name_body = $image->id . '__project_description';
+			$file->file_new_name_body = $image->id . '__info_description';
 			$file->image_watermark = $path->getStatic('img/watermark.png');
 			$file->image_watermark_position = 'TL';
 			$file->image_resize = true;
@@ -87,9 +87,9 @@ class ImageProject extends Image
 				return false;
 			}
 
-			// Загружаем картинку для списка проектов
+			// Загружаем картинку для списка инфо страниц
 
-			$file->file_new_name_body = $image->id . '__project_list';
+			$file->file_new_name_body = $image->id . '__info_list';
 			$file->image_resize = true;
 			$file->image_ratio = true;
 			$file->image_x = 173;

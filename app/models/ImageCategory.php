@@ -13,6 +13,10 @@ class ImageCategory extends Image
 	/** @var string картинка для категории (110 x 110) */
 	public $imgPath;
 
+	public function onConstruct()
+	{
+		$this->setDI();
+	}
 
 	public function setPaths()
 	{
@@ -46,7 +50,6 @@ class ImageCategory extends Image
 			->execute()->count();
 
 		$image = new self();
-		$image->setDI();
 		$image->extension = $file->file_src_name_ext;
 		$image->belongs = 'category';
 		$image->belongs_id = $categoryId;
