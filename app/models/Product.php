@@ -335,7 +335,7 @@ class Product extends \Phalcon\Mvc\Model
 			->execute()
 			->count();
 
-		if ($productsCount) return false;
+		if ($productsCount > 1) return false;
 		else return true;
 	}
 

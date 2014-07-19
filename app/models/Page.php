@@ -14,6 +14,11 @@ class Page extends \Phalcon\Mvc\Model
 		return 'pages';
 	}
 
+	public function onConstruct()
+	{
+		$this->setDI();
+	}
+
 	public function initialize()
 	{
 		$this->hasManyToMany('id', '\App\Models\ProductSaleModel', 'page_id', 'product_id', '\App\Models\ProductModel', 'id', [
@@ -27,7 +32,6 @@ class Page extends \Phalcon\Mvc\Model
 		]);
 
 		$this->useDynamicUpdate(true);
-		$this->setDI();
 	}
 
 	protected $_di;

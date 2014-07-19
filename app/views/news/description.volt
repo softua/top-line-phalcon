@@ -9,7 +9,7 @@
 			<a class="breadcrumbs__item__link" href="{{ url('company/news/') }}" title="Главная" itemprop="breadcrumb">Новости</a> -
 		</li>
 		<li class="breadcrumbs__item">
-			<span class="breadcrumbs__item__current" itemprop="breadcrumb">{{ news['name'] }}</span>
+			<span class="breadcrumbs__item__current" itemprop="breadcrumb">{{ news.name }}</span>
 		</li>
 	</ul>
 {% endblock %}
@@ -18,12 +18,19 @@
 	<main class="main main--aside" role="main">
 		<a class="main__back" href="{{ url('company/news/') }}">Назад к новостям</a>
 		<article class="article">
-			<h1 class="title">{{ news['name'] }}</h1>
-			<time class="article__date" datetime="{{ news['time'] }}">{{ news['time'] }}</time>
-			<figure class="article__main-img">
-				<img src="{{ news['img'] }}" alt="{{ news['name'] }}"/>
-			</figure>
-			{{ news['full_content'] }}
+			<h1 class="title">{{ news.name }}</h1>
+			<time class="article__date" datetime="<?= date('d.m.Y', $news->time) ?>"><?= date('d.m.Y', $news->time) ?></time>
+			{% set image = news.getMainImage() %}
+			{% if image %}
+				<figure class="article__main-img">
+					<img src="{{ image.imgDescriptionPath }}" alt="{{ news.name }}"/>
+				</figure>
+			{% else %}
+				<figure class="article__main-img">
+					<img src="{{ static_url('img/no_foto.png') }}" alt="{{ news.name }}"/>
+				</figure>
+			{% endif %}
+			{{ news.full_content }}
 			<div class="clear"></div>
 
 			<div class="article__actions">

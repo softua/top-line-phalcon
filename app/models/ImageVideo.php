@@ -45,6 +45,28 @@ class ImageVideo extends Image
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function deleteImage()
+	{
+		if ($this->delete()) {
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__video_description.' . $this->extension);
+			if (file_exists($path)) parent::deleteFiles($path);
+
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__video_list.' . $this->extension);
+			if (file_exists($path)) parent::deleteFiles($path);
+
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__admin_thumb.' . $this->extension);
+			if (file_exists($path)) parent::deleteFiles($path);
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
 	 * @param int $videoId
 	 * @return ImageProduct | false | null
 	 */

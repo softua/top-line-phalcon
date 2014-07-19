@@ -16,7 +16,7 @@ class MainController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$news = Models\Page::find([
+		$news = Models\News::find([
 			'type_id = 4 AND public = 1',
 			'order' => 'time DESC',
 			'limit' => 3
@@ -37,8 +37,8 @@ class MainController extends BaseFrontController
 		}
 
 		$this->view->news = $newsForView;
-		$this->view->novelties = Models\Product::getNovelty($this->di);
-		$this->view->sales = Models\Sale::getSales($this->di, true);
+		$this->view->novelties = Models\Product::getNovelty();
+		$this->view->sales = Models\Sale::getSales(true);
 
 		echo $this->view->render('main');
 	}

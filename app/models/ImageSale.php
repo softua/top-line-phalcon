@@ -29,7 +29,7 @@ class ImageSale extends Image
 
 		if ($this->imgListPath === null) {
 			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__sale_list.' . $this->extension);
-			if (file_exists($path)) $this->imgDescriptionPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__sale_list.' . $this->extension);
+			if (file_exists($path)) $this->imgListPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__sale_list.' . $this->extension);
 			else $this->imgDescriptionPath = false;
 		}
 
@@ -43,6 +43,28 @@ class ImageSale extends Image
 	public function onConstruct()
 	{
 		$this->setDI();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function deleteImage()
+	{
+		if ($this->delete()) {
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__sale_description.' . $this->extension);
+			if (file_exists($path)) parent::deleteFiles($path);
+
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__sale_list.' . $this->extension);
+			if (file_exists($path)) parent::deleteFiles($path);
+
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__admin_thumb.' . $this->extension);
+			if (file_exists($path)) parent::deleteFiles($path);
+
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**

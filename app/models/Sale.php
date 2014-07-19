@@ -31,9 +31,9 @@ class Sale extends Page
 		}
 
 		if (count($prodsIds) == 1) {
-			$products = Product::getProductById($this->_di, $prodsIds[0]);
+			$products = Product::getProductById($prodsIds[0]);
 		} else {
-			$products = Product::getProductsByIds($this->_di, $prodsIds);
+			$products = Product::getProductsByIds($prodsIds);
 		}
 
 		if ($products === null) {
@@ -142,6 +142,7 @@ class Sale extends Page
 			->orderBy('time DESC, name')
 			->execute()->filter(function(Sale $item) {
 				$item->time = strtotime($item->time);
+				$item->expiration = strtotime($item->expiration);
 				$item->setPath();
 				return $item;
 			});
@@ -155,7 +156,7 @@ class Sale extends Page
 	}
 
 	public static function getSaleBySeoName($seoName, $withImages = false)
-	{//TODO: Реализовать $withImages
+	{
 		/** @var Page $page */
 		$page = parent::getPageBySeoName($seoName);
 
@@ -174,6 +175,9 @@ class Sale extends Page
 			$sale->time = $page->time;
 			if ($page->expiration) {
 				$sale->expiration = strtotime($page->expiration);
+			}
+			if ($withImages) {
+				$sale->setImages();
 			}
 			return $sale;
 		}

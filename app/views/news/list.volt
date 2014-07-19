@@ -31,9 +31,16 @@
 							<li class="news-list__item">
 						{% endif %}
 							<h3 class="news-list__item__title">{{ item['name'] }}</h3>
-							<figure class="news-list__item__img">
-								<img src="{{ item['img'] }}" alt="{{ item['name'] }}"/>
-							</figure>
+							{% set image = item['img'] %}
+							{% if image %}
+								<figure class="news-list__item__img">
+									<img src="{{ image.imgListPath }}" alt="{{ item['name'] }}"/>
+								</figure>
+							{% else %}
+								<figure class="news-list__item__img">
+									<img src="{{ static_url('img/no_foto.png') }}" alt="{{ item['name'] }}"/>
+								</figure>
+							{% endif %}
 							{{ item['short_content'] }}
 							<a href="{{ url('company/news/') }}{{ item['seo_name'] }}">Подробнее ...</a>
 						</li>

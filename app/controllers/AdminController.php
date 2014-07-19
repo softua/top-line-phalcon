@@ -459,7 +459,7 @@ class AdminController extends BaseAdminController
 			$inputs['meta_keywords'] = $this->request->getPost('keywords', ['trim', 'striptags']);
 			$inputs['meta_description'] = $this->request->getPost('description', ['trim', 'striptags']);
 
-			$validation = new \App\Validation();
+			$validation = new Validation();
 
 			$validation->isNotEmpty([
 				'Название' => $inputs['name'],
@@ -517,6 +517,7 @@ class AdminController extends BaseAdminController
 				$product->meta_keywords = $inputs['keywords'];
 				$product->meta_description = $inputs['description'];
 				$product->public = 0;
+				$product->novelty = 0;
 				$product->country_id = Models\Country::findFirst([
 					'name = ?1',
 					'bind' => [1 => $inputs['country']]
@@ -528,8 +529,7 @@ class AdminController extends BaseAdminController
 				$product->price_usd = $prices['price_usd'];
 				$product->price_uah = $prices['price_uah'];
 
-				if ($product->save())
-				{
+				if ($product->save()) {
 					if (Models\Product::isUniqueSeoName($product->seo_name)) // Если SEO-название уникально, то перенаправляем на дальнейшее редактирование
 					{
 						return $this->response->redirect('admin/editproduct/' . $product->id . '/');
@@ -1762,10 +1762,11 @@ class AdminController extends BaseAdminController
 				$newPage->sort = $item->sort;
 				$newPage->time = $item->time;
 				$newPage->expiration = $item->expiration;
+				$newPage->setImages();
 				return $newPage;
 			});
 
-		if (!$pages) {
+		if (!count($pages)) {
 			return $this->dispatcher->forward([
 				'controller' => 'admin',
 				'action' => 'pages'
@@ -1805,6 +1806,7 @@ class AdminController extends BaseAdminController
 		$pageForView['sort'] = $page->sort;
 		$pageForView['public'] = ($page->public == 1) ? 'on' : 'off';
 		$pageForView['fotos'] = $page->getImages();
+
 
 		if ($this->request->isPost()) {
 			$inputs = [];
@@ -2058,35 +2060,31 @@ class AdminController extends BaseAdminController
 			echo 'false';
 			return false;
 		}
-
 		$id = $this->request->getPost('id', ['trim', 'striptags']);
-		$bdFile = Models\PageImageModel::findFirst($id);
-
-		if ($bdFile)
-		{
-			$fileName = 'staticPages/images/' . $bdFile->id . '__page_description.' . $bdFile->extension;
-			if (file_exists($fileName)) {
-				Models\PageImageModel::deleteFiles($fileName);
-			}
-			$fileName = 'staticPages/images/' . $bdFile->id . '__page_list.' . $bdFile->extension;
-			if (file_exists($fileName)) {
-				Models\PageImageModel::deleteFiles($fileName);
-			}
-			$fileName = 'staticPages/images/' . $bdFile->id . '__admin_thumb.' . $bdFile->extension;
-			if (file_exists($fileName)) {
-				Models\PageImageModel::deleteFiles($fileName);
-			}
-		} else {
-			echo 'false';
+		/** @var Models\Image $bdImage */
+		$bdImage = Models\Image::findFirst($id);
+		if (!$bdImage) {
+			echo "false";
 			return false;
 		}
 
-		if ($bdFile->delete())
-		{
+		$image = null;
+		switch ($bdImage->belongs) {
+			case 'company': $image = new Models\ImageCompany(); break;
+			case 'project': $image = new Models\ImageProject(); break;
+			case 'video': $image = new Models\ImageVideo(); break;
+			case 'news': $image = new Models\ImageNews(); break;
+			case 'sale': $image = new Models\ImageSale(); break;
+			case 'info': $image = new Models\ImageInfo(); break;
+		}
+		$image->id = $bdImage->id;
+		$image->extension = $bdImage->extension;
+
+		if ($image->deleteImage()) {
 			echo 'true';
 			return true;
-
-		} else {
+		}
+		else {
 			echo 'false';
 			return false;
 		}

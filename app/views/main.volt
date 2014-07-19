@@ -97,14 +97,15 @@
 										{{ sale.shortContent }}
 									</div>#}
 									<figure class="slider-sales__img">
-										{% if sale.hasImages() %}
-											<img src="<?= $sale->getImages()[0]->pageListPath ?>" alt="{{ sale.name }}"/>
+										{% set image = sale.getMainImage() %}
+										{% if image %}
+											<img src="{{ image.imgListPath }}" alt="{{ sale.name }}"/>
 										{% else %}
 											<img src="{{ static_url('img/no_foto.png') }}" alt="{{ sale.name }}"/>
 										{% endif %}
 									</figure>
 									{% if sale.expiration is not null %}
-										<div class="slider-sales__remain">Акция действует до: <?= date('d.m.Y', strtotime($sale->expiration)) ?></div>
+										<div class="slider-sales__remain">Акция действует до: <?= date('d.m.Y', $sale->expiration) ?></div>
 									{% else %}
 										<div class="slider-sales__remain">Спешите, пока не поздно!</div>
 									{% endif %}
@@ -127,8 +128,9 @@
 							<li class="new-products__item">
 								<a class="new-products__link" href="{{ novelty.path }}" title="">
 									<figure class="new-products__img">
-										{% if novelty.getMainImageForList() %}
-											<img src="{{ novelty.getMainImageForList() }}" alt="{{ novelty.name }}"/>
+										{% set image = novelty.getMainImage() %}
+										{% if inage %}
+											<img src="{{ image.imgListPath }}" alt="{{ novelty.name }}"/>
 										{% else %}
 											<img src="{{ static_url('img/no_foto.png') }}" alt="{{ novelty.name }}"/>
 										{% endif %}

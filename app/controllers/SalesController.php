@@ -46,10 +46,10 @@ class SalesController extends BaseFrontController
 		if (!$seoName) {
 			return $this->response->redirect('sales/notfound');
 		}
-		$page = App\Sale::getSaleBySeoName($this->di, $seoName, true);
+		$page = Models\Sale::getSaleBySeoName($seoName, true);
 
 		if ($page->hasProducts()) {
-			$newPaginator = new App\Paginator($this->di, $page->getProducts(), 6, $currentPage);
+			$newPaginator = new App\Paginator($page->getProducts(), 6, $currentPage);
 			$products = $newPaginator->paginate('sales/show/' . $page->seoName . '?page=');
 			$this->view->products = $products;
 		}
@@ -65,17 +65,17 @@ class SalesController extends BaseFrontController
 		$currentPage = $this->request->getQuery('page', 'int');
 		if (!$seoName) return $this->response->redirect('sales/notfound');
 
-		$product = App\Product::getProductBySeoName($this->di, $seoName, false, false);
+		$product = Models\Product::getProductBySeoName($seoName, false, false);
 		if (!$product) return $this->response->redirect('sales/notfound');
 
 		if (!$product->getSales()) return $this->response->redirect('sales/');
 		if (count($product->getSales()) == 1) {
-			/** @var App\Sale $page */
+			/** @var Models\Sale $page */
 			$page = $product->getSales()[0];
-			$page->getImages();
+			$page->setImages();
 
 			if ($page->hasProducts()) {
-				$newPaginator = new App\Paginator($this->di, $page->getProducts(), 6, $currentPage);
+				$newPaginator = new App\Paginator($page->getProducts(), 6, $currentPage);
 				$products = $newPaginator->paginate('sales/product/' . $product->seo_name . '?page=');
 				$this->view->products = $products;
 			}
@@ -87,7 +87,7 @@ class SalesController extends BaseFrontController
 		else {
 			$currentPage = $this->request->getQuery('page', 'int');
 			$sales = $product->getSales();
-			$newPaginator = new App\Paginator($this->di, $sales, 10, $currentPage);
+			$newPaginator = new App\Paginator($sales, 10, $currentPage);
 
 			$this->view->data = $newPaginator->paginate('sales/product/' . $product->seo_name . '?page=');
 

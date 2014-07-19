@@ -24,7 +24,13 @@ class News extends Page
 					return $item;
 				});
 
-			if (!$this->_images || !count($this->_images)) $this->_images = false;
+			if (!$this->_images || !count($this->_images)) {
+				$this->_images = false;
+				$this->_mainImage = false;
+			}
+			else {
+				$this->_mainImage = $this->_images[0];
+			}
 		}
 	}
 
@@ -36,6 +42,16 @@ class News extends Page
 		}
 		elseif ($this->_images === false) return null;
 		else return $this->_images;
+	}
+
+	public function getMainImage()
+	{
+		if ($this->_mainImage === null) {
+			$this->setImages();
+			$this->getMainImage();
+		}
+		elseif ($this->_mainImage === false) return false;
+		else return $this->_mainImage;
 	}
 
 	public static function getProjects()

@@ -20,7 +20,7 @@ class ContactsController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$this->view->sidebar_categories = \App\Category::getMainCategories($this->di, false);
+		$this->view->sidebar_categories = Models\Category::getMainCategories();
 
 		echo $this->view->render('contacts');
 	}

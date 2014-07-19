@@ -21,13 +21,20 @@
 			{% if projects is defined and projects is not empty %}
 				{% for project in projects %}
 					<li class="catalog__item">
-						<a class="catalog__item__link" href="{{ project['href'] }}">
-							<figure class="catalog__item__img">
-								<img src="{{ project['img'] }}" alt="{{ project['name'] }}"/>
-							</figure>
-							{{ project['name'] }}
+						<a class="catalog__item__link" href="{{ project.path }}">
+							{% set image = project.getMainImage() %}
+							{% if image is not false %}
+								<figure class="catalog__item__img">
+									<img src="{{ image.imgDescriptionPath }}" alt="{{ project.name }}"/>
+								</figure>
+							{% else %}
+								<figure class="catalog__item__img">
+									<img src="{{ static_url('img/no_foto.png') }}" alt="{{ project.name }}"/>
+								</figure>
+							{% endif %}
+							{{ project.name }}
 						</a>
-						{{ project['short_content'] }}
+						{{ project.short_content }}
 					</li>
 				{% endfor %}
 			{% endif %}

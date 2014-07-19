@@ -15,16 +15,22 @@ class Project extends Page
 	public function setImages()
 	{
 		if ($this->_images === null) {
-			$this->_images = ImageInfo::query()
+			$this->_images = ImageProject::query()
 				->where('belongs = \'project\'')
 				->andWhere('belongs_id = ?1', [1 => $this->id])
 				->orderBy('sort')
-				->execute()->filter(function(ImageInfo $item) {
+				->execute()->filter(function(ImageProject $item) {
 					$item->setPaths();
 					return $item;
 				});
 
-			if (!$this->_images || !count($this->_images)) $this->_images = false;
+			if (!$this->_images || !count($this->_images)) {
+				$this->_images = false;
+				$this->_mainImage = false;
+			}
+			else {
+				$this->_mainImage = $this->_images[0];
+			}
 		}
 	}
 
@@ -38,6 +44,16 @@ class Project extends Page
 		else return $this->_images;
 	}
 
+	public function getMainImage()
+	{
+		if ($this->_mainImage === null) {
+			$this->setImages();
+			$this->getMainImage();
+		}
+		elseif ($this->_mainImage === false) return null;
+		else return $this->_mainImage;
+	}
+
 	public static function getProjects()
 	{
 		/** @var self[] $pages */
@@ -48,6 +64,7 @@ class Project extends Page
 			->execute()->filter(function(self $page) {
 				$page->time = strtotime($page->time);
 				$page->path = \Phalcon\DI::getDefault()['url']->get('page/show/' . $page->seo_name);
+				$page->setImages();
 				return $page;
 			});
 

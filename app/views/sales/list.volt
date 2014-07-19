@@ -19,9 +19,9 @@
 				{% for item in data.items %}
 					<li class="sales__item sales__item--label-sales">
 						<figure class="sales__item__img">
-							{% set image = item.getImages() %}
-							{% if image is defined and image is not empty %}
-								<img src="{{ image[0].imgListPath }}" alt="{{ item.name }}"/>
+							{% set image = item.getMainImage() %}
+							{% if image is not empty %}
+								<img src="{{ image.imgListPath }}" alt="{{ item.name }}"/>
 							{% else %}
 								<img src="{{ static_url('img/no_foto.png') }}" alt="{{ item.name }}"/>
 							{% endif %}

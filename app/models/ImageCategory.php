@@ -35,6 +35,22 @@ class ImageCategory extends Image
 			return false;
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function deleteImage()
+	{
+		if ($this->delete()) {
+			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__category.' . $this->extension);
+			if (file_exists($path)) parent::deleteFiles($path);
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public static function uploadFotosAndReturn($categoryId)
 	{
 		$file = new Upload($_FILES['fotos'], 'ru');

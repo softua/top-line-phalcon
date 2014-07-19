@@ -21,7 +21,7 @@
 			<div class="cf">
 				<figure class="article__img article__img--sales">
 					{% if page.getMainImage() is not false %}
-						<img src="{{ page.getMainImage().pageDescriptionPath }}" alt="{{ page.name }}"/>
+						<img src="{{ page.getMainImage().imgDescriptionPath }}" alt="{{ page.name }}"/>
 					{% else %}
 						<img src="{{ static_url('img/no_foto.png') }}" alt="{{ page.name }}"/>
 					{% endif %}

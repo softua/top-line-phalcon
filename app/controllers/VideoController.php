@@ -22,29 +22,7 @@ class VideoController extends BaseFrontController
 	{
 		$this->response->setStatusCode(404, 'Not Found');
 
-		$mainCategories = Models\CategoryModel::find([
-			'parent_id = 0',
-			'order' => 'sort, name'
-		]);
-		$mainCategoriesForView = [];
-		for ($i = 0; $i < count($mainCategories); $i++)
-		{
-			$mainCategoriesForView[$i]['name'] = $mainCategories[$i]->name;
-			$areThereChildrenCats = Models\CategoryModel::findFirst([
-				'parent_id = :id:',
-				'bind' => ['id' => $mainCategories[$i]->id]
-			]);
-			if ($areThereChildrenCats)
-			{
-				$mainCategoriesForView[$i]['path'] = '/catalog/show/' . $mainCategories[$i]->seo_name . '/';
-
-			} else {
-
-				$mainCategoriesForView[$i]['path'] = '/products/list/' . $mainCategories[$i]->seo_name . '/';
-			}
-		}
-
-		$this->view->sidebar_categories = $mainCategoriesForView;
+		$this->view->sidebar_categories = Models\Category::getMainCategories();
 
 		echo $this->view->render('video/notfound');
 	}
@@ -52,26 +30,10 @@ class VideoController extends BaseFrontController
 	public function indexAction()
 	{
 		// Список видео
-		$videos = Models\Page::find([
-			'type_id = 3 AND public = 1',
-			'order' => 'time DESC'
-		]);
-		if (!$videos)
-			$videosForView = null;
-		else {
-			$videosForView = [];
-			foreach ($videos as $video) {
-				$tempVideo = [];
-				$tempVideo['name'] = $video->name;
-				$tempVideo['short_content'] = $video->short_content;
-				$tempVideo['video_content'] = $video->video_content;
-				$tempVideo['seo_name'] = $video->seo_name;
-				$videosForView[] = $tempVideo;
-			}
-		}
+		$videos = Models\Video::getVideos();
 
-		$this->view->videos = $videosForView;
-		$this->view->sidebar_categories = \App\Category::getMainCategories($this->di, false);
+		$this->view->videos = $videos;
+		$this->view->sidebar_categories = Models\Category::getMainCategories();
 
 		echo $this->view->render('video/list');
 	}
