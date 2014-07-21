@@ -18,7 +18,7 @@
 			<div class="cf">
 				<figure class="article__img article__img--skew">
 					<img src="{{ static_url('img/dummy/skew.jpg') }}" alt=""/>
-					<figcaption class="article__img__caption">Новейшее шиномонтажное оборудование</figcaption>
+					<figcaption class="article__img__caption">Все о компании и рынке оборудования</figcaption>
 				</figure>
 			</div>
 			<h2 class="title"><span class="title__wrapper">Главные новости</span></h2>
@@ -31,9 +31,16 @@
 							<li class="news-list__item">
 						{% endif %}
 							<h3 class="news-list__item__title">{{ item['name'] }}</h3>
-							<figure class="news-list__item__img">
-								<img src="{{ item['img'] }}" alt="{{ item['name'] }}"/>
-							</figure>
+							{% set image = item['img'] %}
+							{% if image %}
+								<figure class="news-list__item__img">
+									<img src="{{ image.imgListPath }}" alt="{{ item['name'] }}"/>
+								</figure>
+							{% else %}
+								<figure class="news-list__item__img">
+									<img src="{{ static_url('img/no_foto.png') }}" alt="{{ item['name'] }}"/>
+								</figure>
+							{% endif %}
 							{{ item['short_content'] }}
 							<a href="{{ url('company/news/') }}{{ item['seo_name'] }}">Подробнее ...</a>
 						</li>

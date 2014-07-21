@@ -12,6 +12,7 @@ class Paginator
 {
 	protected $_di;
 	protected $_url;
+
 	private $_paginator;
 	public $items = [];
 	public $before;
@@ -23,9 +24,9 @@ class Paginator
 	public $totalItems;
 	public $links = [];
 
-	public function __construct($di, $data, $limit = 10, $page = 1)
+	public function __construct($data, $limit = 10, $page = 1)
 	{
-		$this->setDi($di);
+		$this->setDI();
 		$this->_paginator = new \Phalcon\Paginator\Adapter\NativeArray([
 			'data' => $data,
 			'limit' => $limit,
@@ -33,9 +34,9 @@ class Paginator
 		]);
 	}
 
-	public function setDi($di)
+	public function setDI($di = null)
 	{
-		$this->_di = $di;
+		$this->_di = \Phalcon\DI::getDefault();
 		$this->_url = $this->_di->get('url');
 	}
 
@@ -53,7 +54,7 @@ class Paginator
 
 		if ($this->totalPages > 1) {
 			for ($i = 0; $i < $this->totalPages; $i++) {
-				$link = new Link($this->_di);
+				$link = new Link();
 				$link->generateUrl($linkText, $i+1);
 				$link->name = $i+1;
 				if ($i+1 == $this->current) {
@@ -62,13 +63,13 @@ class Paginator
 				$this->links[] = $link;
 			}
 			if ($this->current != $this->first) {
-				$firstLink = new Link($this->_di);
+				$firstLink = new Link();
 				$firstLink->name = '←';
 				$firstLink->generateUrl($linkText, $this->first);
 				array_unshift($this->links, $firstLink);
 			}
 			if ($this->current != $this->last) {
-				$lastLink = new Link($this->_di);
+				$lastLink = new Link();
 				$lastLink->name = '→';
 				$lastLink->generateUrl($linkText, $this->last);
 				array_push($this->links, $lastLink);

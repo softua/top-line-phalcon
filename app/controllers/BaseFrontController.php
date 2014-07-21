@@ -17,44 +17,26 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 
 		$this->view->top_products = $this->getTopProducts();
 		$this->view->static_pages = $this->getSubmenuWithCompanyPages();
-		$this->view->infoPages = App\InfoPage::getInfoPages($this->di);
+		$this->view->infoPages = Models\InfoPage::getInfoPages($this->di);
 	}
 
 	public function getTopProducts()
 	{
-		$topProducts = Models\ProductModel::find([
-			'top = 1',
-			'limit' => 5
-		]);
-		if (count($topProducts))
-		{
-			$topProductsForView = [];
-			foreach ($topProducts as $topProd)
-			{
-				$tempTopProd = [];
-				$tempTopProd['name'] = $topProd->name;
-				$tempTopProd['href'] = '/products/show/' . $topProd->seo_name;
-				$prodTopImage = Models\ProductImageModel::find([
-					'product_id = ?1',
-					'bind' => [1 => $topProd->id],
-					'order' => 'sort'
-				]);
-				if (count($prodTopImage))
-				{
-					$tempTopProd['img'] = '/products/' . $prodTopImage[0]->product_id . '/images/' . $prodTopImage[0]->id . '__product_top.' . $prodTopImage[0]->extension;
-				} else {
-					$tempTopProd['img'] = '/img/no_foto.png';
-				}
-				$topProductsForView[] = $tempTopProd;
-			}
-			return $topProductsForView;
-		}
-		return false;
+		$topProducts = Models\Product::query()
+			->where('top = \'1\'')
+			->andWhere('public = \'1\'')
+			->limit(5)
+			->execute()->filter(function(Models\Product $product) {
+				$product->setImages();
+				$product->setPath();
+				return $product;
+			});
+		return $topProducts;
 	}
 
 	public function getSubmenuWithCompanyPages()
 	{
-		$staticCompanyPages = Models\PageModel::find([
+		$staticCompanyPages = Models\Page::find([
 			'type_id = 1 AND public = 1',
 			'order' => 'name'
 		]);

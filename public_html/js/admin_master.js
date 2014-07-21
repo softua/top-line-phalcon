@@ -3,6 +3,7 @@
  * Date: 23.03.2014
  * Time: 10:50
  */
+'use strict';
 
 CKEDITOR.replaceAll('editor');
 
@@ -22,10 +23,8 @@ var admin = {};
 $('body').on('click', '[data-action="open"]', function(e) {
 	e.preventDefault();
 
-	if($(e.target).data('editing'))
-		admin.openCategoryForEditing(e);
-	else
-		admin.openCategory(e);
+	if($(e.target).data('editing')) admin.openCategoryForEditing(e);
+	else admin.openCategory(e);
 })
 
 // Событие - добавление категории товару
@@ -106,7 +105,7 @@ $('body').on('click', '[data-action="open"]', function(e) {
 			prodId: $('.videos').data('product-id')
 		},
 		success: function (data) {
-			if (data != 'false')
+			if (data !== 'false')
 			{
 				var video = JSON.parse(data);
 				var videos = $('.videos');
@@ -125,7 +124,7 @@ $('body').on('click', '[data-action="open"]', function(e) {
 		url: '/admin/deletevideo/' + $(e.target).parent().data('video-id'),
 		type: 'post',
 		success: function (data) {
-			if (data == 'true')
+			if (data === 'true')
 			{
 				$(e.target).parent().remove();
 			}
@@ -157,7 +156,7 @@ $('body').on('click', '[data-action="open"]', function(e) {
 				href: href
 			},
 			success: function (data) {
-				if (data == 'true')
+				if (data === 'true')
 				{
 					var li = $('<li data-video-id="' + id + '" class="videos__item"><a data-video-delete="true" href="" class="btn btn-mini btn-danger">Удалить</a><a data-video-edit="true" href="" class="btn btn-mini">Редактировать</a><a href="' + href + '" title="Смотреть видео" target="_blank">' + name + '</a></li>');
 					container.replaceWith(li);
@@ -346,7 +345,7 @@ $('[data-upload-foto="true"]').on('click', function(e) {
 
 			setTimeout(function() {
 				$('[data-progress-fotos="true"]').fadeOut();
-			}, 1000)
+			}, 1000);
 		}
 	}
 });
@@ -362,14 +361,14 @@ $('[data-upload-foto-category="true"]').on('click', function(e) {
 		var ajax = data.submit();
 
 		ajax.success(function (result, textStatus, jqXHR) {
-			if (result !== 'false')
-			{
+			try {
 				var imgData = JSON.parse(result);
-				var ul = $('[data-uploaded-list="fotos-categories"]');
-				var li = $('<li data-uploaded-id="' + imgData.id + '" data-delete-category-foto="true"><img src="' + imgData.path + '" alt="/" class="thumbnail"/></li>');
-				ul.append(li);
-
-			}
+				if (result && result !== false) {
+					var ul = $('[data-uploaded-list="fotos-categories"]');
+					var li = $('<li data-uploaded-id="' + imgData.id + '" data-delete-category-foto="true"><img src="' + imgData.path + '" alt="/" class="thumbnail"/></li>');
+					ul.append(li);
+				}
+			} catch (e) {window.console.log(e.message);}
 		});
 	},
 	progressall: function(e, data) {

@@ -12,19 +12,20 @@ class Link
 {
 	protected $_di;
 	protected $_url;
+
 	public $name;
 	public $active = false;
 	public $href;
 	public $title;
 
-	public function __construct($di)
+	public function __construct()
 	{
-		$this->setDi($di);
+		$this->setDI();
 	}
 
-	public function setDi($di)
+	public function setDI($di = null)
 	{
-		$this->_di = $di;
+		$this->_di = \Phalcon\DI::getDefault();
 		$this->_url = $this->_di->get('url');
 	}
 

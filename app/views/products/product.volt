@@ -44,27 +44,26 @@
 				<div class="product__info">
 					{% if product['images'] is defined and product['images'] is not empty %}
 						<div class="product__gallery">
+							{% set images = product['images'] %}
+							{% set mainImage = images[0] %}
 							{% if product['sales'] %}
 								<figure class="product__gallery__full product__gallery__full--sale">
-									{#TODO: сюда нужна большая картинка#}
-									<a class="fancybox" href="<?= $product['images'][0]->productDescriptionPath ?>">
-										<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
+									<a class="fancybox" href="{{ mainImage.imgOriginWPath }}">
+										<img class="product__gallery__full__img" src="{{ mainImage.imgDescriptionPath }}" alt=""/>
 									</a>
-							</figure>
+								</figure>
 							{% else %}
-								<figure class="product__gallery__full">
-									{#TODO: сюда нужна большая картинка#}
-									<a class="fancybox" href="<?= $product['images'][0]->productDescriptionPath ?>">
-										<img class="product__gallery__full__img" src="<?= $product['images'][0]->productDescriptionPath ?>" alt=""/>
+								<figure class="product__gallery__full product__gallery__full">
+									<a class="fancybox" href="{{ mainImage.imgOriginWPath }}">
+										<img class="product__gallery__full__img" src="{{ mainImage.imgDescriptionPath }}" alt=""/>
 									</a>
 								</figure>
 							{% endif %}
 							<ul class="product__gallery__thumbs">
 								{% for image in product['images'] %}
 									<li class="product__gallery__thumbs__item">
-										{#TODO: сюда нужна большая картинка#}
-										<a class="product__gallery__thumbs__link" href="{{ image.productDescriptionPath }}" title="" data-big-img-path="{{ image.productDescriptionPath }}">
-											<img src="{{ image.productThumbPath }}" alt=""/>
+										<a class="product__gallery__thumbs__link" href="{{ image.imgDescriptionPath }}" title="" data-big-img-path="{{ image.imgOriginWPath }}">
+											<img src="{{ image.imgThumbPath }}" alt=""/>
 										</a>
 									</li>
 								{% endfor %}
@@ -144,7 +143,7 @@
 					{% endif %}
 					{% if product['files'] is defined and product['files'] is not empty %}
 						{% for file in product['files'] %}
-							<a class="product__actions__pdf" href="{{ static_url(file.pathName) }}" title="Открыть файл" target="_blank">{{ file.name }}</a>
+							<a class="product__actions__pdf" href="{{ static_url(file.path) }}" title="Открыть файл" target="_blank">{{ file.name }}</a>
 						{% endfor %}
 					{% endif %}
 				</div>

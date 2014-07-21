@@ -20,7 +20,7 @@ class ServiceController extends BaseFrontController
 
 	public function indexAction()
 	{
-		$this->view->sidebar_categories = \App\Category::getMainCategories($this->di, false, ['servisnyie_uslugi_montaj']);
+		$this->view->sidebar_categories = Models\Category::getMainCategories(false, ['servisnyie_uslugi_montaj']);
 
 		echo $this->view->render('service');
 	}

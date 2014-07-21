@@ -44,7 +44,9 @@
 			<ul data-uploaded-list="fotos-categories" data-category-id="<?php echo $category->id; ?>" class="thumbnails">
 				<?php if (isset($fotos) && $fotos == !$empty) { ?>
 					<?php foreach ($fotos as $foto) { ?>
-						<li data-uploaded-id="<?php echo $foto['id']; ?>" data-delete-category-foto="true"><img src="<?php echo $foto['path']; ?>" alt="/" class="thumbnail"/></li>
+						<li data-uploaded-id="<?php echo $foto->id; ?>" data-delete-category-foto="true">
+							<img src="<?php echo $foto->imgPath; ?>" alt="<?php echo $foto->name; ?>" class="thumbnail"/>
+						</li>
 					<?php } ?>
 				<?php } ?>
 			</ul>

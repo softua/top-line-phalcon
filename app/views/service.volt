@@ -19,7 +19,7 @@
 			<div class="cf">
 				<figure class="article__img article__img--skew">
 					<img src="/img/dummy/services.jpg" alt=""/>
-					<figcaption class="article__img__caption article__img__caption--black">Новейшее шиномонтажное оборудование</figcaption>
+					<figcaption class="article__img__caption article__img__caption--black">Заказ услуг и запасных частей</figcaption>
 				</figure>
 			</div>
 
