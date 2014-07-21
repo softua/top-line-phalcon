@@ -19,6 +19,8 @@ class File extends \Phalcon\Mvc\Model
 	public $pathname;
 	public $product_id;
 
+	public $path;
+
 	public $dbFields = [
 		'id', 'name', 'pathname', 'product_id'
 	];
@@ -34,6 +36,11 @@ class File extends \Phalcon\Mvc\Model
 			'alias' => 'product'
 		]);
 
+		$this->useDynamicUpdate(true);
+	}
+
+	public function onConstruct()
+	{
 		$this->setDI();
 	}
 
@@ -41,6 +48,13 @@ class File extends \Phalcon\Mvc\Model
 	{
 		$this->_di = \Phalcon\DI::getDefault();
 		$this->_url = $this->_di->get('url');
+	}
+
+	public function setPath()
+	{
+		if (!$this->path) {
+			$this->path = $this->_url->getStatic($this->pathname);
+		}
 	}
 
 	public function dbSave($data = null)
@@ -58,9 +72,12 @@ class File extends \Phalcon\Mvc\Model
 		$files = self::query()
 			->where('product_id = ?1')->bind([1 => $prod->id])
 			->orderBy('name')
-			->execute();
+			->execute()->filter(function(File $file) {
+				$file->setPath();
+				return $file;
+			});
 
-		if (count($files)) return (array)$files;
+		if (count($files)) return $files;
 		else return null;
 
 	}

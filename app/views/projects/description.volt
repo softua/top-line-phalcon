@@ -16,11 +16,11 @@
 
 {% block content %}
 	<main class="main main--aside" role="main">
-		<a class="main__back" href="/projects/" title="">Назад к проектам</a>
+		<a class="main__back" href="{{ url('projects/') }}" title="">Назад к проектам</a>
 		<article class="article">
 			<h1 class="title">{{ project.name }}</h1>
 			{% set image = project.getMainImage() %}
-			{% if image is not false %}
+			{% if image %}
 				<figure class="article__main-img">
 					<img src="{{ image.imgDescriptionPath }}" alt="{{ project.name }}"/>
 				</figure>

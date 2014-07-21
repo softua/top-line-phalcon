@@ -143,7 +143,7 @@
 					{% endif %}
 					{% if product['files'] is defined and product['files'] is not empty %}
 						{% for file in product['files'] %}
-							<a class="product__actions__pdf" href="{{ static_url(file.pathName) }}" title="Открыть файл" target="_blank">{{ file.name }}</a>
+							<a class="product__actions__pdf" href="{{ static_url(file.path) }}" title="Открыть файл" target="_blank">{{ file.name }}</a>
 						{% endfor %}
 					{% endif %}
 				</div>

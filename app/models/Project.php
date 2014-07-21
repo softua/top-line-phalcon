@@ -12,6 +12,11 @@ class Project extends Page
 {
 	public $path;
 
+	public function setPath()
+	{
+		if ($this->path === null) $this->path = $this->_url->get('projects/show/' . $this->seo_name);
+	}
+
 	public function setImages()
 	{
 		if ($this->_images === null) {
@@ -63,7 +68,7 @@ class Project extends Page
 			->orderBy('sort, name')
 			->execute()->filter(function(self $page) {
 				$page->time = strtotime($page->time);
-				$page->path = \Phalcon\DI::getDefault()['url']->get('page/show/' . $page->seo_name);
+				$page->setPath();
 				$page->setImages();
 				return $page;
 			});

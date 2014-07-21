@@ -88,7 +88,7 @@ class ImageNews extends Image
 			->execute()->count();
 
 		$image = new self();
-		$image->belongs = 'sale';
+		$image->belongs = 'news';
 		$image->belongs_id = $newsId;
 		$image->extension = $file->file_src_name_ext;
 		$image->sort = $sort;

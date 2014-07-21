@@ -229,7 +229,7 @@ class AdminController extends BaseAdminController
 	{
 		$this->tag->prependTitle('Категории');
 
-		$this->view->mainCategories = Models\Category::getMainCategories($this->di);
+		$this->view->mainCategories = Models\Category::getMainCategories();
 
 		echo $this->view->render('admin/categories/categories');
 	}
@@ -1214,8 +1214,7 @@ class AdminController extends BaseAdminController
 
 	public function uploadFileAction()
 	{
-		if (!$this->request->isAjax())
-		{
+		if (!$this->request->isAjax()) {
 			echo null;
 			return false;
 		}
@@ -1224,37 +1223,34 @@ class AdminController extends BaseAdminController
 
 		$file = new Upload($_FILES['files']);
 
-		if (!preg_match('/\d+/', $productId))
-		{
+		if (!preg_match('/\d+/', $productId)) {
 			$file->clean();
 			echo 'false';
 			return false;
 		}
 
-		$bdFile = new Models\ProductFileModel();
+		$bdFile = new Models\File();
 		$bdFile->name = $file->file_src_name_body;
-		$bdFile->pathname = '/';
+		$bdFile->pathname = 'Uploads/db_files/';
 		$bdFile->product_id = $productId;
 
-		if ($bdFile->save()) // Создаем файлы
+		if ($bdFile->dbSave()) // Создаем файлы
 		{
-			$folder = 'products/' . $bdFile->product_id;
-			if (!file_exists($folder))
-			{
+			$folder = $this->url->path('public_html/Uploads/db_files');
+			if (!file_exists($folder)) {
 				mkdir($folder, 0777, true);
 			}
 
 			$file->file_new_name_body = $bdFile->id . '__' . Translit::get_seo_keyword($bdFile->name, true);
 			$file->process($folder);
 
-			if ($file->processed)
-			{
-				$bdFile->pathname = $folder . '/' . str_replace('\\', '/', $file->file_dst_name);
-				$bdFile->save();
+			if ($file->processed) {
+				$bdFile->pathname .= $file->file_dst_name;
+				$bdFile->dbSave();
 
 				$result['id'] = $bdFile->id;
 				$result['name'] = $bdFile->name;
-				$result['path'] = $bdFile->pathname;
+				$result['path'] = $this->url->getStatic($bdFile->pathname);
 
 				echo json_encode($result);
 				$file->clean();
@@ -1269,18 +1265,16 @@ class AdminController extends BaseAdminController
 
 	public function deleteFileAction()
 	{
-		if (!$this->request->isAjax() && !$this->request->isPost())
-		{
+		if (!$this->request->isAjax() && !$this->request->isPost()) {
 			echo 'false';
 			return false;
 		}
 
 		$id = trim(strip_tags($this->dispatcher->getParams()[0]));
 
-		$bdFile = Models\ProductFileModel::findFirst($id);
-
-		if (Models\ProductFileModel::deleteFiles($bdFile->pathname))
-		{
+		/** @var Models\File $bdFile */
+		$bdFile = Models\File::findFirst($id);
+		if (Models\File::deleteFiles($this->url->path('public_html/' . $bdFile->pathname))) {
 			$bdFile->delete();
 			echo 'true';
 			return true;
@@ -1703,34 +1697,33 @@ class AdminController extends BaseAdminController
 				'action' => 'pages'
 			]);
 		}
+		/** @var Models\Page $page */
 		$page = Models\Page::findFirst([
 			'seo_name = ?1',
 			'bind' => [1 => $seoName]
 		]);
 		if ($page) {
-			$pageImages = Models\PageImageModel::find([
-				'page_id = ?1',
-				'bind' => [1 => $page->id]
-			]);
-			if (count($pageImages)) {
-				foreach ($pageImages as $image) {
-					$imgPath = 'staticPages/images' . $image->id . '__page_list.' . $image->extension;
-					if (file_exists($imgPath)) {
-						Models\PageImageModel::deleteFiles($imgPath);
-					}
-					$imgPath = 'staticPages/images/' . $image->id . '__admin_thumb.' . $image->extension;
-					if (file_exists($imgPath)) {
-						Models\PageImageModel::deleteFiles($imgPath);
-					}
-					$imgPath = 'staticPages/images/' . $image->id . '__page_description.' . $image->extension;
-					if (file_exists($imgPath)) {
-						Models\PageImageModel::deleteFiles($imgPath);
-					}
+			switch ($page->type_id) {
+				case 1: $newPage = new Models\CompanyPage(); break;
+				case 2: $newPage = new Models\Project(); break;
+				case 3: $newPage = new Models\Video(); break;
+				case 4: $newPage = new Models\News(); break;
+				case 5: $newPage = new Models\Sale(); break;
+				case 6: $newPage = new Models\InfoPage(); break;
+			}
+			$newPage->id = $page->id;
+			$newPage->seo_name = $page->seo_name;
+			$newPage->type_id = $page->type_id;
+			$newPage->setImages();
+			if ($newPage->getImages()) {
+				foreach ($newPage->getImages() as $image) {
+					$image->deleteImage();
 				}
 			}
-			$page->delete();
-			return $this->response->redirect('admin/pages');
+			$newPage->delete();
 		}
+
+		return $this->response->redirect('admin/pages');
 	}
 
 	public function editPageAction()
@@ -1985,7 +1978,7 @@ class AdminController extends BaseAdminController
 			}
 		}
 		elseif ($page->type_id == 3) {
-			$image = Models\ImageInfo::uploadImageAndReturn($pageId);
+			$image = Models\ImageVideo::uploadImageAndReturn($pageId);
 
 			// Возвращаем тумбу для админки
 			if ($image) {
@@ -2090,18 +2083,19 @@ class AdminController extends BaseAdminController
 		}
 	}
 
-	public function sortStaticPagesFotos()
+	public function sortStaticPagesFotosAction()
 	{
 		if ($this->request->isAjax() && $this->request->isPost())
 		{
 			$fotoIds = json_decode($this->request->getPost('ids'));
 			for ($i = 0; $i < count($fotoIds); $i++)
 			{
-				$foto = Models\PageImageModel::findFirst($fotoIds[$i]);
+				/** @var Models\Image $foto */
+				$foto = Models\Image::findFirst($fotoIds[$i]);
 				if ($foto)
 				{
 					$foto->sort = $i;
-					$foto->save();
+					$foto->dbSave();
 				}
 			}
 		} else
@@ -2127,7 +2121,7 @@ class AdminController extends BaseAdminController
 			return false;
 		}
 		$prodSale = $product->getSales([
-			'[\App\Models\PageModel].id = ' . $saleId
+			'[\App\Models\Page].id = ' . $saleId
 		]);
 		if (count($prodSale)) {
 			echo "false";

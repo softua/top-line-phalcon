@@ -18,7 +18,7 @@
 			<div class="cf">
 				<figure class="article__img article__img--skew">
 					<img src="{{ static_url('img/dummy/skew.jpg') }}" alt=""/>
-					<figcaption class="article__img__caption">Новейшее шиномонтажное оборудование</figcaption>
+					<figcaption class="article__img__caption">Все о компании и рынке оборудования</figcaption>
 				</figure>
 			</div>
 			<h2 class="title"><span class="title__wrapper">Главные новости</span></h2>

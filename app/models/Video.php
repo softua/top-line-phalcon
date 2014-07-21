@@ -15,11 +15,11 @@ class Video extends Page
 	public function setImages()
 	{
 		if ($this->_images === null) {
-			$this->_images = ImageInfo::query()
+			$this->_images = ImageVideo::query()
 				->where('belongs = \'video\'')
 				->andWhere('belongs_id = ?1', [1 => $this->id])
 				->orderBy('sort')
-				->execute()->filter(function(ImageInfo $item) {
+				->execute()->filter(function(ImageVideo $item) {
 					$item->setPaths();
 					return $item;
 				});

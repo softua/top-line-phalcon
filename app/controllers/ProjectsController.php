@@ -42,7 +42,7 @@ class ProjectsController extends BaseFrontController
 			}
 		}
 
-		$this->view->sidebar_categories = \App\Category::getMainCategories($this->di, false);
+		$this->view->sidebar_categories = Models\Category::getMainCategories(false);
 		$this->view->project = $page;
 
 		echo $this->view->render('projects/description');
