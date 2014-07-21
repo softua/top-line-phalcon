@@ -179,46 +179,45 @@ class Product extends \Phalcon\Mvc\Model
 
 	public function setSales()
 	{
-		if ($this->_sales !== null) {
-			return;
-		}
+		if ($this->_sales === null) {
+			/*$prodsSalesIds = ProductSale::query()
+				->where('product_id = ?1')->bind([1 => $this->id])
+				->execute()->filter(function(ProductSale $dbSale) {
+					return $dbSale->page_id;
+				});
 
-		$prodsSalesIds = ProductSale::query()
-			->where('product_id = ?1')->bind([1 => $this->id])
-			->execute()->filter(function($dbSale) {
-				return $dbSale->page_id;
-			});
+			if (!count($prodsSalesIds)) {
+				$this->_sales = false;
+				return;
+			}*/
 
-		if (!count($prodsSalesIds)) {
-			$this->_sales = false;
-			return;
-		}
+			/** @var Sale[] $sales */
+			/*$this->_sales = Sale::query()
+				->inWhere('id', $prodsSalesIds)
+				->andWhere('public = 1')
+				->andWhere('expiration > NOW()')
+				->execute()
+				->filter(function(Sale $sale) {
+					$sale->setPath();
+					return $sale;
+				});*/
 
-		$sales = Sale::query()
-			->inWhere('id', $prodsSalesIds)
-			->andWhere('public = 1')
-			->andWhere('expiration > NOW()')
-			->execute()
-			->filter(function($sale) {
-				$sale->setPath();
-			});
+			/** @var Sale[] _sales */
+			$this->_sales = ProductSale::query()
+				->where('product_id = ?1')->bind([1 => $this->id])
+				->execute()->filter(function(ProductSale $prodSale) {
+					/** @var Sale | null $sale */
+					$sale = Sale::query()
+						->where('id = ?1')->bind([1 => $prodSale->page_id])
+						->andWhere('public = \'1\'')
+						->execute()
+						->getFirst();
 
-		foreach ($sales as $page) {
-			$sale = new Sale();
-			$sale->setDi($this->_di);
-			$sale->id = $page->id;
-			$sale->name = $page->name;
-			$sale->short_content = $page->short_content;
-			$sale->full_content = $page->full_content;
-			$sale->seo_name = $page->seo_name;
-			$sale->type_id = $page->type_id;
-			$sale->meta_keywords = $page->meta_keywords;
-			$sale->meta_description = $page->meta_description;
-			$sale->public = $page->public;
-			$sale->path = $this->_url->get('sales/show/' . $sale->seo_name);
-			$sale->time = strtotime($page->time);
-			$sale->expiration = strtotime($page->expiration);
-			$this->_sales[] = $sale;
+					if ($sale) {
+						$sale->setPath();
+						return $sale;
+					}
+				});
 		}
 	}
 

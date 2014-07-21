@@ -772,7 +772,7 @@ class AdminController extends BaseAdminController
 			$this->view->fotos = $fotos;
 			$this->view->files = $product->files;
 			$this->view->allSales = json_encode($allSales);
-			$this->view->sales = $salesForView;
+			$this->view->sales = $product->getSales();
 
 			echo $this->view->render('admin/products/edit');
 
@@ -2115,32 +2115,39 @@ class AdminController extends BaseAdminController
 			echo "false";
 			return false;
 		}
+		/** @var Models\Product | null $product */
 		$product = Models\Product::findFirst($prodId);
 		if (!$product) {
 			echo "false";
 			return false;
 		}
-		$prodSale = $product->getSales([
-			'[\App\Models\Page].id = ' . $saleId
-		]);
-		if (count($prodSale)) {
-			echo "false";
-			return false;
+
+		foreach ($product->getSales() as $sale) {
+			if ($sale->id == $saleId) {
+				echo "false";
+				return false;
+			}
 		}
-		$searchedSale = Models\Page::findFirst($saleId);
-		if (!$searchedSale) {
-			echo "false";
-			return false;
-		}
-		$product->sales = $searchedSale;
-		if ($product->save()) {
+
+		$prodSale = new Models\ProductSale();
+		$prodSale->product_id = $product->id;
+		$prodSale->page_id = $saleId;
+
+		if ($prodSale->dbSave()) {
+			$adedSale = Models\Sale::findFirst($prodSale->page_id);
+			$adedSale->setPath();
 			$result = [];
-			$result['name'] = $searchedSale->name;
-			$result['href'] = $this->url->get('sales/show/') . $searchedSale->seo_name;
+			$result['name'] = $adedSale->name;
+			$result['href'] = $adedSale->path;
+
 			echo json_encode($result);
-		} else {
-			echo "false";
+			return true;
 		}
+		else {
+			echo "false";
+			return false;
+		}
+
 	}
 
 	public function deleteSaleFromProductAction()

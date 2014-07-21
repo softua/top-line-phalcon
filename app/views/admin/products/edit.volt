@@ -223,8 +223,8 @@
 									{% if sales is defined and sales is not empty %}
 										{% for sale in sales %}
 											<li>
-												<a href="{{ sale['id'] }}" class="btn btn-danger" data-delete-sale="true">Удалить товар из акции</a>
-												<a href="{{ sale['href'] }}" target="_blank">{{ sale['name'] }}</a>
+												<a href="{{ sale.id }}" class="btn btn-danger" data-delete-sale="true">Удалить товар из акции</a>
+												<a href="{{ sale.path }}" target="_blank">{{ sale.name }}</a>
 											</li>
 										{% endfor %}
 									{% endif %}

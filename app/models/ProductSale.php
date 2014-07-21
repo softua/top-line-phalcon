@@ -28,6 +28,11 @@ class ProductSale extends \Phalcon\Mvc\Model
 		}
 	}
 
+	public function onConstruct()
+	{
+		$this->setDI();
+	}
+
 	public function getSource()
 	{
 		return 'products_sales';
@@ -42,7 +47,6 @@ class ProductSale extends \Phalcon\Mvc\Model
 			'alias' => 'sale'
 		]);
 
-		$this->setDI();
 		$this->useDynamicUpdate(true);
 	}
 
