@@ -28,7 +28,7 @@
 					<figcaption class="article__img__caption">{{ page.name }}</figcaption>
 				</figure>
 			</div>
-			{{ page.fullContent }}
+			{{ page.full_content }}
 			<div class="article__actions">
 				<a class="main__back" href="{{ url('sales/') }}" title="Акционные предложения">Назад</a>
 				<a class="btn-next" href="{{ url('contacts#form') }}" title="Контакты">Подать заявку</a>

@@ -23,7 +23,7 @@ try {
 
 	// Подключаем конфигурацию как сервис
 	$di->setShared('config', function() {
-		return new \App\Config('development');
+		return new \App\Config('production');
 	});
 
     // Сервис для работы с БД

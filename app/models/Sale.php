@@ -104,7 +104,9 @@ class Sale extends Page
 	{
 		if ($this->_images === null) {
 			$this->setImages();
-			$this->getImages();
+			if ($this->_images === null) return null;
+			elseif ($this->_images === false) return null;
+			else return $this->_images;
 		}
 		elseif ($this->_images === false) return null;
 		else return $this->_images;
@@ -117,7 +119,9 @@ class Sale extends Page
 	{
 		if ($this->_mainImage === null) {
 			$this->setImages();
-			$this->getMainImage();
+			if ($this->_mainImage === null) return null;
+			elseif ($this->_mainImage === false) return null;
+			else return $this->_mainImage;
 		}
 		elseif ($this->_mainImage === false) return null;
 		else return $this->_mainImage;
@@ -127,10 +131,11 @@ class Sale extends Page
 	{
 		if (is_array($this->_products) && empty($this->_products)) {
 			$this->_setProducts();
-			if ($this->_products === false) {return false;}
-			else {return true;}
-		} elseif ($this->_products === false) {return false;}
-		else {return true;}
+			if ($this->_products === false) return false;
+			else return true;
+		}
+		elseif ($this->_products === false) return false;
+		else return true;
 	}
 
 	public static function getSales($withImages = false)

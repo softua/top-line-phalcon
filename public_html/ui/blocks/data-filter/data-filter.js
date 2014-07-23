@@ -3,7 +3,7 @@
  * Date: 23.06.14
  * Time: 0:19
  */
-define(['jquery'], function (jquery) {
+define(['jquery'], function ($) {
 
 	var $filter = $('[data-filter="price"]');
 	var oldValue = $filter.val();

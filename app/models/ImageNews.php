@@ -36,8 +36,8 @@ class ImageNews extends Image
 
 		if ($this->imgListPath === null) {
 			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__news_list.' . $this->extension);
-			if (file_exists($path)) $this->imgDescriptionPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__news_list.' . $this->extension);
-			else $this->imgDescriptionPath = false;
+			if (file_exists($path)) $this->imgListPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__news_list.' . $this->extension);
+			else $this->imgListPath = false;
 		}
 
 		if ($this->imgAdminPath === null) {
@@ -104,6 +104,9 @@ class ImageNews extends Image
 			$file->image_watermark_position = 'TL';
 			$file->image_resize = true;
 			$file->image_ratio = true;
+			if ($file->file_src_name_ext == 'jpg' || $file->file_src_name_ext == 'jpeg') {
+				$file->jpeg_quality = 100;
+			}
 			$file->image_x = 500;
 			$file->image_y = 358;
 			$file->process($path->path('public_html/Uploads/db_images/'));
@@ -117,8 +120,11 @@ class ImageNews extends Image
 			$file->file_new_name_body = $image->id . '__news_list';
 			$file->image_resize = true;
 			$file->image_ratio = true;
-			$file->image_x = 173;
-			$file->image_y = 131;
+			if ($file->file_src_name_ext == 'jpg' || $file->file_src_name_ext == 'jpeg') {
+				$file->jpeg_quality = 100;
+			}
+			$file->image_x = 300;
+			$file->image_y = 200;
 			$file->process($path->path('public_html/Uploads/db_images/'));
 			if (!$file->processed) {
 				$file->clean();

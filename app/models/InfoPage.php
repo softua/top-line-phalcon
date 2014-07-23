@@ -32,7 +32,9 @@ class InfoPage extends Page
 	{
 		if ($this->_images === null) {
 			$this->setImages();
-			$this->getImages();
+			if ($this->_images === null) return null;
+			elseif ($this->_images === false) return null;
+			else return $this->_images;
 		}
 		elseif ($this->_images === false) return null;
 		else return $this->_images;

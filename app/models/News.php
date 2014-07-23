@@ -48,7 +48,9 @@ class News extends Page
 	{
 		if ($this->_mainImage === null) {
 			$this->setImages();
-			$this->getMainImage();
+			if ($this->_mainImage === null) return null;
+			elseif ($this->_mainImage === false) return null;
+			else return $this->_mainImage;
 		}
 		elseif ($this->_mainImage === false) return false;
 		else return $this->_mainImage;

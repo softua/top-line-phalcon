@@ -12,6 +12,34 @@ class CompanyPage extends Page
 {
 	public $path;
 
+	public function setImages()
+	{
+		if ($this->_images === null) {
+			$this->_images = ImageCompany::query()
+				->where('belongs = \'company\'')
+				->andWhere('belongs_id = ?1', [1 => $this->id])
+				->orderBy('sort')
+				->execute()->filter(function(ImageCompany $item) {
+					$item->setPaths();
+					return $item;
+				});
+
+			if (!$this->_images || !count($this->_images)) $this->_images = false;
+		}
+	}
+
+	public function getImages()
+	{
+		if ($this->_images === null) {
+			$this->setImages();
+			if ($this->_images === null) return null;
+			elseif ($this->_images === false) return null;
+			else return $this->_images;
+		}
+		elseif ($this->_images === false) return null;
+		else return $this->_images;
+	}
+
 	public static function getCompanyPages()
 	{
 		/** @var self[] $pages */

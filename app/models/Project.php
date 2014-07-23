@@ -43,7 +43,9 @@ class Project extends Page
 	{
 		if ($this->_images === null) {
 			$this->setImages();
-			$this->getImages();
+			if ($this->_images === null) return null;
+			elseif ($this->_images === false) return null;
+			else return $this->_images;
 		}
 		elseif ($this->_images === false) return null;
 		else return $this->_images;
@@ -53,7 +55,9 @@ class Project extends Page
 	{
 		if ($this->_mainImage === null) {
 			$this->setImages();
-			$this->getMainImage();
+			if ($this->_mainImage === null) return null;
+			elseif ($this->_mainImage === false) return null;
+			else return $this->_mainImage;
 		}
 		elseif ($this->_mainImage === false) return null;
 		else return $this->_mainImage;

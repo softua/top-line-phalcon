@@ -33,8 +33,8 @@ class ImageProject extends Image
 
 		if ($this->imgListPath === null) {
 			$path = $this->_url->path('public_html/Uploads/db_images/' . $this->id . '__project_list.' . $this->extension);
-			if (file_exists($path)) $this->imgDescriptionPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__project_list.' . $this->extension);
-			else $this->imgDescriptionPath = false;
+			if (file_exists($path)) $this->imgListPath = $this->_url->getStatic('Uploads/db_images/' . $this->id . '__project_list.' . $this->extension);
+			else $this->imgListPath = false;
 		}
 
 		if ($this->imgAdminPath === null) {

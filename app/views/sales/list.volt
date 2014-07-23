@@ -30,7 +30,7 @@
 							</figcaption>
 						</figure>
 						<div class="sales__item__text-wrapper">
-							{{ item.shortContent }}
+							{{ item.short_content }}
 							<a class="sales__item__more" href="{{ item.path }}" title="{{ item.name }}">Подробнее...</a>
 						</div>
 					</li>

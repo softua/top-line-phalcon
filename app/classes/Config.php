@@ -26,10 +26,10 @@ class Config
 
 		if ($this->env == 'production') {
 			$this->db = [
-				'host' => 'localhost',
-				'username' => 'softuane_admin',
+				'host' => 'tip-topline.com',
+				'username' => 'tiptopli_admin',
 				'password' => '7TWaskME',
-				'dbname' => 'softuane_top_line'
+				'dbname' => 'tiptopli_main'
 			];
 
 		} elseif ($this->env == 'development') {

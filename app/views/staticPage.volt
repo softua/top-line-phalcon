@@ -26,12 +26,11 @@
 		<main class="main main--aside" role="main">
 			<h1 class="title title--big">{{ page.name }}</h1>
 			<div class="article">
-				{{ page.fullContent }}
+				{{ page.full_content }}
 				<div class="article__actions">
 					<div class="article__actions__social">
 						<div class="pluso" data-background="transparent" data-options="small,square,line,horizontal,nocounter,theme=08" data-services="yandex,vkontakte,facebook,twitter,livejournal,google,blogger"></div>
 					</div>
-					<a href="{{ url('contacts#form') }}" title="">Подписаться на новости сервиса</a>
 					<a class="main__back" href="{{ url('company/news/') }}" title="">Все новости </a>
 				</div>
 			</div>

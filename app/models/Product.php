@@ -462,14 +462,15 @@ class Product extends \Phalcon\Mvc\Model
 	 * @param bool $withImages
 	 * @return self[] | null
 	 */
-	public static function getProductsByIds($ids, $withCategories = false, $withImages = true)
+	public static function getProductsByIds(Array $ids, $withCategories = false, $withImages = true)
 	{
 		/** @var self[] $products */
 		$products = self::query()
 			->inWhere('id', $ids)
-			->andWhere('public = 1')
+			->andWhere('public = \'1\'')
 			->execute()->filter(function(self $product) {
 				$product->setPath();
+				return $product;
 			});
 
 		if (count($products)) return $products;

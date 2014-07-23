@@ -174,6 +174,7 @@ class Category extends \Phalcon\Mvc\Model
 
 	public function dbSave($data = null)
 	{
+		if ($this->parent_id === null) $this->parent_id = 0;
 		if ($this->save($data, $this->dbFields))
 			return true;
 		else
