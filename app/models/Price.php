@@ -27,7 +27,7 @@ class Price extends \Phalcon\Mvc\Model
 
 	public function initialize()
 	{
-		$this->useDynamicUpdate();
+		$this->useDynamicUpdate(true);
 	}
 
 	public function onConstruct()

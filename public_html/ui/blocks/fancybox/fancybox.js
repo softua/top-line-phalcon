@@ -5,6 +5,14 @@
  */
 define(['jquery', 'fancyBox'],
 	function ($, fb) {
-		$('.fancybox').fancybox();
+		$('.fancybox').fancybox({
+			helpers : {
+				overlay : {
+					css : {
+						'background' : 'rgba(30, 30, 30, 0.8)'
+					}
+				}
+			}
+		});
 	}
 );

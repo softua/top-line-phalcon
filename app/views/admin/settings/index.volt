@@ -10,7 +10,6 @@
 		{{ partial('admin/partials/errors') }}
 		<form action="/admin/settings" method="post">
 			{% if data is defined %}
-				<h3>Курсы валют:</h3>
 				<table class="table table-bordered">
 					<tbody>
 						<tr>
@@ -20,6 +19,16 @@
 						<tr>
 							<th><label for="curancy_usd">Курс usd:</label></th>
 							<td><input type="text" name="curancy_usd" id="curancy_usd" value="{{ data['curancy_usd'] }}" class="input-mini"/> грн.</td>
+						</tr>
+						<tr>
+							<th><label for="price_list_path">Прайс лист:</label></th>
+							<td>
+								{% if data['price_list_path'] %}
+									<input type="text" name="price_list_path" id="price_list_path" value="{{ data['price_list_path'] }}" class="input-xxlarge"/>
+								{% else %}
+									<input type="text" name="price_list_path" id="price_list_path"/>
+								{% endif %}
+							</td>
 						</tr>
 						<tr>
 							<th></th>

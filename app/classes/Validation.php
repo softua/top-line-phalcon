@@ -240,6 +240,31 @@ class Validation
 		return $flag;
 	}
 
+	public function isEmail($params, $returnResult)
+	{
+		$flag = true;
+
+		if ($returnResult) // Если нужно вернуть результат (true/false)
+		{
+			foreach ($params as $name => $value) {
+				if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+					$flag = false;
+					$this->messages[$name][] = 'Неверно указан E-mail';
+				}
+			}
+		}
+		else // Не нужно возвращать результат
+		{
+			foreach ($params as $name => $value) {
+				if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+					$this->messages[$name][] = 'Неверно указан E-mail';
+				}
+			}
+		}
+
+		return $flag;
+	}
+
 	/***
 	 * @return array Возвращает массив сообщений об ошибках в формате:
 	 * [

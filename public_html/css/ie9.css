@@ -1776,6 +1776,10 @@ input:focus, textarea:focus, button {
   border-color: #ee0301;
 }
 
+.popup-form {
+  display: none;
+}
+
 .product {
   padding: 25px 30px;
 }

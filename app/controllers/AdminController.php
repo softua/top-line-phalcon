@@ -1291,9 +1291,11 @@ class AdminController extends BaseAdminController
 
 		$data['curancy_eur'] = Models\Exchange::findFirst(['curancy = \'eur\''])->value;
 		$data['curancy_usd'] = Models\Exchange::findFirst(['curancy = \'usd\''])->value;
+		/** @var Models\Price | null $priceList */
+		$priceList = Models\Price::findFirst();
+		if ($priceList) $data['price_list_path'] = $this->url->getStatic($priceList->pathname);
 
-		if ($this->request->isPost())
-		{
+		if ($this->request->isPost()) {
 			$inputs['curancy_eur'] = $this->request->getPost('curancy_eur', ['trim', 'striptags']);
 			$inputs['curancy_usd'] = $this->request->getPost('curancy_usd', ['trim', 'striptags']);
 
@@ -1308,8 +1310,7 @@ class AdminController extends BaseAdminController
 				'курс usd' => $inputs['curancy_usd']
 			], false);
 
-			if ($validation->validate())
-			{
+			if ($validation->validate()) {
 				$curancyEur = Models\Exchange::findFirst(['curancy = \'eur\'']);
 				$curancyUsd = Models\Exchange::findFirst(['curancy = \'usd\'']);
 
@@ -1324,8 +1325,7 @@ class AdminController extends BaseAdminController
 					$this->view->errors = ['success' => ['Данные успешно сохранены']];
 
 					// Пересчет всех цен
-					foreach (Models\Product::find() as $product)
-					{
+					foreach (Models\Product::find() as $product) {
 						$prices = [];
 						$priceName = 'price_' . $product->main_curancy;
 						$prices = Models\Exchange::setPrices($product->main_curancy, $product->$priceName);

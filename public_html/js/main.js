@@ -81,6 +81,14 @@ require( ['jquery'], function( $ ) {
 		require(['../../ui/blocks/fancybox/fancybox']);
 	}
 
+	if ($('.download-price').length) {
+		require(['../../ui/blocks/download-price/download-price']);
+	}
+
+	if ($('.popup-form').length) {
+		require(['../../ui/blocks/popup-form/popup-form']);
+	}
+
     if ( !isDev ) {
         require( ['pluso'] );
     }
