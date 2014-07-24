@@ -62,7 +62,7 @@ class ContactsController extends BaseFrontController
 					$mailer = \Swift_Mailer::newInstance($transport);
 
 					$body = [];
-					$body['email'] = '<h4>E-mail клиента: <a href="' . $email .'">' . $email . '</a></h4>';
+					$body['email'] = '<h4>E-mail клиента: <a href=mailto:"' . $email .'">' . $email . '</a></h4>';
 					$body['name'] = '<h4>Имя клиента: </h4>' . '<h3>' . $name . '</h3>';
 					if ($phoneBody)
 						$body['phone'] = '<h4>телефон: </h4><h3>' . $phonePrefix . $phoneBody . '</h3>';
