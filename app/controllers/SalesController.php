@@ -6,8 +6,8 @@
  */
 
 namespace App\Controllers;
-use App\Models;
-use App;
+use App,
+	App\Models;
 
 class SalesController extends BaseFrontController
 {

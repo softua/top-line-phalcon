@@ -261,8 +261,7 @@ class AdminController extends BaseAdminController
 		$this->view->parent = $parent;
 
 		// POST запрос
-		if ($this->request->isPost())
-		{
+		if ($this->request->isPost()) {
 			$category = new Models\Category();
 
 			$name = $this->request->getPost('name', ['striptags', 'trim']);
@@ -275,15 +274,15 @@ class AdminController extends BaseAdminController
 				'Порядок' => $sort
 			], false);
 
-			if ($validation->validate())
-			{
+			if ($validation->validate()) {
 				$category->name = $name;
 				$category->parent_id = $parent;
 				if ($parent == '0')
 				{
 					$category->seo_name = Translit::get_seo_keyword($name, true);
 
-				} else {
+				}
+				else {
 					$category->seo_name = Models\Category::getCategory($parent)->seo_name . '__' . Translit::get_seo_keyword($name, true);
 				}
 				$category->sort = (int)$sort;
@@ -326,17 +325,17 @@ class AdminController extends BaseAdminController
 				'Категория' => $name,
 				'Порядок' => $sort
 			], false);
-			if ($validation->validate())
-			{
+			if ($validation->validate()) {
 				$category->name = $name;
-				if (!$category->parent_id)
-				{
+				// Редактирование SEO-названия
+				/*if (!$category->parent_id) {
 					$category->seo_name = Translit::get_seo_keyword($name, true);
 
-				} else {
+				}
+				else {
 					$category->seo_name = Models\Category::findFirst($category->parent_id)->seo_name . '__' . Translit::get_seo_keyword($name, true);
 
-				}
+				}*/
 				$category->sort = (int)$sort;
 
 				if ($category->save())
@@ -443,8 +442,7 @@ class AdminController extends BaseAdminController
 		$inputs = [];
 
 		// POST запрос
-		if($this->request->isPost())
-		{
+		if($this->request->isPost()) {
 			$inputs['name'] = $this->request->getPost('name', ['trim', 'striptags']);
 			$inputs['type'] = $this->request->getPost('type', ['trim', 'striptags']);
 			$inputs['articul'] = $this->request->getPost('articul', ['trim', 'striptags']);
@@ -496,8 +494,7 @@ class AdminController extends BaseAdminController
 				$inputs['price'] = preg_replace('/,/', '.', $inputs['price']); // меняем "," на "."
 
 			// Если пройдена вся валидация
-			if ($validation->validate())
-			{
+			if ($validation->validate()) {
 				// Добавляем возможные варианты стран, типов и брендов для автодополнения
 				Models\Country::addCountry($inputs['country']);
 				Models\PossibleBrand::addBrand($inputs['brand']);
@@ -614,8 +611,7 @@ class AdminController extends BaseAdminController
 				}
 			}
 
-			if ($this->request->isPost()) // Если POST запрос
-			{
+			if ($this->request->isPost()) { // Если POST запрос
 				$inputs['seo_name'] = $this->request->getPost('seo-name', ['trim', 'striptags']);
 				$inputs['name'] = $this->request->getPost('name', ['trim', 'striptags']);
 				$inputs['type'] = $this->request->getPost('type', ['trim', 'striptags']);
@@ -674,8 +670,7 @@ class AdminController extends BaseAdminController
 					$validation->setMessageManual('SEO название', 'SEO название не уникально');
 
 				// Если пройдена вся валидация
-				if ($validation->validate())
-				{
+				if ($validation->validate()) {
 					// Добавляем возможные варианты стран, типов и брендов для автодополнения
 					Models\Country::addCountry($inputs['country']);
 					Models\PossibleBrand::addBrand($inputs['brand']);
@@ -1579,8 +1574,7 @@ class AdminController extends BaseAdminController
 			]);
 			if ($samePages)
 				$validation->setMessageManual('СЕО название', 'Такое название уже существует');
-			if ($validation->validate())
-			{
+			if ($validation->validate()) {
 				$newPage = new Models\Page();
 				$newPage->name = $inputs['name'];
 				$newPage->seo_name = $inputs['seo_name'];

@@ -96,6 +96,7 @@ try {
 
 	// Роуты
 	require $di['url']->path('app/classes/Routes.php');
+//	require __DIR__ . '/../app/classes/Routes.php';
 
     // Обработка запроса
     $application = new \Phalcon\Mvc\Application($di);

@@ -372,10 +372,14 @@ class Product extends \Phalcon\Mvc\Model
 	public static function getProductById($id)
 	{
 		if ($id && preg_match('/\d+/', $id)) {
+			/** @var self | null $product */
 			$product = self::findFirst($id);
 
-			if (count($product))
+			if (count($product)) {
+				$product->setPath();
 				return $product;
+			}
+
 			else
 				return false;
 		}
