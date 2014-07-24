@@ -14,7 +14,7 @@
 			<a href="mailto:top@tip-topline.com" title="">top@tip-topline.com</a></div>
 	</div>
 
-	<form class="header__search" action="action.php">
+	<form class="header__search" action="{{ url('search') }}">
 		Поиск по сайту
 
 		<div class="header__search__wrapper">
