@@ -38,7 +38,17 @@
 
 			<form id="form" class="form" method="post" action="{{ url('contacts') }}">
 				<h2 class="title2">Заполните форму</h2>
-
+				{% if errors %}
+					{% for field, messages in errors %}
+						{% for message in messages %}
+							<h4>{{ message }}</h4>
+						{% endfor %}
+					{% endfor %}
+				{% endif %}
+				{% if done %}
+					<h3>Ваше сообщение принято</h3>
+					<h4>Пожулайста ожидайте связи с менеджером</h4>
+				{% endif %}
 				<label>
 					<span class="form__label-name">Ваше имя</span>
 					<input type="text" name="name"/>
