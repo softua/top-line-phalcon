@@ -26,7 +26,7 @@ class Config
 
 		if ($this->env == 'production') {
 			$this->db = [
-				'host' => 'tip-topline.com',
+				'host' => 'localhost',
 				'username' => 'tiptopli_admin',
 				'password' => '7TWaskME',
 				'dbname' => 'tiptopli_main'
@@ -34,10 +34,10 @@ class Config
 
 		} elseif ($this->env == 'development') {
 			$this->db = [
-				'host' => '127.0.0.1',
-				'username' => 'softua',
+				'host' => 'tip-topline.com',
+				'username' => 'tiptopli_admin',
 				'password' => '7TWaskME',
-				'dbname' => 'top-line'
+				'dbname' => 'tiptopli_main'
 			];
 		}
 	}

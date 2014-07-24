@@ -69,6 +69,7 @@ class Product extends \Phalcon\Mvc\Model
 	public $dbFields = [
 		'id', 'name', 'type', 'articul', 'model', 'country_id', 'brand', 'main_curancy', 'price_eur', 'price_usd', 'price_uah', 'price_alternative', 'short_description', 'full_description', 'seo_name', 'meta_keywords', 'meta_description', 'public', 'top', 'novelty'
 	];
+
 	public $path;
 	public $editPath;
 	private $_categories;
@@ -76,6 +77,7 @@ class Product extends \Phalcon\Mvc\Model
 	private $_sales;
 	private $_images;
 	private $_videos;
+	private $_params;
 
 	public function getSource()
 	{
@@ -177,6 +179,16 @@ class Product extends \Phalcon\Mvc\Model
 		}
 	}
 
+	public function setParams()
+	{
+		if ($this->_params === null) {
+			/** @var ProductParam[] | null $params */
+			$params = ProductParam::getParamsByProductId($this->id);
+			if ($params === null) $this->_params = false;
+			else $this->_params = $params;
+		}
+	}
+
 	public function setSales()
 	{
 		if ($this->_sales === null) {
@@ -274,6 +286,17 @@ class Product extends \Phalcon\Mvc\Model
 		$this->setImages();
 		if ($this->_images) return $this->_images[0];
 		else return null;
+	}
+
+	public function getParams()
+	{
+		if ($this->_params === null) {
+			$this->setParams();
+			if ($this->_params === false) return null;
+			else return $this->_params;
+		}
+		elseif ($this->_params === false) return null;
+		else return $this->_params;
 	}
 
 	public function getSales()
@@ -528,6 +551,7 @@ class Product extends \Phalcon\Mvc\Model
 		foreach ($dbProducts as $dbProduct) {
 
 			$dbProduct->setPath();
+			$dbProduct->setParams();
 			if ($withCategories) {
 				$dbProduct->setCategories();
 			}

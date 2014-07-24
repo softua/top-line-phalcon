@@ -1870,11 +1870,26 @@ input:focus, textarea:focus, button {
 .products-list__item + .products-list__item {
   border-top: 1px solid #b5b5b5;
 }
-.products-list__title {
+.products-list__item--simple {
+  padding: 0;
+  min-height: 0;
+}
+.products-list__item--simple .products-list__title {
+  color: #ee0301;
+}
+.products-list__item--simple .products-list__price {
+  color: #ee0301;
+}
+.products-list__title, .products-list__price {
   margin: 0;
   font-size: 16px;
   font-weight: normal;
   line-height: 18px;
+}
+.products-list__price {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 .products-list__img {
   position: absolute;

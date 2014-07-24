@@ -127,9 +127,14 @@ class Category extends \Phalcon\Mvc\Model
 		if (!$this->link) {
 			if ($this->seo_name === 'servisnyie_uslugi_montaj') {
 				$this->link = $this->_di['url']->get('service');
-			} elseif ($this->areThereChildrenCategories()) {
+			}
+			elseif ($this->parent_id == 22) {
+				$this->link = $this->_di['url']->get('products/list2/') . $this->seo_name . '/';
+			}
+			elseif ($this->areThereChildrenCategories()) {
 				$this->link = $this->_di['url']->get('catalog/show/') . $this->seo_name . '/';
-			} else {
+			}
+			else {
 				$this->link = $this->_di['url']->get('products/list/') . $this->seo_name . '/';
 			}
 		}

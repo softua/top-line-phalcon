@@ -58,6 +58,30 @@ class ProductsController extends BaseFrontController
 		echo $this->view->render('products/list');
 	}
 
+	public function list2Action()
+	{
+		$catSeoName = $this->dispatcher->getParams()[0];
+		if (!$catSeoName) return $this->response->redirect('catalog/');
+
+		$category = Models\Category::getCategoryBySeoName($catSeoName, true);
+		if (!$category) {
+			return $this->response->redirect('catalog/');
+		}
+
+		// Список товаров
+		$sort = $this->request->getQuery('sort', ['trim', 'striptags']);
+
+		$products = Models\Product::getProductsByCategories([$category], false, false, true, $sort);
+
+		$this->view->breadcrumbs = $category->getParentsCategories();
+		$this->view->name = $category->name;
+		$this->view->sidebar_categories = Models\Category::getMainCategories(false, [$category->seo_name]);
+		$this->view->products = $products;
+		$this->view->sort = ($sort) ? $sort : 'DESC';
+
+		echo $this->view->render('products/list-simple');
+	}
+
 	public function showAction()
 	{
 		$productSeoName = trim(strip_tags($this->dispatcher->getParams()[0]));
