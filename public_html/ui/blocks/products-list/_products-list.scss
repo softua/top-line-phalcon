@@ -9,6 +9,28 @@
         }
     }
 
+	&--table {
+		width: 100%;
+		margin-top: 40px;
+		border: 1px solid #403F3F;
+
+		tr, th, td {
+			border: 1px solid #000;
+		}
+
+		th, td {
+			padding: 5px;
+		}
+	}
+
+	&--table__centered {
+		text-align: center;
+	}
+
+	&--table__right {
+		text-align: right;
+	}
+
     @include my-reset-list();
 
     p {

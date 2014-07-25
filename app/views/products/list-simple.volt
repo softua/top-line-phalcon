@@ -61,35 +61,50 @@
 
 		<div class="products-list--outer-wrapper">
 			{% if products is defined and products is not empty %}
-				<ul class="products-list">
-					{% for product in products %}
-						<li class="products-list__item products-list__item--simple">
-							<h2 class="products-list__title">
-								{{ product.name }}
-							</h2>
-							<div class="products-list__code">Артикул: {{ product.articul }}</div>
-							{% set param = product.getParams() %}
-							{% if param %}
-								<div class="products-list__code">{{ param[0] }}</div>
-							{% endif %}
-							{% if product.main_curancy is 'eur' %}
-								<h2 class="products-list__price">
-									Цена: {{ product.price_eur }} евро
-								</h2>
-							{% endif %}
-							{% if product.main_curancy is 'usd' %}
-								<h2 class="products-list__price">
-									Цена: ${{ product.price_usd }}
-								</h2>
-							{% endif %}
-							{% if product.main_curancy is 'uah' %}
-								<h2 class="products-list__price">
-									Цена: {{ product.price_uah }} грн
-								</h2>
-							{% endif %}
-						</li>
-					{% endfor %}
-				</ul><!-- end products-list -->
+				<table class="products-list--table">
+					<thead>
+						<tr>
+							<th>№ по каталогу</th>
+							<th>Наименование</th>
+							<th>Шт. в упак.</th>
+							<th>Цена за единицу</th>
+							<th>Цена за упаковку</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for product in products %}
+							<tr>
+								<td>{{ product.articul }}</td>
+
+								<td class="products-list--table__centered">{{ product.name }}</td>
+
+								{% set packageCount = product.getParamByName('Шт. в упак.') %}
+								{% if packageCount %}
+									<td class="products-list--table__centered">{{ packageCount.value }}</td>
+								{% else %}
+									<td class="products-list--table__centered">-</td>
+								{% endif %}
+
+								{% if product.main_curancy is 'eur' %}
+									<td class="products-list--table__right">{{ product.price_eur }} евро</td>
+								{% endif %}
+								{% if product.main_curancy is 'usd' %}
+									<td class="products-list--table__right">{{ product.price_usd }} $</td>
+								{% endif %}
+								{% if product.main_curancy is 'uah' %}
+									<td class="products-list--table__right">{{ product.price_uah }} грн.</td>
+								{% endif %}
+
+								{% set packagePrice = product.getParamByName('Цена за упаковку') %}
+								{% if packagePrice %}
+									<td class="products-list--table__right">{{ packagePrice.value }}</td>
+								{% else %}
+									<td class="products-list--table__right">-</td>
+								{% endif %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
 			{% else %}
 				В данной категории пока нет товаров
 			{% endif %}

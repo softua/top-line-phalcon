@@ -113,6 +113,13 @@ class Product extends \Phalcon\Mvc\Model
 
 	}
 
+	public function afterFetch()
+	{
+		$this->price_eur = number_format($this->price_eur, 2, '.', ' ');
+		$this->price_usd = number_format($this->price_usd, 2, '.', ' ');
+		$this->price_uah = number_format($this->price_uah, 2, '.', ' ');
+	}
+
 	public function setDi($di = null)
 	{
 		if ($this->_di === null) $this->_di = \Phalcon\DI::getDefault();
@@ -297,6 +304,35 @@ class Product extends \Phalcon\Mvc\Model
 		}
 		elseif ($this->_params === false) return null;
 		else return $this->_params;
+	}
+
+	public function getParamByName($name)
+	{
+		if ($this->_params === null) {
+			$this->setParams();
+			if ($this->_params === false) return null;
+			else {
+				if (!$name) return null;
+				foreach ($this->_params as $param) {
+					if ($param->name == $name) {
+						return $param;
+						break;
+					}
+				}
+				return null;
+			}
+		}
+		elseif ($this->_params === false) return null;
+		else {
+			if (!$name) return null;
+			foreach ($this->_params as $param) {
+				if ($param->name == $name) {
+					return $param;
+					break;
+				}
+			}
+			return null;
+		}
 	}
 
 	public function getSales()

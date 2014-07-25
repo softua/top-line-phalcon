@@ -1976,6 +1976,23 @@ input:focus, textarea:focus, button {
 .products-list--outer-wrapper .pagination {
   margin-top: 0;
 }
+.products-list--table {
+  width: 100%;
+  margin-top: 40px;
+  border: 1px solid #403F3F;
+}
+.products-list--table tr, .products-list--table th, .products-list--table td {
+  border: 1px solid #000;
+}
+.products-list--table th, .products-list--table td {
+  padding: 5px;
+}
+.products-list--table__centered {
+  text-align: center;
+}
+.products-list--table__right {
+  text-align: right;
+}
 .products-list p {
   margin: 20px 0 0;
   font-size: 14px;
