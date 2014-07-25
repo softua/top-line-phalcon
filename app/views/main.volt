@@ -129,7 +129,7 @@
 								<a class="new-products__link" href="{{ novelty.path }}" title="">
 									<figure class="new-products__img">
 										{% set image = novelty.getMainImage() %}
-										{% if inage %}
+										{% if image %}
 											<img src="{{ image.imgListPath }}" alt="{{ novelty.name }}"/>
 										{% else %}
 											<img src="{{ static_url('img/no_foto.png') }}" alt="{{ novelty.name }}"/>

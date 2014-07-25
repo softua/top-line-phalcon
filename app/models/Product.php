@@ -569,10 +569,9 @@ class Product extends \Phalcon\Mvc\Model
 
 	/**
 	 * @param bool $withCategories
-	 * @param bool $withImages
 	 * @return self[] | null
 	 */
-	public static function getNovelty($withCategories = false, $withImages = true)
+	public static function getNovelty($withCategories = false)
 	{
 		/** @var self[] $prods */
 		$prods = Product::query()
