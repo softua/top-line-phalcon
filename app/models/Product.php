@@ -400,6 +400,7 @@ class Product extends \Phalcon\Mvc\Model
 
 			if (count($product)) {
 				$product->setPath();
+				$product->setCategories();
 				return $product;
 			}
 

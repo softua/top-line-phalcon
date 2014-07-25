@@ -586,11 +586,9 @@ class AdminController extends BaseAdminController
 			elseif ($inputs['main_curancy'] == 'uah')
 				$inputs['price'] = $product->price_uah;
 
-			if (count($product->_categories))
-			{
+			if (count($product->getCategories())) {
 				$productCats = [];
-				foreach ($product->_categories as $cat)
-				{
+				foreach ($product->getCategories() as $cat) {
 					$productCats[] = Models\Category::getCategoryWithFullName($cat->id);
 				}
 				$inputs['categories'] = $productCats;

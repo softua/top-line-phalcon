@@ -38,6 +38,11 @@ class ProductCategory extends \Phalcon\Mvc\Model
 		$this->belongsTo('product_id', '\App\Models\ProductModel', 'id');
 		$this->belongsTo('category_id', '\App\Models\CategoryModel', 'id');
 
+		$this->useDynamicUpdate(true);
+	}
+
+	public function onConstruct()
+	{
 		$this->setDI();
 	}
 }
