@@ -85,14 +85,18 @@
 									<td class="products-list--table__centered">-</td>
 								{% endif %}
 
-								{% if product.main_curancy is 'eur' %}
-									<td class="products-list--table__right">{{ product.price_eur }} евро</td>
-								{% endif %}
-								{% if product.main_curancy is 'usd' %}
-									<td class="products-list--table__right">{{ product.price_usd }} $</td>
-								{% endif %}
-								{% if product.main_curancy is 'uah' %}
-									<td class="products-list--table__right">{{ product.price_uah }} грн.</td>
+								{% if product.price_alternative %}
+									<td class="products-list--table__right">{{ product.price_alternative }}</td>
+								{% else %}
+									{% if product.main_curancy is 'eur' %}
+										<td class="products-list--table__right">{{ product.price_eur }} евро</td>
+									{% endif %}
+									{% if product.main_curancy is 'usd' %}
+										<td class="products-list--table__right">{{ product.price_usd }} $</td>
+									{% endif %}
+									{% if product.main_curancy is 'uah' %}
+										<td class="products-list--table__right">{{ product.price_uah }} грн.</td>
+									{% endif %}
 								{% endif %}
 
 								{% set packagePrice = product.getParamByName('Цена за упаковку') %}
