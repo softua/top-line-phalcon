@@ -69,15 +69,15 @@ class ProductsController extends BaseFrontController
 		}
 
 		// Список товаров
-		$sort = $this->request->getQuery('sort', ['trim', 'striptags']);
+//		$sort = $this->request->getQuery('sort', ['trim', 'striptags']);
 
-		$products = Models\Product::getProductsByCategories([$category], false, false, true, $sort);
+		$products = Models\Product::getProductsByCategories([$category], false, false, true);
 
 		$this->view->breadcrumbs = $category->getParentsCategories();
 		$this->view->name = $category->name;
 		$this->view->sidebar_categories = Models\Category::getMainCategories(false, [$category->seo_name]);
 		$this->view->products = $products;
-		$this->view->sort = ($sort) ? $sort : 'DESC';
+//		$this->view->sort = ($sort) ? $sort : 'DESC';
 
 		echo $this->view->render('products/list-simple');
 	}

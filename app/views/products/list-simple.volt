@@ -36,7 +36,7 @@
 {% block content %}
 	<main class="main main--aside" role="main">
 		<h1 class="title title--dot">{{ name }}</h1>
-		<div class="filter">
+		{#<div class="filter">
 			<div class="filter__wrapper">
 				<div class="filter__title">Сортировать по цене:</div>
 				<div class="js-select">
@@ -57,7 +57,7 @@
 					</select>
 				</div>
 			</div>
-		</div>
+		</div>#}
 
 		<div class="products-list--outer-wrapper">
 			{% if products is defined and products is not empty %}
