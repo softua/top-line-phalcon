@@ -15,5 +15,7 @@ class BaseAdminController extends \Phalcon\Mvc\Controller
 
 		$this->tag->setTitle($this->di['config']->name);
 		$this->tag->setTitleSeparator(' :: ');
+
+		$this->response->setHeader('Cache-Control', 'private, max-age=0, must-revalidate');
 	}
 } 

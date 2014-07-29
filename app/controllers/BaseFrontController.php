@@ -15,6 +15,8 @@ class BaseFrontController extends \Phalcon\Mvc\Controller
 		$this->tag->setTitle($this->di->get('config')->name);
 		$this->tag->setTitleSeparator(' :: ');
 
+		$this->response->setHeader('Cache-Control', 'private, max-age=0, must-revalidate');
+
 		$this->view->top_products = $this->getTopProducts();
 		$this->view->static_pages = $this->getSubmenuWithCompanyPages();
 		$this->view->infoPages = Models\InfoPage::getInfoPages($this->di);
