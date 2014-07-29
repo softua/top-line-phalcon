@@ -76,7 +76,7 @@
 							<tr>
 								<td>{{ product.articul }}</td>
 
-								<td class="products-list--table__centered">{{ product.name }}</td>
+								<td>{{ product.name }}</td>
 
 								{% set packageCount = product.getParamByName('Шт. в упак.') %}
 								{% if packageCount %}
